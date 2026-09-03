@@ -10,7 +10,7 @@ export default function Auth() {
   const [role, setRole] = useState<'worker' | 'manager'>('worker');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, demoError } = useAuth();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -128,9 +128,9 @@ export default function Auth() {
             </div>
           )}
 
-          {error && (
+          {(error || demoError) && (
             <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-lg text-sm">
-              {error}
+              {error || demoError}
             </div>
           )}
 

@@ -87,7 +87,10 @@ function AppContent() {
             </div>
 
             <button
-              onClick={() => signOut()}
+              onClick={() => {
+                setActiveTab('dashboard');
+                signOut();
+              }}
               className="flex items-center gap-2 px-5 py-2.5 text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-xl transition-all border border-slate-700 hover:border-slate-600"
             >
               <LogOut className="w-4 h-4" />
