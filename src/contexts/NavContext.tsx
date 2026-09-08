@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 
-export type ViewType = 'site' | 'worker' | 'task';
+export type ViewType = 'site' | 'worker' | 'task' | 'worker_task';
 
 export interface NavView {
   type: ViewType;
@@ -104,5 +104,12 @@ export function useTaskLink() {
   const { pushView } = useNav();
   return useCallback((taskId: string, taskTitle: string) => {
     pushView({ type: 'task', id: taskId, label: taskTitle });
+  }, [pushView]);
+}
+
+export function useWorkerTaskLink() {
+  const { pushView } = useNav();
+  return useCallback((taskId: string, taskTitle: string) => {
+    pushView({ type: 'worker_task', id: taskId, label: taskTitle });
   }, [pushView]);
 }

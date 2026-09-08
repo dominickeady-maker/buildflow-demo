@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase, Task, Site, Profile } from '../../lib/supabase';
+import { supabase, Site } from '../../lib/supabase';
 import { useSiteLink } from '../../contexts/NavContext';
 import { BarChart3, CheckCircle2, Clock, ListTodo } from 'lucide-react';
 
@@ -23,15 +23,11 @@ export default function ManagerDashboard() {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'tasks' },
-        () => {
-          loadDashboardData();
-        }
+        () => { loadDashboardData(); }
       )
       .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   async function loadDashboardData() {
@@ -77,37 +73,26 @@ export default function ManagerDashboard() {
   const totalTodo = siteStats.reduce((sum, s) => sum + s.todoTasks, 0);
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <StatCard
-          icon={<ListTodo className="w-6 h-6" />}
-          label="Total Tasks"
-          value={totalTasks}
-          color="slate"
-        />
-        <StatCard
-          icon={<Clock className="w-6 h-6" />}
-          label="To Do"
-          value={totalTodo}
-          color="orange"
-        />
-        <StatCard
-          icon={<BarChart3 className="w-6 h-6" />}
-          label="In Progress"
-          value={totalInProgress}
-          color="blue"
-        />
-        <StatCard
-          icon={<CheckCircle2 className="w-6 h-6" />}
-          label="Completed"
-          value={totalCompleted}
-          color="green"
-        />
+    <div className="space-y-5">
+      {/* Mobile compact stat cards (2x2 grid) */}
+      <div className="grid grid-cols-2 gap-2 md:hidden">
+        <CompactStat label="Total" value={totalTasks} color="text-slate-300" />
+        <CompactStat label="To Do" value={totalTodo} color="text-orange-400" />
+        <CompactStat label="Active" value={totalInProgress} color="text-blue-400" />
+        <CompactStat label="Done" value={totalCompleted} color="text-green-400" />
+      </div>
+
+      {/* Desktop stat cards */}
+      <div className="hidden md:grid md:grid-cols-4 gap-4">
+        <StatCard icon={<ListTodo className="w-6 h-6" />} label="Total Tasks" value={totalTasks} color="slate" />
+        <StatCard icon={<Clock className="w-6 h-6" />} label="To Do" value={totalTodo} color="orange" />
+        <StatCard icon={<BarChart3 className="w-6 h-6" />} label="In Progress" value={totalInProgress} color="blue" />
+        <StatCard icon={<CheckCircle2 className="w-6 h-6" />} label="Completed" value={totalCompleted} color="green" />
       </div>
 
       <div>
-        <h2 className="text-xl font-semibold text-white mb-4">Site Progress</h2>
-        <div className="space-y-4">
+        <h2 className="text-lg md:text-xl font-semibold text-white mb-3 md:mb-4">Site Progress</h2>
+        <div className="space-y-3 md:space-y-4">
           {siteStats.map(stat => (
             <SiteProgressCard key={stat.site.id} stats={stat} />
           ))}
@@ -120,17 +105,16 @@ export default function ManagerDashboard() {
   );
 }
 
-function StatCard({
-  icon,
-  label,
-  value,
-  color,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: number;
-  color: string;
-}) {
+function CompactStat({ label, value, color }: { label: string; value: number; color: string }) {
+  return (
+    <div className="bg-slate-700/60 border border-slate-600/50 rounded-lg px-3 py-2 flex items-center justify-between">
+      <span className={`text-xl font-bold ${color}`}>{value}</span>
+      <span className="text-xs text-slate-400 font-medium">{label}</span>
+    </div>
+  );
+}
+
+function StatCard({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: number; color: string }) {
   const colorClasses = {
     slate: 'bg-slate-700 text-slate-300 border-slate-600',
     orange: 'bg-orange-900/30 text-orange-400 border-orange-800/30',
@@ -140,9 +124,7 @@ function StatCard({
 
   return (
     <div className={`border rounded-lg p-4 ${colorClasses}`}>
-      <div className="inline-flex p-2 rounded-lg mb-2">
-        {icon}
-      </div>
+      <div className="inline-flex p-2 rounded-lg mb-2">{icon}</div>
       <div className="text-2xl font-bold text-white">{value}</div>
       <div className="text-sm">{label}</div>
     </div>
@@ -151,49 +133,42 @@ function StatCard({
 
 function SiteProgressCard({ stats }: { stats: SiteStats }) {
   const openSite = useSiteLink();
-  const progress = stats.totalTasks > 0
-    ? (stats.completedTasks / stats.totalTasks) * 100
-    : 0;
+  const progress = stats.totalTasks > 0 ? (stats.completedTasks / stats.totalTasks) * 100 : 0;
 
   return (
     <div
       onClick={() => openSite(stats.site.id, stats.site.name)}
-      className="bg-slate-700 border border-slate-600 rounded-lg p-4 hover:shadow-lg hover:shadow-blue-900/20 hover:border-orange-500/50 transition-all cursor-pointer"
+      className="bg-slate-700 border border-slate-600 rounded-lg p-3 md:p-4 hover:shadow-lg hover:shadow-blue-900/20 hover:border-orange-500/50 transition-all cursor-pointer"
     >
-      <div className="flex items-center justify-between mb-3">
-        <div>
-          <h3 className="font-medium text-white">{stats.site.name}</h3>
+      <div className="flex items-center justify-between mb-2 md:mb-3">
+        <div className="min-w-0 flex-1">
+          <h3 className="font-medium text-white text-sm md:text-base truncate">{stats.site.name}</h3>
           {stats.site.description && (
-            <p className="text-sm text-slate-400">{stats.site.description}</p>
+            <p className="text-xs md:text-sm text-slate-400 truncate">{stats.site.description}</p>
           )}
         </div>
-        <div className="text-right">
-          <div className="text-2xl font-bold text-white">
-            {Math.round(progress)}%
-          </div>
-          <div className="text-xs text-slate-400">Complete</div>
+        <div className="text-right ml-2 flex-shrink-0">
+          <div className="text-xl md:text-2xl font-bold text-white">{Math.round(progress)}%</div>
+          <div className="text-xs text-slate-400 hidden md:block">Complete</div>
         </div>
       </div>
 
-      <div className="w-full bg-slate-800 rounded-full h-2 mb-3">
-        <div
-          className="bg-gradient-to-r from-orange-600 to-orange-500 h-2 rounded-full transition-all duration-300"
-          style={{ width: `${progress}%` }}
-        />
+      <div className="w-full bg-slate-800 rounded-full h-2 mb-2 md:mb-3">
+        <div className="bg-gradient-to-r from-orange-600 to-orange-500 h-2 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
       </div>
 
-      <div className="flex gap-4 text-sm">
+      <div className="flex gap-3 md:gap-4 text-xs md:text-sm">
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-slate-400" />
           <span className="text-slate-300">{stats.todoTasks} To Do</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-blue-500" />
-          <span className="text-slate-300">{stats.inProgressTasks} In Progress</span>
+          <span className="text-slate-300">{stats.inProgressTasks} Active</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-green-500" />
-          <span className="text-slate-300">{stats.completedTasks} Complete</span>
+          <span className="text-slate-300">{stats.completedTasks} Done</span>
         </div>
       </div>
     </div>

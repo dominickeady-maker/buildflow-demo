@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { supabase, Task, Site, Trade } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
-import { CheckCircle2, Circle, Loader2 } from 'lucide-react';
+import { useWorkerTaskLink } from '../../contexts/NavContext';
+import { CheckCircle2, Loader2, ChevronRight } from 'lucide-react';
 
 export default function WorkerDashboard() {
   const { profile } = useAuth();
+  const openTask = useWorkerTaskLink();
   const [tasks, setTasks] = useState<(Task & { site: Site; trade?: Trade })[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null);
@@ -89,7 +91,7 @@ export default function WorkerDashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-white mb-4">To Do</h2>
+        <h2 className="text-lg font-semibold text-white mb-3">To Do</h2>
         {todoTasks.length === 0 ? (
           <p className="text-slate-400 text-sm">No pending tasks</p>
         ) : (
@@ -100,6 +102,7 @@ export default function WorkerDashboard() {
                 task={task}
                 updating={updatingTaskId === task.id}
                 onStatusChange={updateTaskStatus}
+                onOpen={() => openTask(task.id, task.title)}
               />
             ))}
           </div>
@@ -107,7 +110,7 @@ export default function WorkerDashboard() {
       </div>
 
       <div>
-        <h2 className="text-xl font-semibold text-white mb-4">In Progress</h2>
+        <h2 className="text-lg font-semibold text-white mb-3">In Progress</h2>
         {inProgressTasks.length === 0 ? (
           <p className="text-slate-400 text-sm">No tasks in progress</p>
         ) : (
@@ -118,6 +121,7 @@ export default function WorkerDashboard() {
                 task={task}
                 updating={updatingTaskId === task.id}
                 onStatusChange={updateTaskStatus}
+                onOpen={() => openTask(task.id, task.title)}
               />
             ))}
           </div>
@@ -125,13 +129,13 @@ export default function WorkerDashboard() {
       </div>
 
       <div>
-        <h2 className="text-xl font-semibold text-white mb-4">Completed</h2>
+        <h2 className="text-lg font-semibold text-white mb-3">Completed</h2>
         {completedTasks.length === 0 ? (
           <p className="text-slate-400 text-sm">No completed tasks</p>
         ) : (
           <div className="space-y-3">
             {completedTasks.map(task => (
-              <TaskCard key={task.id} task={task} updating={false} onStatusChange={() => {}} />
+              <TaskCard key={task.id} task={task} updating={false} onStatusChange={() => {}} onOpen={() => openTask(task.id, task.title)} />
             ))}
           </div>
         )}
@@ -144,16 +148,21 @@ function TaskCard({
   task,
   updating,
   onStatusChange,
+  onOpen,
 }: {
   task: Task & { site: Site; trade?: Trade };
   updating: boolean;
   onStatusChange: (taskId: string, status: 'in_progress' | 'complete') => void;
+  onOpen: () => void;
 }) {
   return (
-    <div className="bg-slate-700 border border-slate-600 rounded-lg p-4 hover:shadow-lg hover:shadow-blue-900/20 transition-all">
+    <div
+      onClick={onOpen}
+      className="bg-slate-700 border border-slate-600 rounded-lg p-4 hover:border-orange-500/50 hover:shadow-lg hover:shadow-blue-900/20 transition-all cursor-pointer"
+    >
       <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span className="text-xs font-medium text-blue-300 bg-blue-900/30 px-2 py-1 rounded">
               {task.site.name}
             </span>
@@ -168,32 +177,35 @@ function TaskCard({
           </div>
           <h3 className="font-medium text-white">{task.title}</h3>
           {task.description && (
-            <p className="text-sm text-slate-300 mt-1">{task.description}</p>
+            <p className="text-sm text-slate-300 mt-1 line-clamp-2">{task.description}</p>
           )}
         </div>
 
-        {task.status !== 'complete' && (
-          <div className="ml-4 flex gap-2">
-            {task.status === 'todo' && (
-              <button
-                onClick={() => onStatusChange(task.id, 'in_progress')}
-                disabled={updating}
-                className="px-3 py-1 text-xs font-medium text-blue-200 bg-blue-600/30 hover:bg-blue-600/50 rounded transition-all disabled:opacity-50"
-              >
-                {updating ? 'Starting...' : 'Start'}
-              </button>
-            )}
-            {task.status === 'in_progress' && (
-              <button
-                onClick={() => onStatusChange(task.id, 'complete')}
-                disabled={updating}
-                className="px-3 py-1 text-xs font-medium text-green-200 bg-green-600/30 hover:bg-green-600/50 rounded transition-all disabled:opacity-50"
-              >
-                {updating ? 'Completing...' : 'Complete'}
-              </button>
-            )}
-          </div>
-        )}
+        <div className="ml-3 flex items-center gap-2 flex-shrink-0">
+          {task.status !== 'complete' && (
+            <>
+              {task.status === 'todo' && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onStatusChange(task.id, 'in_progress'); }}
+                  disabled={updating}
+                  className="px-3 py-1 text-xs font-medium text-blue-200 bg-blue-600/30 hover:bg-blue-600/50 rounded transition-all disabled:opacity-50"
+                >
+                  {updating ? '...' : 'Start'}
+                </button>
+              )}
+              {task.status === 'in_progress' && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onStatusChange(task.id, 'complete'); }}
+                  disabled={updating}
+                  className="px-3 py-1 text-xs font-medium text-green-200 bg-green-600/30 hover:bg-green-600/50 rounded transition-all disabled:opacity-50"
+                >
+                  {updating ? '...' : 'Complete'}
+                </button>
+              )}
+            </>
+          )}
+          <ChevronRight className="w-5 h-5 text-slate-500" />
+        </div>
       </div>
     </div>
   );

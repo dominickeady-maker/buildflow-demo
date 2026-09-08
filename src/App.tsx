@@ -20,12 +20,14 @@ import Breadcrumbs from './components/Breadcrumbs';
 import SiteDetail from './components/detail/SiteDetail';
 import WorkerDetail from './components/detail/WorkerDetail';
 import TaskDetail from './components/detail/TaskDetail';
-import { Hammer, LayoutDashboard, ListTodo, Package, MapPin, Clock, LogOut, Sparkles, Camera, FileText, Users, User, MessageCircle } from 'lucide-react';
+import WorkerTaskDetail from './components/detail/WorkerTaskDetail';
+import { Hammer, LayoutDashboard, ListTodo, Package, MapPin, Clock, LogOut, Sparkles, Camera, FileText, Users, User, MessageCircle, MoreHorizontal, X } from 'lucide-react';
 
 function AppContent() {
   const { user, profile, loading, signOut } = useAuth();
   const { activeView } = useNav();
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
 
   if (loading) {
     return (
@@ -44,37 +46,50 @@ function AppContent() {
 
   const isManager = profile.role === 'manager';
 
-  const tabs = isManager
-    ? [
-        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-        { id: 'tasks', label: 'Tasks', icon: ListTodo },
-        { id: 'workers', label: 'Workers', icon: Users },
-        { id: 'timesheets', label: 'Timesheets', icon: Clock },
-        { id: 'materials', label: 'Materials', icon: Package },
-        { id: 'sites', label: 'Sites', icon: MapPin },
-        { id: 'drawings', label: 'Drawings', icon: FileText },
-        { id: 'photos', label: 'Photos', icon: Camera },
-        { id: 'messages', label: 'Messages', icon: MessageCircle },
-        { id: 'profile', label: 'Profile', icon: User },
-      ]
-    : [
-        { id: 'dashboard', label: 'My Tasks', icon: ListTodo },
-        { id: 'hours', label: 'My Hours', icon: Clock },
-        { id: 'materials', label: 'Request Materials', icon: Package },
-        { id: 'drawings', label: 'Drawings', icon: FileText },
-        { id: 'photos', label: 'Photos', icon: Camera },
-        { id: 'messages', label: 'Messages', icon: MessageCircle },
-        { id: 'profile', label: 'Profile', icon: User },
-      ];
+  const managerTabs = [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'tasks', label: 'Tasks', icon: ListTodo },
+    { id: 'workers', label: 'Workers', icon: Users },
+    { id: 'timesheets', label: 'Timesheets', icon: Clock },
+    { id: 'materials', label: 'Materials', icon: Package },
+    { id: 'sites', label: 'Sites', icon: MapPin },
+    { id: 'drawings', label: 'Drawings', icon: FileText },
+    { id: 'photos', label: 'Photos', icon: Camera },
+    { id: 'messages', label: 'Messages', icon: MessageCircle },
+    { id: 'profile', label: 'Profile', icon: User },
+  ];
 
-  const rootLabel = activeTab === 'dashboard' ? 'Dashboard' :
-    tabs.find(t => t.id === activeTab)?.label || 'Dashboard';
+  const workerTabs = [
+    { id: 'dashboard', label: 'My Tasks', icon: ListTodo },
+    { id: 'hours', label: 'My Hours', icon: Clock },
+    { id: 'materials', label: 'Materials', icon: Package },
+    { id: 'drawings', label: 'Drawings', icon: FileText },
+    { id: 'photos', label: 'Photos', icon: Camera },
+    { id: 'messages', label: 'Messages', icon: MessageCircle },
+    { id: 'profile', label: 'Profile', icon: User },
+  ];
+
+  const tabs = isManager ? managerTabs : workerTabs;
+
+  // For mobile bottom nav: first 4 tabs + More
+  const mobilePrimaryTabs = tabs.slice(0, 4);
+  const mobileMoreTabs = tabs.slice(4);
+
+  const rootLabel = activeTab === 'dashboard'
+    ? (isManager ? 'Dashboard' : 'My Tasks')
+    : tabs.find(t => t.id === activeTab)?.label || 'Dashboard';
+
+  function handleTabClick(tabId: string) {
+    setActiveTab(tabId);
+    setMoreMenuOpen(false);
+  }
 
   function renderDetail() {
     if (!activeView) return null;
     if (activeView.type === 'site') return <SiteDetail siteId={activeView.id} />;
     if (activeView.type === 'worker') return <WorkerDetail workerId={activeView.id} />;
     if (activeView.type === 'task') return <TaskDetail taskId={activeView.id} />;
+    if (activeView.type === 'worker_task') return <WorkerTaskDetail taskId={activeView.id} />;
     return null;
   }
 
@@ -98,79 +113,146 @@ function AppContent() {
     return null;
   }
 
+  function TabButton({ tab, onClick, isActive }: { tab: { id: string; label: string; icon: any }; onClick: () => void; isActive: boolean }) {
+    const Icon = tab.icon;
+    return (
+      <button
+        onClick={onClick}
+        className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all whitespace-nowrap ${
+          isActive
+            ? 'bg-gradient-to-r from-orange-600 to-orange-500 text-white shadow-lg shadow-orange-900/50'
+            : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
+        }`}
+      >
+        <Icon className="w-4 h-4" />
+        {tab.label}
+      </button>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black pb-20 md:pb-0">
+      {/* Top bar — always visible */}
       <nav className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b border-orange-500/20 sticky top-0 z-40 backdrop-blur-md bg-opacity-90 shadow-lg shadow-orange-900/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between h-16 md:h-20">
+            <div className="flex items-center gap-3 md:gap-4">
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl blur opacity-50"></div>
-                <div className="relative bg-gradient-to-br from-orange-500 to-orange-600 p-2.5 rounded-xl shadow-lg">
-                  <Hammer className="w-7 h-7 text-white" />
+                <div className="relative bg-gradient-to-br from-orange-500 to-orange-600 p-2 md:p-2.5 rounded-xl shadow-lg">
+                  <Hammer className="w-6 h-6 md:w-7 md:h-7 text-white" />
                 </div>
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-2xl font-black bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent tracking-tight">
+                  <h1 className="text-xl md:text-2xl font-black bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent tracking-tight">
                     BuildFlow
                   </h1>
                   <Sparkles className="w-4 h-4 text-orange-400 animate-pulse" />
                 </div>
-                <p className="text-xs text-slate-400 font-medium mt-0.5">
+                <p className="text-xs text-slate-400 font-medium mt-0.5 hidden sm:block">
                   {profile.full_name} <span className="text-orange-500">•</span> <span className="capitalize">{profile.role}</span>
                 </p>
               </div>
             </div>
 
             <button
-              onClick={() => {
-                setActiveTab('dashboard');
-                signOut();
-              }}
-              className="flex items-center gap-2 px-5 py-2.5 text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-xl transition-all border border-slate-700 hover:border-slate-600"
+              onClick={() => { setActiveTab('dashboard'); signOut(); }}
+              className="flex items-center gap-2 px-3 md:px-5 py-2 md:py-2.5 text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-xl transition-all border border-slate-700 hover:border-slate-600"
             >
               <LogOut className="w-4 h-4" />
-              <span className="text-sm font-semibold">Sign Out</span>
+              <span className="text-sm font-semibold hidden sm:inline">Sign Out</span>
             </button>
           </div>
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
+        {/* Desktop tab bar — always visible */}
+        <div className="hidden md:flex gap-2 mb-6 overflow-x-auto pb-2">
+          {tabs.map(tab => (
+            <TabButton key={tab.id} tab={tab} onClick={() => handleTabClick(tab.id)} isActive={activeTab === tab.id} />
+          ))}
+        </div>
+
+        {/* Content area */}
         {activeView ? (
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-2xl border border-slate-700 p-6">
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-2xl border border-slate-700 p-4 md:p-6">
             <Breadcrumbs rootLabel={rootLabel} />
             {renderDetail()}
           </div>
         ) : (
-          <>
-            <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-              {tabs.map((tab) => {
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-2xl border border-slate-700 p-4 md:p-6">
+            {renderTab()}
+          </div>
+        )}
+      </div>
+
+      {/* Mobile bottom nav */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-900 border-t border-orange-500/20 backdrop-blur-md bg-opacity-95">
+        <div className="flex items-center justify-around h-16 px-1">
+          {mobilePrimaryTabs.map(tab => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id && !activeView;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => handleTabClick(tab.id)}
+                className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1 rounded-lg transition-colors flex-1 ${
+                  isActive ? 'text-orange-400' : 'text-slate-400'
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                <span className="text-[10px] font-medium leading-none">{tab.label}</span>
+              </button>
+            );
+          })}
+
+          {/* More button */}
+          <button
+            onClick={() => setMoreMenuOpen(true)}
+            className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1 rounded-lg transition-colors flex-1 ${
+              mobileMoreTabs.some(t => t.id === activeTab) ? 'text-orange-400' : 'text-slate-400'
+            }`}
+          >
+            <MoreHorizontal className="w-5 h-5" />
+            <span className="text-[10px] font-medium leading-none">More</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile More menu */}
+      {moreMenuOpen && (
+        <div className="md:hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" onClick={() => setMoreMenuOpen(false)}>
+          <div className="absolute bottom-0 left-0 right-0 bg-slate-800 rounded-t-2xl border-t border-slate-700 p-4 pb-6" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-white">More</h3>
+              <button onClick={() => setMoreMenuOpen(false)} className="text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {mobileMoreTabs.map(tab => {
                 const Icon = tab.icon;
                 return (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all whitespace-nowrap ${
+                    onClick={() => handleTabClick(tab.id)}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-xl transition-colors ${
                       activeTab === tab.id
-                        ? 'bg-gradient-to-r from-orange-600 to-orange-500 text-white shadow-lg shadow-orange-900/50'
-                        : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
+                        ? 'bg-orange-600 text-white'
+                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
                     }`}
                   >
-                    <Icon className="w-4 h-4" />
-                    {tab.label}
+                    <Icon className="w-6 h-6" />
+                    <span className="text-xs font-medium text-center leading-tight">{tab.label}</span>
                   </button>
                 );
               })}
             </div>
-
-            <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-2xl border border-slate-700 p-6">
-              {renderTab()}
-            </div>
-          </>
-        )}
-      </div>
+          </div>
+        </div>
+      )}
 
       <AIAssistant />
     </div>
