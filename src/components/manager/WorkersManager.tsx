@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
+import { useWorkerLink } from '../../contexts/NavContext';
 import { Users, Plus, Edit2, Trash2, MapPin, Briefcase, Mail, UserCheck } from 'lucide-react';
 
 interface Worker {
@@ -24,6 +25,7 @@ interface Task {
 }
 
 export default function WorkersManager() {
+  const openWorker = useWorkerLink();
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [sites, setSites] = useState<Site[]>([]);
   const [workerTasks, setWorkerTasks] = useState<Record<string, Task[]>>({});
@@ -229,7 +231,8 @@ export default function WorkersManager() {
           return (
             <div
               key={worker.id}
-              className="bg-slate-700 border border-slate-600 rounded-lg p-4 hover:border-orange-500 transition-colors"
+              onClick={() => openWorker(worker.id, worker.full_name)}
+              className="bg-slate-700 border border-slate-600 rounded-lg p-4 hover:border-orange-500 transition-colors cursor-pointer"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">

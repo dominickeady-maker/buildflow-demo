@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { NavProvider, useNav } from './contexts/NavContext';
 import Auth from './components/Auth';
 import WorkerDashboard from './components/worker/WorkerDashboard';
 import MaterialsRequest from './components/worker/MaterialsRequest';
@@ -15,10 +16,15 @@ import PhotoManager from './components/photo/PhotoManager';
 import AccountProfile from './components/AccountProfile';
 import Messages from './components/Messages';
 import AIAssistant from './components/AIAssistant';
+import Breadcrumbs from './components/Breadcrumbs';
+import SiteDetail from './components/detail/SiteDetail';
+import WorkerDetail from './components/detail/WorkerDetail';
+import TaskDetail from './components/detail/TaskDetail';
 import { Hammer, LayoutDashboard, ListTodo, Package, MapPin, Clock, LogOut, Sparkles, Camera, FileText, Users, User, MessageCircle } from 'lucide-react';
 
 function AppContent() {
   const { user, profile, loading, signOut } = useAuth();
+  const { activeView } = useNav();
   const [activeTab, setActiveTab] = useState('dashboard');
 
   if (loading) {
@@ -61,6 +67,37 @@ function AppContent() {
         { id: 'profile', label: 'Profile', icon: User },
       ];
 
+  const rootLabel = activeTab === 'dashboard' ? 'Dashboard' :
+    tabs.find(t => t.id === activeTab)?.label || 'Dashboard';
+
+  function renderDetail() {
+    if (!activeView) return null;
+    if (activeView.type === 'site') return <SiteDetail siteId={activeView.id} />;
+    if (activeView.type === 'worker') return <WorkerDetail workerId={activeView.id} />;
+    if (activeView.type === 'task') return <TaskDetail taskId={activeView.id} />;
+    return null;
+  }
+
+  function renderTab() {
+    if (activeTab === 'photos') return <PhotoManager />;
+    if (activeTab === 'drawings') return <DrawingsManager />;
+    if (activeTab === 'profile') return <AccountProfile />;
+    if (activeTab === 'messages') return <Messages />;
+    if (isManager) {
+      if (activeTab === 'dashboard') return <ManagerDashboard />;
+      if (activeTab === 'tasks') return <TasksManager />;
+      if (activeTab === 'workers') return <WorkersManager />;
+      if (activeTab === 'timesheets') return <TimesheetsManager />;
+      if (activeTab === 'materials') return <MaterialsManager />;
+      if (activeTab === 'sites') return <SitesManager />;
+    } else {
+      if (activeTab === 'dashboard') return <WorkerDashboard />;
+      if (activeTab === 'hours') return <HoursBooking />;
+      if (activeTab === 'materials') return <MaterialsRequest />;
+    }
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black">
       <nav className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b border-orange-500/20 sticky top-0 z-40 backdrop-blur-md bg-opacity-90 shadow-lg shadow-orange-900/10">
@@ -101,52 +138,38 @@ function AppContent() {
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all whitespace-nowrap ${
-                  activeTab === tab.id
-                    ? 'bg-gradient-to-r from-orange-600 to-orange-500 text-white shadow-lg shadow-orange-900/50'
-                    : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
+        {activeView ? (
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-2xl border border-slate-700 p-6">
+            <Breadcrumbs rootLabel={rootLabel} />
+            {renderDetail()}
+          </div>
+        ) : (
+          <>
+            <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all whitespace-nowrap ${
+                      activeTab === tab.id
+                        ? 'bg-gradient-to-r from-orange-600 to-orange-500 text-white shadow-lg shadow-orange-900/50'
+                        : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
 
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-2xl border border-slate-700 p-6">
-          {activeTab === 'photos' ? (
-            <PhotoManager />
-          ) : activeTab === 'drawings' ? (
-            <DrawingsManager />
-          ) : activeTab === 'profile' ? (
-            <AccountProfile />
-          ) : activeTab === 'messages' ? (
-            <Messages />
-          ) : isManager ? (
-            <>
-              {activeTab === 'dashboard' && <ManagerDashboard />}
-              {activeTab === 'tasks' && <TasksManager />}
-              {activeTab === 'workers' && <WorkersManager />}
-              {activeTab === 'timesheets' && <TimesheetsManager />}
-              {activeTab === 'materials' && <MaterialsManager />}
-              {activeTab === 'sites' && <SitesManager />}
-            </>
-          ) : (
-            <>
-              {activeTab === 'dashboard' && <WorkerDashboard />}
-              {activeTab === 'hours' && <HoursBooking />}
-              {activeTab === 'materials' && <MaterialsRequest />}
-            </>
-          )}
-        </div>
+            <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-2xl border border-slate-700 p-6">
+              {renderTab()}
+            </div>
+          </>
+        )}
       </div>
 
       <AIAssistant />
@@ -157,7 +180,9 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <NavProvider>
+        <AppContent />
+      </NavProvider>
     </AuthProvider>
   );
 }

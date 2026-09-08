@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
 import { supabase, Task, Site, Profile, Trade } from '../../lib/supabase';
+import { useSiteLink, useWorkerLink, useTaskLink } from '../../contexts/NavContext';
 import { Plus, CreditCard as Edit2, Trash2, Filter, Download } from 'lucide-react';
 import { exportToCSV, formatDataForExport } from '../../utils/exportToCSV';
 
 export default function TasksManager() {
+  const openSite = useSiteLink();
+  const openWorker = useWorkerLink();
+  const openTask = useTaskLink();
   const [tasks, setTasks] = useState<(Task & { site: Site; trade?: Trade; assignee?: Profile })[]>([]);
   const [sites, setSites] = useState<Site[]>([]);
   const [trades, setTrades] = useState<Trade[]>([]);
@@ -400,9 +404,9 @@ export default function TasksManager() {
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs font-medium text-slate-400 bg-slate-600 px-2 py-1 rounded">
+                  <button onClick={() => openSite(task.site.id, task.site.name)} className="text-xs font-medium text-slate-400 bg-slate-600 px-2 py-1 rounded hover:text-orange-400 transition-colors">
                     {task.site.name}
-                  </span>
+                  </button>
                   {task.trade && (
                     <span className="text-xs font-medium text-orange-300 bg-orange-900/30 px-2 py-1 rounded">
                       {task.trade.name}
@@ -416,14 +420,16 @@ export default function TasksManager() {
                     {task.status.replace('_', ' ')}
                   </span>
                 </div>
-                <h3 className="font-medium text-white">{task.title}</h3>
+                <button onClick={() => openTask(task.id, task.title)} className="text-left">
+                  <h3 className="font-medium text-white hover:text-orange-400 transition-colors">{task.title}</h3>
+                </button>
                 {task.description && (
                   <p className="text-sm text-slate-300 mt-1">{task.description}</p>
                 )}
                 {task.assignee && (
-                  <p className="text-xs text-slate-400 mt-2">
+                  <button onClick={() => openWorker(task.assignee!.id, task.assignee!.full_name)} className="text-xs text-blue-400 hover:text-blue-300 mt-2 transition-colors">
                     Assigned to: {task.assignee.full_name}
-                  </p>
+                  </button>
                 )}
               </div>
               <div className="flex gap-2 ml-4">

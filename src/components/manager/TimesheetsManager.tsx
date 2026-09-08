@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { supabase, Timesheet, Site, Profile } from '../../lib/supabase';
+import { useSiteLink, useWorkerLink } from '../../contexts/NavContext';
 import { Clock, PoundSterling, Filter, Calendar, Download } from 'lucide-react';
 import { exportToCSV, formatDataForExport } from '../../utils/exportToCSV';
 
 export default function TimesheetsManager() {
+  const openSite = useSiteLink();
+  const openWorker = useWorkerLink();
   const [timesheets, setTimesheets] = useState<(Timesheet & { site: Site; worker: Profile })[]>([]);
   const [sites, setSites] = useState<Site[]>([]);
   const [workers, setWorkers] = useState<Profile[]>([]);
@@ -195,7 +198,9 @@ export default function TimesheetsManager() {
               ) : (
                 workerSummary.map(({ worker, dayworkHours, priceAmount, entriesCount }) => (
                   <tr key={worker.id} className="border-b border-slate-600/50 hover:bg-slate-600/30 transition-colors">
-                    <td className="py-3 px-4 text-white font-medium">{worker.full_name}</td>
+                    <td className="py-3 px-4 text-white font-medium">
+                      <button onClick={() => openWorker(worker.id, worker.full_name)} className="hover:text-orange-400 transition-colors">{worker.full_name}</button>
+                    </td>
                     <td className="py-3 px-4 text-right text-blue-300">{dayworkHours.toFixed(1)} hrs</td>
                     <td className="py-3 px-4 text-right text-orange-300">£{priceAmount.toFixed(2)}</td>
                     <td className="py-3 px-4 text-right text-slate-300">{entriesCount}</td>
@@ -262,9 +267,9 @@ export default function TimesheetsManager() {
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs font-medium text-blue-300 bg-blue-900/30 px-2 py-1 rounded">
+                  <button onClick={() => openSite(entry.site.id, entry.site.name)} className="text-xs font-medium text-blue-300 bg-blue-900/30 px-2 py-1 rounded hover:text-blue-200 transition-colors">
                     {entry.site.name}
-                  </span>
+                  </button>
                   <span className="text-xs text-slate-400">
                     Plot {entry.plot_number}
                   </span>
@@ -278,7 +283,7 @@ export default function TimesheetsManager() {
                 </div>
                 <h3 className="font-medium text-white">{entry.task_description}</h3>
                 <div className="flex items-center gap-4 mt-2 text-sm text-slate-300">
-                  <span>Worker: {entry.worker.full_name}</span>
+                  <button onClick={() => openWorker(entry.worker.id, entry.worker.full_name)} className="text-blue-400 hover:text-blue-300 transition-colors">Worker: {entry.worker.full_name}</button>
                   <span>Date: {new Date(entry.date_worked).toLocaleDateString()}</span>
                 </div>
                 {entry.notes && (

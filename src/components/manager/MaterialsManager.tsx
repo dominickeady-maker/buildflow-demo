@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { supabase, Material, Site, Profile } from '../../lib/supabase';
+import { useSiteLink, useWorkerLink } from '../../contexts/NavContext';
 import { Package, Filter, Download } from 'lucide-react';
 import { exportToCSV, formatDataForExport } from '../../utils/exportToCSV';
 
 export default function MaterialsManager() {
+  const openSite = useSiteLink();
+  const openWorker = useWorkerLink();
   const [materials, setMaterials] = useState<(Material & { site: Site; requester: Profile })[]>([]);
   const [sites, setSites] = useState<Site[]>([]);
   const [filterSite, setFilterSite] = useState('');
@@ -155,9 +158,9 @@ export default function MaterialsManager() {
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs font-medium text-slate-400 bg-slate-600 px-2 py-1 rounded">
+                  <button onClick={() => openSite(material.site.id, material.site.name)} className="text-xs font-medium text-slate-400 bg-slate-600 px-2 py-1 rounded hover:text-orange-400 transition-colors">
                     {material.site.name}
-                  </span>
+                  </button>
                   <span className={`text-xs font-medium px-2 py-1 rounded ${
                     material.status === 'delivered' ? 'bg-green-100 text-green-700' :
                     material.status === 'ordered' ? 'bg-purple-100 text-purple-700' :
@@ -174,9 +177,9 @@ export default function MaterialsManager() {
                 {material.comment && (
                   <p className="text-sm text-slate-300 mt-1">{material.comment}</p>
                 )}
-                <p className="text-xs text-slate-400 mt-2">
+                <button onClick={() => openWorker(material.requester.id, material.requester.full_name)} className="text-xs text-blue-400 hover:text-blue-300 mt-2 transition-colors">
                   Requested by: {material.requester.full_name}
-                </p>
+                </button>
                 <p className="text-xs text-slate-400">
                   {new Date(material.created_at).toLocaleString()}
                 </p>

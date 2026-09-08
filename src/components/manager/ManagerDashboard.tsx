@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase, Task, Site, Profile } from '../../lib/supabase';
+import { useSiteLink } from '../../contexts/NavContext';
 import { BarChart3, CheckCircle2, Clock, ListTodo } from 'lucide-react';
 
 type SiteStats = {
@@ -149,12 +150,16 @@ function StatCard({
 }
 
 function SiteProgressCard({ stats }: { stats: SiteStats }) {
+  const openSite = useSiteLink();
   const progress = stats.totalTasks > 0
     ? (stats.completedTasks / stats.totalTasks) * 100
     : 0;
 
   return (
-    <div className="bg-slate-700 border border-slate-600 rounded-lg p-4 hover:shadow-lg hover:shadow-blue-900/20 transition-all">
+    <div
+      onClick={() => openSite(stats.site.id, stats.site.name)}
+      className="bg-slate-700 border border-slate-600 rounded-lg p-4 hover:shadow-lg hover:shadow-blue-900/20 hover:border-orange-500/50 transition-all cursor-pointer"
+    >
       <div className="flex items-center justify-between mb-3">
         <div>
           <h3 className="font-medium text-white">{stats.site.name}</h3>

@@ -2,11 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { supabase, Drawing, Site } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useOrganization } from '../../hooks/useOrganization';
+import { useSiteLink } from '../../contexts/NavContext';
 import { FileText, Upload, Download, Trash2, Eye, Filter, Loader2 } from 'lucide-react';
 
 export default function DrawingsManager() {
   const { user } = useAuth();
   const { organizationId } = useOrganization();
+  const openSite = useSiteLink();
   const [drawings, setDrawings] = useState<(Drawing & { site?: Site; uploader?: any })[]>([]);
   const [sites, setSites] = useState<Site[]>([]);
   const [loading, setLoading] = useState(true);
@@ -312,7 +314,11 @@ export default function DrawingsManager() {
                     </td>
                     <td className="py-3 px-4 text-slate-300">{drawing.category}</td>
                     <td className="py-3 px-4 text-slate-300">
-                      {drawing.site?.name || 'General'}
+                      {drawing.site ? (
+                        <button onClick={() => openSite(drawing.site!.id, drawing.site!.name)} className="hover:text-orange-400 transition-colors">
+                          {drawing.site.name}
+                        </button>
+                      ) : 'General'}
                     </td>
                     <td className="py-3 px-4 text-slate-300">{drawing.version}</td>
                     <td className="py-3 px-4 text-slate-300">

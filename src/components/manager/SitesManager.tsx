@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase, Site } from '../../lib/supabase';
+import { useSiteLink } from '../../contexts/NavContext';
 import { MapPin, Plus, Edit2, Trash2, Download, Users, Briefcase, ChevronDown, ChevronUp } from 'lucide-react';
 import { exportToCSV, formatDataForExport } from '../../utils/exportToCSV';
 
@@ -9,6 +10,7 @@ interface SiteWithDetails extends Site {
 }
 
 export default function SitesManager() {
+  const openSite = useSiteLink();
   const [sites, setSites] = useState<SiteWithDetails[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingSite, setEditingSite] = useState<Site | null>(null);
@@ -237,7 +239,9 @@ export default function SitesManager() {
               <div className="p-4">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-white text-lg">{site.name}</h3>
+                    <button onClick={() => openSite(site.id, site.name)} className="text-left">
+                      <h3 className="font-semibold text-white text-lg hover:text-orange-400 transition-colors">{site.name}</h3>
+                    </button>
                     {site.description && (
                       <p className="text-sm text-slate-300 mt-1">{site.description}</p>
                     )}
