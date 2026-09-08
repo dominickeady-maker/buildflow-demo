@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useOrganization } from '../../hooks/useOrganization';
 import { Clock, MapPin, FileText, Package, Camera, Upload, Loader2, CheckCircle2, X, ExternalLink } from 'lucide-react';
 import heic2any from 'heic2any';
+import { processImageForUpload } from '../../utils/imageResize';
 
 export default function WorkerTaskDetail({ taskId }: { taskId: string }) {
   const { user } = useAuth();
@@ -91,16 +92,21 @@ export default function WorkerTaskDetail({ taskId }: { taskId: string }) {
     setUploading(true);
     for (let i = 0; i < pendingPhotos.length; i++) {
       const { file, previewUrl } = pendingPhotos[i];
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-      const { error: uploadError } = await supabase.storage.from('construction-photos').upload(fileName, file, { cacheControl: '3600', upsert: false });
+      const { full, thumbnail } = await processImageForUpload(file);
+      const timestamp = Date.now();
+      const random = Math.random().toString(36).substring(7);
+      const fullFileName = `${user.id}/${timestamp}-${random}.jpg`;
+      const thumbFileName = `${user.id}/thumbs/${timestamp}-${random}.jpg`;
+      const { error: uploadError } = await supabase.storage.from('construction-photos').upload(fullFileName, full, { cacheControl: '3600', upsert: false });
       if (uploadError) { alert(`Upload failed: ${uploadError.message}`); continue; }
-      const { data: { publicUrl } } = supabase.storage.from('construction-photos').getPublicUrl(fileName);
+      await supabase.storage.from('construction-photos').upload(thumbFileName, thumbnail, { cacheControl: '3600', upsert: false });
+      const { data: { publicUrl: fullUrl } } = supabase.storage.from('construction-photos').getPublicUrl(fullFileName);
+      const { data: { publicUrl: thumbUrl } } = supabase.storage.from('construction-photos').getPublicUrl(thumbFileName);
       await supabase.from('construction_photos').insert({
-        user_id: user.id, organization_id: organizationId, image_url: publicUrl, thumbnail_url: publicUrl,
-        description: photoDescription || null, task_id: task.id, site_id: task.site_id,
+        user_id: user.id, organization_id: organizationId, image_url: fullUrl, thumbnail_url: thumbUrl,
+        description: photoDescription || null, task_id: task.id,
         issues: [], ai_processing: false,
-        metadata: { filename: file.name, size: file.size, type: file.type, uploadedAt: new Date().toISOString() },
+        metadata: { filename: file.name, size: full.size, type: 'image/jpeg', uploadedAt: new Date().toISOString() },
       });
       URL.revokeObjectURL(previewUrl);
     }
@@ -232,7 +238,7 @@ export default function WorkerTaskDetail({ taskId }: { taskId: string }) {
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
             {photos.map(p => (
               <div key={p.id} className="relative aspect-square rounded-lg overflow-hidden bg-slate-800">
-                <img src={p.image_url} alt={p.description || ''} className="w-full h-full object-cover" loading="lazy" />
+                <img src={p.thumbnail_url || p.image_url} alt={p.description || ''} className="w-full h-full object-cover" loading="lazy" />
                 {p.description && <div className="absolute bottom-0 left-0 right-0 bg-black/70 p-1"><p className="text-white text-xs line-clamp-1">{p.description}</p></div>}
               </div>
             ))}

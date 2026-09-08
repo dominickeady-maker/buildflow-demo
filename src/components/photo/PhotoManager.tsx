@@ -6,6 +6,7 @@ import { Photo, Task } from '../../types/photo';
 import { Camera, Upload, Settings, FileText, Image as ImageIcon, Loader2, X, Check, Trash2, Download } from 'lucide-react';
 import heic2any from 'heic2any';
 import { exportToCSV, formatDataForExport } from '../../utils/exportToCSV';
+import { processImageForUpload } from '../../utils/imageResize';
 
 interface PendingPhoto {
   file: File;
@@ -102,6 +103,7 @@ export default function PhotoManager() {
   async function handlePhotoSelection(files: FileList | null) {
     if (!files || files.length === 0) return;
 
+    setUploadProgress('Processing images...');
     const pending: PendingPhoto[] = [];
 
     for (let i = 0; i < files.length; i++) {
@@ -127,6 +129,7 @@ export default function PhotoManager() {
     setShowUploadModal(true);
     setPhotoDescription('');
     setSelectedTaskId('');
+    setUploadProgress('');
   }
 
   async function uploadPhotos() {
@@ -139,19 +142,23 @@ export default function PhotoManager() {
     try {
       for (let i = 0; i < pendingPhotos.length; i++) {
         const { file, previewUrl } = pendingPhotos[i];
-        setUploadProgress(`Uploading photo ${i + 1} of ${pendingPhotos.length}...`);
+        setUploadProgress(`Processing photo ${i + 1} of ${pendingPhotos.length}...`);
         setPreviewImage(previewUrl);
 
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+        // Resize image and generate thumbnail
+        const { full, thumbnail } = await processImageForUpload(file);
 
-        // Upload to Supabase storage
+        setUploadProgress(`Uploading photo ${i + 1} of ${pendingPhotos.length}...`);
+
+        const timestamp = Date.now();
+        const random = Math.random().toString(36).substring(7);
+        const fullFileName = `${user.id}/${timestamp}-${random}.jpg`;
+        const thumbFileName = `${user.id}/thumbs/${timestamp}-${random}.jpg`;
+
+        // Upload full image
         const { error: uploadError } = await supabase.storage
           .from('construction-photos')
-          .upload(fileName, file, {
-            cacheControl: '3600',
-            upsert: false,
-          });
+          .upload(fullFileName, full, { cacheControl: '3600', upsert: false });
 
         if (uploadError) {
           console.error('Upload error:', uploadError);
@@ -159,10 +166,18 @@ export default function PhotoManager() {
           continue;
         }
 
-        // Get public URL
-        const { data: { publicUrl } } = supabase.storage
+        // Upload thumbnail
+        await supabase.storage
           .from('construction-photos')
-          .getPublicUrl(fileName);
+          .upload(thumbFileName, thumbnail, { cacheControl: '3600', upsert: false });
+
+        // Get public URLs
+        const { data: { publicUrl: fullUrl } } = supabase.storage
+          .from('construction-photos')
+          .getPublicUrl(fullFileName);
+        const { data: { publicUrl: thumbUrl } } = supabase.storage
+          .from('construction-photos')
+          .getPublicUrl(thumbFileName);
 
         // Save to database
         const { error: dbError } = await supabase
@@ -170,16 +185,16 @@ export default function PhotoManager() {
           .insert({
             user_id: user.id,
             organization_id: organizationId,
-            image_url: publicUrl,
-            thumbnail_url: publicUrl,
+            image_url: fullUrl,
+            thumbnail_url: thumbUrl,
             description: photoDescription || null,
             task_id: selectedTaskId || null,
             issues: [],
             ai_processing: false,
             metadata: {
               filename: file.name,
-              size: file.size,
-              type: file.type,
+              size: full.size,
+              type: 'image/jpeg',
               device: navigator.userAgent,
               uploadedAt: new Date().toISOString(),
             },
@@ -478,7 +493,7 @@ export default function PhotoManager() {
                 onClick={() => togglePhotoSelection(photo.id)}
               >
                 <img
-                  src={photo.image_url}
+                  src={photo.thumbnail_url || photo.image_url}
                   alt={photo.description || 'Construction photo'}
                   className="w-full h-full object-cover"
                   loading="lazy"
