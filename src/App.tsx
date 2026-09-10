@@ -31,9 +31,9 @@ function AppContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black flex items-center justify-center">
+      <div className="min-h-screen bg-navy flex items-center justify-center">
         <div className="text-center">
-          <Hammer className="w-12 h-12 text-orange-500 mx-auto mb-4 animate-pulse" />
+          <Hammer className="w-12 h-12 text-brand-500 mx-auto mb-4 animate-pulse" />
           <p className="text-slate-300">Loading...</p>
         </div>
       </div>
@@ -120,7 +120,7 @@ function AppContent() {
         onClick={onClick}
         className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all whitespace-nowrap ${
           isActive
-            ? 'bg-gradient-to-r from-orange-600 to-orange-500 text-white shadow-lg shadow-orange-900/50'
+            ? 'bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-lg shadow-brand-900/50'
             : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
         }`}
       >
@@ -131,15 +131,15 @@ function AppContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black pb-20 md:pb-0">
+    <div className="min-h-screen bg-navy pb-28 md:pb-0">
       {/* Top bar — always visible */}
-      <nav className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b border-orange-500/20 sticky top-0 z-40 backdrop-blur-md bg-opacity-90 shadow-lg shadow-orange-900/10">
+      <nav className="bg-slate-900 border-b border-brand-500/20 sticky top-0 z-40 backdrop-blur-md bg-opacity-90 shadow-lg shadow-brand-900/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
             <div className="flex items-center gap-3 md:gap-4">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl blur opacity-50"></div>
-                <div className="relative bg-gradient-to-br from-orange-500 to-orange-600 p-2 md:p-2.5 rounded-xl shadow-lg">
+                <div className="absolute inset-0 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl blur opacity-50"></div>
+                <div className="relative bg-gradient-to-br from-brand-500 to-brand-600 p-2 md:p-2.5 rounded-xl shadow-lg">
                   <Hammer className="w-6 h-6 md:w-7 md:h-7 text-white" />
                 </div>
               </div>
@@ -148,10 +148,10 @@ function AppContent() {
                   <h1 className="text-xl md:text-2xl font-black bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent tracking-tight">
                     BuildFlow
                   </h1>
-                  <Sparkles className="w-4 h-4 text-orange-400 animate-pulse" />
+                  <Sparkles className="w-4 h-4 text-brand-400 animate-pulse" />
                 </div>
                 <p className="text-xs text-slate-400 font-medium mt-0.5 hidden sm:block">
-                  {profile.full_name} <span className="text-orange-500">•</span> <span className="capitalize">{profile.role}</span>
+                  {profile.full_name} <span className="text-brand-500">•</span> <span className="capitalize">{profile.role}</span>
                 </p>
               </div>
             </div>
@@ -189,7 +189,7 @@ function AppContent() {
       </div>
 
       {/* Mobile bottom nav */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-900 border-t border-orange-500/20 backdrop-blur-md bg-opacity-95">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-900 border-t border-brand-500/20 backdrop-blur-md bg-opacity-95" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="flex items-center justify-around h-16 px-1">
           {mobilePrimaryTabs.map(tab => {
             const Icon = tab.icon;
@@ -199,7 +199,7 @@ function AppContent() {
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id)}
                 className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1 rounded-lg transition-colors flex-1 ${
-                  isActive ? 'text-orange-400' : 'text-slate-400'
+                  isActive ? 'text-brand-400' : 'text-slate-400'
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -212,7 +212,7 @@ function AppContent() {
           <button
             onClick={() => setMoreMenuOpen(true)}
             className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1 rounded-lg transition-colors flex-1 ${
-              mobileMoreTabs.some(t => t.id === activeTab) ? 'text-orange-400' : 'text-slate-400'
+              mobileMoreTabs.some(t => t.id === activeTab) ? 'text-brand-400' : 'text-slate-400'
             }`}
           >
             <MoreHorizontal className="w-5 h-5" />
@@ -224,7 +224,7 @@ function AppContent() {
       {/* Mobile More menu */}
       {moreMenuOpen && (
         <div className="md:hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" onClick={() => setMoreMenuOpen(false)}>
-          <div className="absolute bottom-0 left-0 right-0 bg-slate-800 rounded-t-2xl border-t border-slate-700 p-4 pb-6" onClick={e => e.stopPropagation()}>
+          <div className="absolute bottom-0 left-0 right-0 bg-slate-800 rounded-t-2xl border-t border-slate-700 p-4 pb-6" style={{ paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom))' }} onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-white">More</h3>
               <button onClick={() => setMoreMenuOpen(false)} className="text-slate-400 hover:text-white">
@@ -240,7 +240,7 @@ function AppContent() {
                     onClick={() => handleTabClick(tab.id)}
                     className={`flex flex-col items-center gap-2 p-4 rounded-xl transition-colors ${
                       activeTab === tab.id
-                        ? 'bg-orange-600 text-white'
+                        ? 'bg-brand-600 text-white'
                         : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
                     }`}
                   >
