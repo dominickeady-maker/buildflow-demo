@@ -158,6 +158,31 @@ INSERT INTO construction_photos (user_id, organization_id, image_url, thumbnail_
   'Foundations poured — strip footings complete', '3afa2b82-bedb-4314-8210-a4431ed343e6', '[]'::jsonb, false, '{"uploadedAt": "2026-09-06T16:00:00Z"}'::jsonb);
 
 -- ============================================================
+-- 5. MESSAGES — realistic demo threads
+-- ============================================================
+-- Manager: Dom Keady (923b1109-85c9-402f-a443-3c88588a60ec)
+-- Jake Brennan: 91fcdfdd-d9d0-42d7-a837-df84fb34ebc2
+-- Ryan Sutcliffe: b0000001-0000-0000-0000-000000000001
+-- Org: 51e8233d-3cd8-4580-a867-a6e58f860801
+
+DELETE FROM messages;
+
+INSERT INTO messages (sender_id, receiver_id, message, read, created_at, organization_id) VALUES
+-- Thread 1: Jake Brennan <-> Manager, Plot 4 Marsden Road
+('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '923b1109-85c9-402f-a443-3c88588a60ec', 'Blocks are down to about half a pack. Will need another 2 packs before Thursday or we''ll be stood about.', true, '2026-09-08T07:15:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
+('923b1109-85c9-402f-a443-3c88588a60ec', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'Ordered this morning, Travis are delivering Wednesday am. Leave the drop next to the site cabin, not the driveway.', true, '2026-09-08T08:30:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
+('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '923b1109-85c9-402f-a443-3c88588a60ec', 'No problem. DPC will be done by then.', false, '2026-09-08T09:45:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
+
+-- Thread 2: Ryan Sutcliffe <-> Manager, Rear Extension Holmfirth
+('b0000001-0000-0000-0000-000000000001', '923b1109-85c9-402f-a443-3c88588a60ec', 'Is the RSJ detail on Rev A still current? Steel arrives Monday and the padstone sizes look different to what''s on site.', true, '2026-09-09T10:20:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
+('923b1109-85c9-402f-a443-3c88588a60ec', 'b0000001-0000-0000-0000-000000000001', 'Good spot. Rev B went up last night, padstones are 215 not 140. Use the Rev B drawing.', true, '2026-09-09T11:05:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
+('b0000001-0000-0000-0000-000000000001', '923b1109-85c9-402f-a443-3c88588a60ec', 'Got it, thanks.', false, '2026-09-09T11:30:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
+
+-- Thread 3: Manager <-> Jake Brennan, New Build Meltham Road
+('923b1109-85c9-402f-a443-3c88588a60ec', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'Can you get a few photos of the foundations before the pour so we''ve got them for building control?', true, '2026-09-10T06:45:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
+('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '923b1109-85c9-402f-a443-3c88588a60ec', 'Done, uploaded four just now.', false, '2026-09-10T07:30:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801');
+
+-- ============================================================
 -- VERIFICATION
 -- ============================================================
 SELECT 'Sites:' as info;

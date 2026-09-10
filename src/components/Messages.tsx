@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
-import { MessageCircle, Send, User, Search, Loader2 } from 'lucide-react';
+import { MessageCircle, Send, User, Search, Loader2, ArrowLeft } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -202,7 +202,6 @@ export default function Messages() {
       console.error('Error sending message:', error);
       alert(`Failed to send message: ${error.message}`);
     } else {
-      console.log('Message sent successfully:', data);
       setNewMessage('');
       loadMessages(selectedUser);
       loadConversations();
@@ -238,7 +237,8 @@ export default function Messages() {
       </div>
 
       <div className="flex gap-4 flex-1 min-h-0">
-        <div className="w-80 bg-slate-700 rounded-lg border border-slate-600 flex flex-col">
+        {/* === Conversation list === */}
+        <div className={`w-80 bg-slate-700 rounded-lg border border-slate-600 flex flex-col ${selectedUser ? 'hidden md:flex' : 'flex'}`}>
           <div className="p-4 border-b border-slate-600">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -324,11 +324,18 @@ export default function Messages() {
           </div>
         </div>
 
-        <div className="flex-1 bg-slate-700 rounded-lg border border-slate-600 flex flex-col">
+        {/* === Thread view === */}
+        <div className={`flex-1 bg-slate-700 rounded-lg border border-slate-600 flex flex-col ${selectedUser ? 'flex' : 'hidden md:flex'}`}>
           {selectedUser ? (
             <>
               <div className="p-4 border-b border-slate-600 bg-slate-800">
                 <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setSelectedUser(null)}
+                    className="md:hidden text-slate-300 hover:text-white p-1 -ml-1"
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                  </button>
                   <div className="bg-brand-500 rounded-full p-2">
                     <User className="w-5 h-5 text-white" />
                   </div>
@@ -370,7 +377,10 @@ export default function Messages() {
                 <div ref={messagesEndRef} />
               </div>
 
-              <div className="p-4 border-t border-slate-600">
+              <div
+                className="p-4 border-t border-slate-600"
+                style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom))' }}
+              >
                 <form onSubmit={sendMessage} className="flex gap-2">
                   <input
                     type="text"
@@ -399,7 +409,8 @@ export default function Messages() {
               <div className="text-center">
                 <MessageCircle className="w-16 h-16 text-slate-500 mx-auto mb-4" />
                 <p className="text-slate-400 text-lg">Select a conversation</p>
-                <p className="text-slate-500 text-sm mt-1">Choose a user from the left to start messaging</p>
+                <p className="text-slate-500 text-sm mt-1 hidden md:block">Choose a user from the left to start messaging</p>
+                <p className="text-slate-500 text-sm mt-1 md:hidden">Tap a conversation to start messaging</p>
               </div>
             </div>
           )}
