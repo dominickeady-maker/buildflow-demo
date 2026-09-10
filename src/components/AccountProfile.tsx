@@ -244,7 +244,7 @@ export default function AccountProfile() {
             <button
               onClick={handleChangePassword}
               disabled={saving || !passwordData.newPassword}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-600 to-brand-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-3 bg-brand-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50"
             >
               {saving ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

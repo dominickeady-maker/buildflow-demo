@@ -273,7 +273,7 @@ export default function HoursBooking() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white font-semibold py-3 rounded-lg transition-all disabled:opacity-50 shadow-lg"
+            className="w-full bg-brand-500 hover:bg-brand-600 text-white font-semibold py-3 rounded-lg transition-all disabled:opacity-50 shadow-lg"
           >
             {loading ? 'Submitting...' : 'Log Hours'}
           </button>

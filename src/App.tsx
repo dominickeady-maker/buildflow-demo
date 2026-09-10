@@ -15,7 +15,6 @@ import WorkersManager from './components/manager/WorkersManager';
 import PhotoManager from './components/photo/PhotoManager';
 import AccountProfile from './components/AccountProfile';
 import Messages from './components/Messages';
-import AIAssistant from './components/AIAssistant';
 import Breadcrumbs from './components/Breadcrumbs';
 import SiteDetail from './components/detail/SiteDetail';
 import WorkerDetail from './components/detail/WorkerDetail';
@@ -120,7 +119,7 @@ function AppContent() {
         onClick={onClick}
         className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all whitespace-nowrap ${
           isActive
-            ? 'bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-lg shadow-brand-900/50'
+            ? 'bg-brand-500 text-white shadow-lg shadow-brand-900/50'
             : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
         }`}
       >
@@ -138,8 +137,8 @@ function AppContent() {
           <div className="flex items-center justify-between h-16 md:h-20">
             <div className="flex items-center gap-3 md:gap-4">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl blur opacity-50"></div>
-                <div className="relative bg-gradient-to-br from-brand-500 to-brand-600 p-2 md:p-2.5 rounded-xl shadow-lg">
+                <div className="absolute inset-0 bg-brand-500 rounded-xl blur opacity-50"></div>
+                <div className="relative bg-brand-500 p-2 md:p-2.5 rounded-xl shadow-lg">
                   <Hammer className="w-6 h-6 md:w-7 md:h-7 text-white" />
                 </div>
               </div>
@@ -254,7 +253,6 @@ function AppContent() {
         </div>
       )}
 
-      <AIAssistant />
     </div>
   );
 }

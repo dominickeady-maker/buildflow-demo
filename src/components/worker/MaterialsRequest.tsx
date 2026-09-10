@@ -280,7 +280,7 @@ export default function MaterialsRequest() {
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white rounded-lg transition-all shadow-lg"
+          className="flex items-center gap-2 px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg transition-all shadow-lg"
         >
           <Plus className="w-4 h-4" />
           New Request
@@ -421,7 +421,7 @@ export default function MaterialsRequest() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white font-semibold py-2 rounded-lg transition-all disabled:opacity-50 shadow-lg"
+                className="flex-1 bg-brand-500 hover:bg-brand-600 text-white font-semibold py-2 rounded-lg transition-all disabled:opacity-50 shadow-lg"
               >
                 {loading ? 'Submitting...' : 'Submit Request'}
               </button>

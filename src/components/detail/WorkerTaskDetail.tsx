@@ -226,7 +226,7 @@ export default function WorkerTaskDetail({ taskId }: { taskId: string }) {
         <input ref={cameraInputRef} type="file" accept="image/jpeg,image/png,image/jpg,image/heic" capture="environment" className="hidden" onChange={(e) => handlePhotoSelection(e.target.files)} multiple />
         <input ref={galleryInputRef} type="file" accept="image/jpeg,image/png,image/jpg,image/heic" className="hidden" onChange={(e) => handlePhotoSelection(e.target.files)} multiple />
         <div className="flex flex-col sm:flex-row gap-2 mb-3">
-          <button onClick={() => cameraInputRef.current?.click()} disabled={uploading} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-brand-600 to-brand-500 text-white font-medium rounded-lg transition-all disabled:opacity-50 text-sm">
+          <button onClick={() => cameraInputRef.current?.click()} disabled={uploading} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-500 text-white font-medium rounded-lg transition-all disabled:opacity-50 text-sm">
             <Camera className="w-4 h-4" /> Take Photo
           </button>
           <button onClick={() => galleryInputRef.current?.click()} disabled={uploading} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-600 hover:bg-slate-500 text-white font-medium rounded-lg transition-colors disabled:opacity-50 text-sm">

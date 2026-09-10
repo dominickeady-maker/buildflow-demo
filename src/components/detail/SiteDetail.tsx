@@ -73,7 +73,7 @@ export default function SiteDetail({ siteId }: { siteId: string }) {
       <div className="bg-slate-700 border border-slate-600 rounded-lg p-5">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-br from-brand-500 to-brand-600 p-2.5 rounded-xl">
+            <div className="bg-brand-500 p-2.5 rounded-xl">
               <MapPin className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -102,7 +102,7 @@ export default function SiteDetail({ siteId }: { siteId: string }) {
               onClick={() => setSubTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all whitespace-nowrap ${
                 isActive
-                  ? 'bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-lg shadow-brand-900/50'
+                  ? 'bg-brand-500 text-white shadow-lg shadow-brand-900/50'
                   : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
               }`}
             >

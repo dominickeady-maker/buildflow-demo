@@ -426,7 +426,7 @@ export default function PhotoManager() {
         />
 
         <button
-          className="flex-1 flex items-center justify-center gap-3 bg-gradient-to-r from-brand-600 to-brand-500 text-white px-6 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          className="flex-1 flex items-center justify-center gap-3 bg-brand-500 text-white px-6 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           onClick={() => cameraInputRef.current?.click()}
           disabled={uploading}
         >
