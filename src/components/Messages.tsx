@@ -352,7 +352,7 @@ export default function Messages() {
                 </div>
               </div>
 
-              <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4 space-y-3 pb-24">
+              <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4 space-y-3 pb-4">
                 {messages.map(msg => {
                   const isOwn = msg.sender_id === user?.id;
                   return (
