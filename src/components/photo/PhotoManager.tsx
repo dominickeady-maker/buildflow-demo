@@ -426,7 +426,7 @@ export default function PhotoManager() {
         />
 
         <button
-          className="flex-1 flex items-center justify-center gap-3 bg-gradient-to-r from-orange-600 to-orange-500 text-white px-6 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          className="flex-1 flex items-center justify-center gap-3 bg-gradient-to-r from-brand-600 to-brand-500 text-white px-6 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           onClick={() => cameraInputRef.current?.click()}
           disabled={uploading}
         >
@@ -488,7 +488,7 @@ export default function PhotoManager() {
               <div
                 key={photo.id}
                 className={`relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-800 cursor-pointer transform transition-all hover:scale-105 hover:shadow-2xl ${
-                  selectedPhotos.has(photo.id) ? 'ring-4 ring-orange-500 scale-95' : ''
+                  selectedPhotos.has(photo.id) ? 'ring-4 ring-brand-500 scale-95' : ''
                 }`}
                 onClick={() => togglePhotoSelection(photo.id)}
               >
@@ -528,8 +528,8 @@ export default function PhotoManager() {
                 </div>
 
                 {selectedPhotos.has(photo.id) && (
-                  <div className="absolute inset-0 bg-orange-500/20 flex items-center justify-center backdrop-blur-[1px]">
-                    <div className="bg-orange-500 rounded-full p-2 shadow-lg">
+                  <div className="absolute inset-0 bg-brand-500/20 flex items-center justify-center backdrop-blur-[1px]">
+                    <div className="bg-brand-500 rounded-full p-2 shadow-lg">
                       <Check className="w-6 h-6 text-white" strokeWidth={3} />
                     </div>
                   </div>

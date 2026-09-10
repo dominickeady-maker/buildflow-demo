@@ -131,9 +131,9 @@ export default function HoursBooking() {
           <div className="text-xs text-slate-400">Daywork Hours</div>
         </div>
 
-        <div className="bg-orange-900/30 border border-orange-800/30 rounded-lg p-4">
+        <div className="bg-brand-700/30 border border-brand-700/30 rounded-lg p-4">
           <div className="flex items-center gap-2 mb-2">
-            <PoundSterling className="w-5 h-5 text-orange-400" />
+            <PoundSterling className="w-5 h-5 text-brand-400" />
             <span className="text-sm text-slate-400">This Week</span>
           </div>
           <div className="text-2xl font-bold text-white">£{totalPriceThisWeek.toFixed(2)}</div>
@@ -143,7 +143,7 @@ export default function HoursBooking() {
 
       <div className="bg-slate-700 border border-slate-600 rounded-lg p-6">
         <h3 className="font-medium text-white mb-4 flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-orange-500" />
+          <Calendar className="w-5 h-5 text-brand-500" />
           Book Price or Daywork
         </h3>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -155,7 +155,7 @@ export default function HoursBooking() {
               <select
                 value={formData.site_id}
                 onChange={(e) => setFormData({ ...formData, site_id: e.target.value })}
-                className="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white transition-all"
+                className="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white transition-all"
                 required
               >
                 <option value="">Select a site</option>
@@ -175,7 +175,7 @@ export default function HoursBooking() {
                 type="text"
                 value={formData.plot_number}
                 onChange={(e) => setFormData({ ...formData, plot_number: e.target.value })}
-                className="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-slate-500 transition-all"
+                className="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white placeholder-slate-500 transition-all"
                 placeholder="e.g., Plot 12"
                 required
               />
@@ -189,7 +189,7 @@ export default function HoursBooking() {
             <select
               value={formData.work_type}
               onChange={(e) => setFormData({ ...formData, work_type: e.target.value as 'price' | 'daywork' })}
-              className="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white transition-all"
+              className="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white transition-all"
             >
               <option value="price">Price Work</option>
               <option value="daywork">Daywork</option>
@@ -204,7 +204,7 @@ export default function HoursBooking() {
               type="text"
               value={formData.task_description}
               onChange={(e) => setFormData({ ...formData, task_description: e.target.value })}
-              className="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-slate-500 transition-all"
+              className="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white placeholder-slate-500 transition-all"
               placeholder="e.g., Brickwork foundation"
               required
             />
@@ -221,7 +221,7 @@ export default function HoursBooking() {
                   step="0.5"
                   value={formData.hours_worked}
                   onChange={(e) => setFormData({ ...formData, hours_worked: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-slate-500 transition-all"
+                  className="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white placeholder-slate-500 transition-all"
                   placeholder="e.g., 8"
                   required
                 />
@@ -236,7 +236,7 @@ export default function HoursBooking() {
                   step="0.01"
                   value={formData.pricework_amount}
                   onChange={(e) => setFormData({ ...formData, pricework_amount: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-slate-500 transition-all"
+                  className="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white placeholder-slate-500 transition-all"
                   placeholder="e.g., 450.00"
                   required
                 />
@@ -251,7 +251,7 @@ export default function HoursBooking() {
                 type="date"
                 value={formData.date_worked}
                 onChange={(e) => setFormData({ ...formData, date_worked: e.target.value })}
-                className="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white transition-all"
+                className="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white transition-all"
                 required
               />
             </div>
@@ -264,7 +264,7 @@ export default function HoursBooking() {
             <textarea
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              className="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-slate-500 transition-all"
+              className="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white placeholder-slate-500 transition-all"
               rows={2}
               placeholder="Any additional information"
             />
@@ -273,7 +273,7 @@ export default function HoursBooking() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white font-semibold py-3 rounded-lg transition-all disabled:opacity-50 shadow-lg"
+            className="w-full bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white font-semibold py-3 rounded-lg transition-all disabled:opacity-50 shadow-lg"
           >
             {loading ? 'Submitting...' : 'Log Hours'}
           </button>

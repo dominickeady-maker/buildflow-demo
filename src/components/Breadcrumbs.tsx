@@ -23,7 +23,7 @@ export default function Breadcrumbs({ rootLabel }: BreadcrumbsProps) {
       <div className="flex items-center gap-1 flex-wrap">
         <button
           onClick={() => goToLevel(-1)}
-          className="text-slate-400 hover:text-orange-400 transition-colors text-sm font-medium"
+          className="text-slate-400 hover:text-brand-400 transition-colors text-sm font-medium"
         >
           {rootLabel}
         </button>
@@ -36,7 +36,7 @@ export default function Breadcrumbs({ rootLabel }: BreadcrumbsProps) {
               className={`text-sm font-medium transition-colors ${
                 index === views.length - 1
                   ? 'text-white'
-                  : 'text-slate-400 hover:text-orange-400'
+                  : 'text-slate-400 hover:text-brand-400'
               }`}
             >
               {view.label}

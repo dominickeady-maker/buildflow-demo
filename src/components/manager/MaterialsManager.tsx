@@ -131,7 +131,7 @@ export default function MaterialsManager() {
           <select
             value={filterSite}
             onChange={(e) => setFilterSite(e.target.value)}
-            className="px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+            className="px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all"
           >
             <option value="">All Sites</option>
             {sites.map(site => (
@@ -141,7 +141,7 @@ export default function MaterialsManager() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+            className="px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all"
           >
             <option value="">All Statuses</option>
             <option value="new">New</option>
@@ -158,7 +158,7 @@ export default function MaterialsManager() {
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
-                  <button onClick={() => openSite(material.site.id, material.site.name)} className="text-xs font-medium text-slate-400 bg-slate-600 px-2 py-1 rounded hover:text-orange-400 transition-colors">
+                  <button onClick={() => openSite(material.site.id, material.site.name)} className="text-xs font-medium text-slate-400 bg-slate-600 px-2 py-1 rounded hover:text-brand-400 transition-colors">
                     {material.site.name}
                   </button>
                   <span className={`text-xs font-medium px-2 py-1 rounded ${
@@ -226,7 +226,7 @@ export default function MaterialsManager() {
 
 function StatusCard({ label, count, color }: { label: string; count: number; color: string }) {
   const colorClasses = {
-    yellow: 'bg-orange-900/30 text-orange-400 border-orange-800/30',
+    yellow: 'bg-brand-700/30 text-brand-400 border-brand-700/30',
     blue: 'bg-blue-900/30 text-blue-400 border-blue-800/30',
     purple: 'bg-purple-900/30 text-purple-400 border-purple-800/30',
     green: 'bg-green-900/30 text-green-400 border-green-800/30',

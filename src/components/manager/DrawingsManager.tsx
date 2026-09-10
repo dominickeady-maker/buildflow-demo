@@ -315,7 +315,7 @@ export default function DrawingsManager() {
                     <td className="py-3 px-4 text-slate-300">{drawing.category}</td>
                     <td className="py-3 px-4 text-slate-300">
                       {drawing.site ? (
-                        <button onClick={() => openSite(drawing.site!.id, drawing.site!.name)} className="hover:text-orange-400 transition-colors">
+                        <button onClick={() => openSite(drawing.site!.id, drawing.site!.name)} className="hover:text-brand-400 transition-colors">
                           {drawing.site.name}
                         </button>
                       ) : 'General'}

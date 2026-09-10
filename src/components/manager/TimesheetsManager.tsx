@@ -199,10 +199,10 @@ export default function TimesheetsManager() {
                 workerSummary.map(({ worker, dayworkHours, priceAmount, entriesCount }) => (
                   <tr key={worker.id} className="border-b border-slate-600/50 hover:bg-slate-600/30 transition-colors">
                     <td className="py-3 px-4 text-white font-medium">
-                      <button onClick={() => openWorker(worker.id, worker.full_name)} className="hover:text-orange-400 transition-colors">{worker.full_name}</button>
+                      <button onClick={() => openWorker(worker.id, worker.full_name)} className="hover:text-brand-400 transition-colors">{worker.full_name}</button>
                     </td>
                     <td className="py-3 px-4 text-right text-blue-300">{dayworkHours.toFixed(1)} hrs</td>
-                    <td className="py-3 px-4 text-right text-orange-300">£{priceAmount.toFixed(2)}</td>
+                    <td className="py-3 px-4 text-right text-brand-300">£{priceAmount.toFixed(2)}</td>
                     <td className="py-3 px-4 text-right text-slate-300">{entriesCount}</td>
                   </tr>
                 ))
@@ -221,7 +221,7 @@ export default function TimesheetsManager() {
           <select
             value={filterWorker}
             onChange={(e) => setFilterWorker(e.target.value)}
-            className="px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+            className="px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all"
           >
             <option value="">All Workers</option>
             {workers.map(worker => (
@@ -231,7 +231,7 @@ export default function TimesheetsManager() {
           <select
             value={filterSite}
             onChange={(e) => setFilterSite(e.target.value)}
-            className="px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+            className="px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all"
           >
             <option value="">All Sites</option>
             {sites.map(site => (
@@ -241,7 +241,7 @@ export default function TimesheetsManager() {
           <select
             value={filterWorkType}
             onChange={(e) => setFilterWorkType(e.target.value)}
-            className="px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+            className="px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all"
           >
             <option value="">All Work Types</option>
             <option value="price">Price Work</option>
@@ -252,7 +252,7 @@ export default function TimesheetsManager() {
             value={filterDateFrom}
             onChange={(e) => setFilterDateFrom(e.target.value)}
             placeholder="From Date"
-            className="px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+            className="px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all"
           />
         </div>
       </div>
@@ -276,7 +276,7 @@ export default function TimesheetsManager() {
                   <span className={`text-xs font-medium px-2 py-1 rounded ${
                     entry.work_type === 'daywork'
                       ? 'bg-blue-900/30 text-blue-300'
-                      : 'bg-orange-900/30 text-orange-300'
+                      : 'bg-brand-700/30 text-brand-300'
                   }`}>
                     {entry.work_type === 'daywork' ? 'Daywork' : 'Price'}
                   </span>
@@ -324,7 +324,7 @@ function StatCard({
 }) {
   const colorClasses = {
     slate: 'bg-slate-700 text-slate-300 border-slate-600',
-    orange: 'bg-orange-900/30 text-orange-400 border-orange-800/30',
+    orange: 'bg-brand-700/30 text-brand-400 border-brand-700/30',
     blue: 'bg-blue-900/30 text-blue-400 border-blue-800/30',
     green: 'bg-green-900/30 text-green-400 border-green-800/30',
   }[color];

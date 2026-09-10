@@ -162,7 +162,7 @@ export default function WorkersManager() {
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white rounded-lg transition-colors"
         >
           <Plus className="w-4 h-4" />
           Add Worker
@@ -179,7 +179,7 @@ export default function WorkersManager() {
                 type="text"
                 value={formData.full_name}
                 onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-orange-500"
+                className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-brand-500"
                 required
               />
             </div>
@@ -189,7 +189,7 @@ export default function WorkersManager() {
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-orange-500"
+                className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-brand-500"
                 required
               />
             </div>
@@ -199,7 +199,7 @@ export default function WorkersManager() {
                 type="password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-orange-500"
+                className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-brand-500"
                 required
                 minLength={6}
               />
@@ -207,7 +207,7 @@ export default function WorkersManager() {
             <div className="flex gap-2">
               <button
                 type="submit"
-                className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors"
+                className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg transition-colors"
               >
                 Add Worker
               </button>
@@ -232,11 +232,11 @@ export default function WorkersManager() {
             <div
               key={worker.id}
               onClick={() => openWorker(worker.id, worker.full_name)}
-              className="bg-slate-700 border border-slate-600 rounded-lg p-4 hover:border-orange-500 transition-colors cursor-pointer"
+              className="bg-slate-700 border border-slate-600 rounded-lg p-4 hover:border-brand-500 transition-colors cursor-pointer"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <div className="bg-orange-500 rounded-full p-2">
+                  <div className="bg-brand-500 rounded-full p-2">
                     <UserCheck className="w-5 h-5 text-white" />
                   </div>
                   <div>

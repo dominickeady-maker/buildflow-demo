@@ -292,7 +292,7 @@ export default function Messages() {
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="bg-orange-500 rounded-full p-2 relative">
+                      <div className="bg-brand-500 rounded-full p-2 relative">
                         <User className="w-4 h-4 text-white" />
                         {conv.unreadCount > 0 && (
                           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -329,7 +329,7 @@ export default function Messages() {
             <>
               <div className="p-4 border-b border-slate-600 bg-slate-800">
                 <div className="flex items-center gap-3">
-                  <div className="bg-orange-500 rounded-full p-2">
+                  <div className="bg-brand-500 rounded-full p-2">
                     <User className="w-5 h-5 text-white" />
                   </div>
                   <div>

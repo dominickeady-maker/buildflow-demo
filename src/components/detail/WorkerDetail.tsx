@@ -41,7 +41,7 @@ export default function WorkerDetail({ workerId }: { workerId: string }) {
   }
 
   if (loading || !worker) {
-    return <div className="flex items-center justify-center h-64"><Clock className="w-8 h-8 animate-spin text-orange-500" /></div>;
+    return <div className="flex items-center justify-center h-64"><Clock className="w-8 h-8 animate-spin text-brand-500" /></div>;
   }
 
   const todoTasks = tasks.filter(t => t.status === 'todo');
@@ -55,13 +55,13 @@ export default function WorkerDetail({ workerId }: { workerId: string }) {
       {/* Worker Header */}
       <div className="bg-slate-700 border border-slate-600 rounded-lg p-5">
         <div className="flex items-center gap-4">
-          <div className="bg-orange-500 rounded-full p-3">
+          <div className="bg-brand-500 rounded-full p-3">
             <UserCheck className="w-7 h-7 text-white" />
           </div>
           <div className="flex-1">
             <h2 className="text-xl font-bold text-white">{worker.full_name}</h2>
             <div className="flex items-center gap-3 mt-1">
-              <span className="text-sm text-orange-400 capitalize">{worker.role}</span>
+              <span className="text-sm text-brand-400 capitalize">{worker.role}</span>
               {trade && <span className="text-sm text-slate-400">· {trade.name}</span>}
             </div>
             <p className="text-sm text-slate-400 flex items-center gap-1 mt-1">
@@ -89,7 +89,7 @@ export default function WorkerDetail({ workerId }: { workerId: string }) {
           <div className="text-sm text-slate-400">Daywork Hours</div>
         </div>
         <div className="bg-slate-700 border border-slate-600 rounded-lg p-4">
-          <Package className="w-5 h-5 text-orange-400 mb-2" />
+          <Package className="w-5 h-5 text-brand-400 mb-2" />
           <div className="text-2xl font-bold text-white">{materials.length}</div>
           <div className="text-sm text-slate-400">Material Requests</div>
         </div>
@@ -127,7 +127,7 @@ export default function WorkerDetail({ workerId }: { workerId: string }) {
           <h3 className="font-semibold text-white mb-3">Task Status</h3>
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-orange-400">To Do</span>
+              <span className="text-brand-400">To Do</span>
               <span className="text-white font-medium">{todoTasks.length}</span>
             </div>
             <div className="flex justify-between text-sm">
@@ -150,11 +150,11 @@ export default function WorkerDetail({ workerId }: { workerId: string }) {
             <div key={task.id} className="flex items-center justify-between p-2 hover:bg-slate-600/50 rounded-lg transition-colors">
               <div className="flex items-center gap-3 flex-1">
                 <span className={`w-2 h-2 rounded-full ${
-                  task.status === 'todo' ? 'bg-orange-500' :
+                  task.status === 'todo' ? 'bg-brand-500' :
                   task.status === 'in_progress' ? 'bg-blue-500' :
                   'bg-green-500'
                 }`} />
-                <button onClick={() => pushView({ type: 'task', id: task.id, label: task.title })} className="text-sm text-white hover:text-orange-400 transition-colors">
+                <button onClick={() => pushView({ type: 'task', id: task.id, label: task.title })} className="text-sm text-white hover:text-brand-400 transition-colors">
                   {task.title}
                 </button>
               </div>
@@ -204,7 +204,7 @@ export default function WorkerDetail({ workerId }: { workerId: string }) {
                 m.status === 'delivered' ? 'bg-green-900/50 text-green-400' :
                 m.status === 'ordered' ? 'bg-purple-900/30 text-purple-400' :
                 m.status === 'approved' ? 'bg-blue-900/30 text-blue-400' :
-                'bg-orange-900/30 text-orange-400'
+                'bg-brand-900/30 text-brand-400'
               }`}>{m.status}</span>
             </div>
           ))}

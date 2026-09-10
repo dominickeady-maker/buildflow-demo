@@ -77,7 +77,7 @@ export default function ManagerDashboard() {
       {/* Mobile compact stat cards (2x2 grid) */}
       <div className="grid grid-cols-2 gap-2 md:hidden">
         <CompactStat label="Total" value={totalTasks} color="text-slate-300" />
-        <CompactStat label="To Do" value={totalTodo} color="text-orange-400" />
+        <CompactStat label="To Do" value={totalTodo} color="text-brand-400" />
         <CompactStat label="Active" value={totalInProgress} color="text-blue-400" />
         <CompactStat label="Done" value={totalCompleted} color="text-green-400" />
       </div>
@@ -117,7 +117,7 @@ function CompactStat({ label, value, color }: { label: string; value: number; co
 function StatCard({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: number; color: string }) {
   const colorClasses = {
     slate: 'bg-slate-700 text-slate-300 border-slate-600',
-    orange: 'bg-orange-900/30 text-orange-400 border-orange-800/30',
+    orange: 'bg-brand-900/30 text-brand-400 border-brand-800/30',
     blue: 'bg-blue-900/30 text-blue-400 border-blue-800/30',
     green: 'bg-green-900/30 text-green-400 border-green-800/30',
   }[color];
@@ -138,7 +138,7 @@ function SiteProgressCard({ stats }: { stats: SiteStats }) {
   return (
     <div
       onClick={() => openSite(stats.site.id, stats.site.name)}
-      className="bg-slate-700 border border-slate-600 rounded-lg p-3 md:p-4 hover:shadow-lg hover:shadow-blue-900/20 hover:border-orange-500/50 transition-all cursor-pointer"
+      className="bg-slate-700 border border-slate-600 rounded-lg p-3 md:p-4 hover:shadow-lg hover:shadow-blue-900/20 hover:border-brand-500/50 transition-all cursor-pointer"
     >
       <div className="flex items-center justify-between mb-2 md:mb-3">
         <div className="min-w-0 flex-1">
@@ -154,7 +154,7 @@ function SiteProgressCard({ stats }: { stats: SiteStats }) {
       </div>
 
       <div className="w-full bg-slate-800 rounded-full h-2 mb-2 md:mb-3">
-        <div className="bg-gradient-to-r from-orange-600 to-orange-500 h-2 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
+        <div className="bg-gradient-to-r from-brand-600 to-brand-500 h-2 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
       </div>
 
       <div className="flex gap-3 md:gap-4 text-xs md:text-sm">

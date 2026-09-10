@@ -83,7 +83,7 @@ export default function WorkerDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-brand-500" />
       </div>
     );
   }
@@ -158,7 +158,7 @@ function TaskCard({
   return (
     <div
       onClick={onOpen}
-      className="bg-slate-700 border border-slate-600 rounded-lg p-4 hover:border-orange-500/50 hover:shadow-lg hover:shadow-blue-900/20 transition-all cursor-pointer"
+      className="bg-slate-700 border border-slate-600 rounded-lg p-4 hover:border-brand-500/50 hover:shadow-lg hover:shadow-blue-900/20 transition-all cursor-pointer"
     >
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
@@ -167,7 +167,7 @@ function TaskCard({
               {task.site.name}
             </span>
             {task.trade && (
-              <span className="text-xs font-medium text-orange-300 bg-orange-900/30 px-2 py-1 rounded">
+              <span className="text-xs font-medium text-brand-300 bg-brand-700/30 px-2 py-1 rounded">
                 {task.trade.name}
               </span>
             )}

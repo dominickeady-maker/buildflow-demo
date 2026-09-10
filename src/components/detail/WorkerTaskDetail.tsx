@@ -127,7 +127,7 @@ export default function WorkerTaskDetail({ taskId }: { taskId: string }) {
   }
 
   if (loading || !task) {
-    return <div className="flex items-center justify-center h-64"><Clock className="w-8 h-8 animate-spin text-orange-500" /></div>;
+    return <div className="flex items-center justify-center h-64"><Clock className="w-8 h-8 animate-spin text-brand-500" /></div>;
   }
 
   return (
@@ -136,7 +136,7 @@ export default function WorkerTaskDetail({ taskId }: { taskId: string }) {
       <div className="bg-slate-700 border border-slate-600 rounded-lg p-4">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           {task.trade && (
-            <span className="text-xs font-medium text-orange-300 bg-orange-900/30 px-2 py-1 rounded">{task.trade.name}</span>
+            <span className="text-xs font-medium text-brand-300 bg-brand-900/30 px-2 py-1 rounded">{task.trade.name}</span>
           )}
           <span className={`text-xs font-medium px-2 py-1 rounded ${
             task.status === 'complete' ? 'bg-green-900/50 text-green-400' :
@@ -189,7 +189,7 @@ export default function WorkerTaskDetail({ taskId }: { taskId: string }) {
       {/* Drawings for this site */}
       <div className="bg-slate-700 border border-slate-600 rounded-lg p-4">
         <div className="flex items-center gap-2 mb-3">
-          <FileText className="w-5 h-5 text-orange-400" />
+          <FileText className="w-5 h-5 text-brand-400" />
           <h3 className="font-semibold text-white">Drawings</h3>
           <span className="text-sm text-slate-400">({drawings.length})</span>
         </div>
@@ -226,7 +226,7 @@ export default function WorkerTaskDetail({ taskId }: { taskId: string }) {
         <input ref={cameraInputRef} type="file" accept="image/jpeg,image/png,image/jpg,image/heic" capture="environment" className="hidden" onChange={(e) => handlePhotoSelection(e.target.files)} multiple />
         <input ref={galleryInputRef} type="file" accept="image/jpeg,image/png,image/jpg,image/heic" className="hidden" onChange={(e) => handlePhotoSelection(e.target.files)} multiple />
         <div className="flex flex-col sm:flex-row gap-2 mb-3">
-          <button onClick={() => cameraInputRef.current?.click()} disabled={uploading} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-orange-600 to-orange-500 text-white font-medium rounded-lg transition-all disabled:opacity-50 text-sm">
+          <button onClick={() => cameraInputRef.current?.click()} disabled={uploading} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-brand-600 to-brand-500 text-white font-medium rounded-lg transition-all disabled:opacity-50 text-sm">
             <Camera className="w-4 h-4" /> Take Photo
           </button>
           <button onClick={() => galleryInputRef.current?.click()} disabled={uploading} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-600 hover:bg-slate-500 text-white font-medium rounded-lg transition-colors disabled:opacity-50 text-sm">
@@ -250,7 +250,7 @@ export default function WorkerTaskDetail({ taskId }: { taskId: string }) {
       {/* Material requests */}
       <div className="bg-slate-700 border border-slate-600 rounded-lg p-4">
         <div className="flex items-center gap-2 mb-3">
-          <Package className="w-5 h-5 text-orange-400" />
+          <Package className="w-5 h-5 text-brand-400" />
           <h3 className="font-semibold text-white">My Material Requests</h3>
           <span className="text-sm text-slate-400">({materials.length})</span>
         </div>
@@ -265,7 +265,7 @@ export default function WorkerTaskDetail({ taskId }: { taskId: string }) {
                 <span className={`text-xs font-medium px-2 py-1 rounded flex-shrink-0 ml-2 ${
                   m.status === 'delivered' ? 'bg-green-900/50 text-green-400' :
                   m.status === 'ordered' ? 'bg-purple-900/30 text-purple-400' :
-                  m.status === 'approved' ? 'bg-blue-900/30 text-blue-400' : 'bg-orange-900/30 text-orange-400'
+                  m.status === 'approved' ? 'bg-blue-900/30 text-blue-400' : 'bg-brand-900/30 text-brand-400'
                 }`}>{m.status}</span>
               </div>
             ))}

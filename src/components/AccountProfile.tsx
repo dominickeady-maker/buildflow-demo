@@ -206,7 +206,7 @@ export default function AccountProfile() {
       <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 space-y-6">
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <Lock className="w-5 h-5 text-orange-400" />
+            <Lock className="w-5 h-5 text-brand-400" />
             <h3 className="text-lg font-semibold text-white">Change Password</h3>
           </div>
 
@@ -222,7 +222,7 @@ export default function AccountProfile() {
                   setPasswordData({ ...passwordData, newPassword: e.target.value })
                 }
                 placeholder="Enter new password"
-                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
@@ -237,14 +237,14 @@ export default function AccountProfile() {
                   setPasswordData({ ...passwordData, confirmPassword: e.target.value })
                 }
                 placeholder="Confirm new password"
-                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <button
               onClick={handleChangePassword}
               disabled={saving || !passwordData.newPassword}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-600 to-orange-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-600 to-brand-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50"
             >
               {saving ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

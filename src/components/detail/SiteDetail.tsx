@@ -59,7 +59,7 @@ export default function SiteDetail({ siteId }: { siteId: string }) {
   }
 
   if (loading || !site) {
-    return <div className="flex items-center justify-center h-64"><Clock className="w-8 h-8 animate-spin text-orange-500" /></div>;
+    return <div className="flex items-center justify-center h-64"><Clock className="w-8 h-8 animate-spin text-brand-500" /></div>;
   }
 
   const todoTasks = tasks.filter(t => t.status === 'todo');
@@ -73,7 +73,7 @@ export default function SiteDetail({ siteId }: { siteId: string }) {
       <div className="bg-slate-700 border border-slate-600 rounded-lg p-5">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-br from-orange-500 to-orange-600 p-2.5 rounded-xl">
+            <div className="bg-gradient-to-br from-brand-500 to-brand-600 p-2.5 rounded-xl">
               <MapPin className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -87,7 +87,7 @@ export default function SiteDetail({ siteId }: { siteId: string }) {
           </div>
         </div>
         <div className="w-full bg-slate-800 rounded-full h-2.5">
-          <div className="bg-gradient-to-r from-orange-600 to-orange-500 h-2.5 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
+          <div className="bg-gradient-to-r from-brand-600 to-brand-500 h-2.5 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
         </div>
       </div>
 
@@ -102,7 +102,7 @@ export default function SiteDetail({ siteId }: { siteId: string }) {
               onClick={() => setSubTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all whitespace-nowrap ${
                 isActive
-                  ? 'bg-gradient-to-r from-orange-600 to-orange-500 text-white shadow-lg shadow-orange-900/50'
+                  ? 'bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-lg shadow-brand-900/50'
                   : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
               }`}
             >
@@ -177,15 +177,15 @@ function SiteOverview({ tasks, todoTasks, inProgressTasks, completedTasks, worke
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <button onClick={() => onSubTab('tasks')} className="bg-slate-700 border border-slate-600 rounded-lg p-4 text-left hover:border-orange-500/50 transition-colors">
+        <button onClick={() => onSubTab('tasks')} className="bg-slate-700 border border-slate-600 rounded-lg p-4 text-left hover:border-brand-500/50 transition-colors">
           <ListTodo className="w-5 h-5 text-slate-400 mb-2" />
           <div className="text-2xl font-bold text-white">{tasks.length}</div>
           <div className="text-sm text-slate-400">Total Tasks</div>
         </button>
-        <div className="bg-orange-900/30 border border-orange-800/30 rounded-lg p-4">
-          <Clock className="w-5 h-5 text-orange-400 mb-2" />
+        <div className="bg-brand-900/30 border border-brand-800/30 rounded-lg p-4">
+          <Clock className="w-5 h-5 text-brand-400 mb-2" />
           <div className="text-2xl font-bold text-white">{todoTasks.length}</div>
-          <div className="text-sm text-orange-400">To Do</div>
+          <div className="text-sm text-brand-400">To Do</div>
         </div>
         <div className="bg-blue-900/30 border border-blue-800/30 rounded-lg p-4">
           <BarChart3 className="w-5 h-5 text-blue-400 mb-2" />
@@ -238,17 +238,17 @@ function SiteOverview({ tasks, todoTasks, inProgressTasks, completedTasks, worke
             </div>
             <div className="flex justify-between">
               <span className="text-slate-400">Pricework Total</span>
-              <span className="text-orange-300 font-medium">£{totalPrice.toFixed(2)}</span>
+              <span className="text-brand-300 font-medium">£{totalPrice.toFixed(2)}</span>
             </div>
-            <button onClick={() => onSubTab('materials')} className="w-full flex justify-between items-center p-1 hover:text-orange-400 transition-colors">
+            <button onClick={() => onSubTab('materials')} className="w-full flex justify-between items-center p-1 hover:text-brand-400 transition-colors">
               <span className="text-slate-400">Material Requests</span>
               <span className="flex items-center gap-1 text-slate-300">{materials.length} <ArrowRight className="w-3 h-3" /></span>
             </button>
-            <button onClick={() => onSubTab('drawings')} className="w-full flex justify-between items-center p-1 hover:text-orange-400 transition-colors">
+            <button onClick={() => onSubTab('drawings')} className="w-full flex justify-between items-center p-1 hover:text-brand-400 transition-colors">
               <span className="text-slate-400">Drawings</span>
               <span className="flex items-center gap-1 text-slate-300">{drawings.length} <ArrowRight className="w-3 h-3" /></span>
             </button>
-            <button onClick={() => onSubTab('photos')} className="w-full flex justify-between items-center p-1 hover:text-orange-400 transition-colors">
+            <button onClick={() => onSubTab('photos')} className="w-full flex justify-between items-center p-1 hover:text-brand-400 transition-colors">
               <span className="text-slate-400">Photos</span>
               <span className="flex items-center gap-1 text-slate-300">{photos.length} <ArrowRight className="w-3 h-3" /></span>
             </button>
@@ -289,12 +289,12 @@ function SiteTasks({ tasks, onTaskClick, onWorkerClick }: {
   return (
     <div className="space-y-3">
       {tasks.map(task => (
-        <div key={task.id} className="bg-slate-700 border border-slate-600 rounded-lg p-4 hover:border-orange-500/50 transition-colors">
+        <div key={task.id} className="bg-slate-700 border border-slate-600 rounded-lg p-4 hover:border-brand-500/50 transition-colors">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
                 {task.trade && (
-                  <span className="text-xs font-medium text-orange-300 bg-orange-900/30 px-2 py-1 rounded">{task.trade.name}</span>
+                  <span className="text-xs font-medium text-brand-300 bg-brand-900/30 px-2 py-1 rounded">{task.trade.name}</span>
                 )}
                 <span className={`text-xs font-medium px-2 py-1 rounded ${
                   task.status === 'complete' ? 'bg-green-900/50 text-green-400' :
@@ -303,7 +303,7 @@ function SiteTasks({ tasks, onTaskClick, onWorkerClick }: {
                 }`}>{task.status.replace('_', ' ')}</span>
               </div>
               <button onClick={() => onTaskClick(task.id, task.title)} className="text-left">
-                <h3 className="font-medium text-white hover:text-orange-400 transition-colors">{task.title}</h3>
+                <h3 className="font-medium text-white hover:text-brand-400 transition-colors">{task.title}</h3>
               </button>
               {task.description && <p className="text-sm text-slate-300 mt-1">{task.description}</p>}
               {task.assignee && (
@@ -333,7 +333,7 @@ function SiteTimesheets({ timesheets, onWorkerClick }: {
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xs text-slate-400">Plot {entry.plot_number}</span>
-                <span className={`text-xs font-medium px-2 py-1 rounded ${entry.work_type === 'daywork' ? 'bg-blue-900/30 text-blue-300' : 'bg-orange-900/30 text-orange-300'}`}>
+                <span className={`text-xs font-medium px-2 py-1 rounded ${entry.work_type === 'daywork' ? 'bg-blue-900/30 text-blue-300' : 'bg-brand-900/30 text-brand-300'}`}>
                   {entry.work_type === 'daywork' ? 'Daywork' : 'Price'}
                 </span>
               </div>
@@ -379,7 +379,7 @@ function SiteMaterials({ materials, onWorkerClick }: {
                   m.status === 'delivered' ? 'bg-green-900/50 text-green-400' :
                   m.status === 'ordered' ? 'bg-purple-900/30 text-purple-400' :
                   m.status === 'approved' ? 'bg-blue-900/30 text-blue-400' :
-                  'bg-orange-900/30 text-orange-400'
+                  'bg-brand-900/30 text-brand-400'
                 }`}>{m.status}</span>
               </div>
               <h3 className="font-medium text-white">{m.item_name}</h3>

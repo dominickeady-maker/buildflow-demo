@@ -233,7 +233,7 @@ export default function TasksManager() {
           </button>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white rounded-lg transition-colors"
           >
             <Plus className="w-4 h-4" />
             New Task
@@ -250,7 +250,7 @@ export default function TasksManager() {
           <select
             value={filterSite}
             onChange={(e) => setFilterSite(e.target.value)}
-            className="px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+            className="px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all"
           >
             <option value="">All Sites</option>
             {sites.map(site => (
@@ -260,7 +260,7 @@ export default function TasksManager() {
           <select
             value={filterTrade}
             onChange={(e) => setFilterTrade(e.target.value)}
-            className="px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+            className="px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all"
           >
             <option value="">All Trades</option>
             {trades.map(trade => (
@@ -270,7 +270,7 @@ export default function TasksManager() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+            className="px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all"
           >
             <option value="">All Statuses</option>
             <option value="todo">To Do</option>
@@ -294,7 +294,7 @@ export default function TasksManager() {
                 <select
                   value={formData.site_id}
                   onChange={(e) => setFormData({ ...formData, site_id: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-slate-500 transition-all"
+                  className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white placeholder-slate-500 transition-all"
                   required
                 >
                   <option value="">Select a site</option>
@@ -311,7 +311,7 @@ export default function TasksManager() {
                 <select
                   value={formData.trade_id}
                   onChange={(e) => setFormData({ ...formData, trade_id: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-slate-500 transition-all"
+                  className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white placeholder-slate-500 transition-all"
                 >
                   <option value="">Select a trade (optional)</option>
                   {trades.map(trade => (
@@ -327,7 +327,7 @@ export default function TasksManager() {
                 <select
                   value={formData.assigned_to}
                   onChange={(e) => setFormData({ ...formData, assigned_to: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-slate-500 transition-all"
+                  className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white placeholder-slate-500 transition-all"
                 >
                   <option value="">Unassigned</option>
                   {workers.map(worker => (
@@ -347,7 +347,7 @@ export default function TasksManager() {
                 type="text"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-slate-500 transition-all"
+                className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white placeholder-slate-500 transition-all"
                 required
               />
             </div>
@@ -359,7 +359,7 @@ export default function TasksManager() {
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-slate-500 transition-all"
+                className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white placeholder-slate-500 transition-all"
                 rows={3}
               />
             </div>
@@ -371,7 +371,7 @@ export default function TasksManager() {
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-slate-500 transition-all"
+                className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white placeholder-slate-500 transition-all"
               >
                 <option value="todo">To Do</option>
                 <option value="in_progress">In Progress</option>
@@ -382,7 +382,7 @@ export default function TasksManager() {
             <div className="flex gap-2">
               <button
                 type="submit"
-                className="flex-1 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white font-medium py-2 rounded-lg transition-colors"
+                className="flex-1 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white font-medium py-2 rounded-lg transition-colors"
               >
                 {editingTask ? 'Update Task' : 'Create Task'}
               </button>
@@ -404,11 +404,11 @@ export default function TasksManager() {
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
-                  <button onClick={() => openSite(task.site.id, task.site.name)} className="text-xs font-medium text-slate-400 bg-slate-600 px-2 py-1 rounded hover:text-orange-400 transition-colors">
+                  <button onClick={() => openSite(task.site.id, task.site.name)} className="text-xs font-medium text-slate-400 bg-slate-600 px-2 py-1 rounded hover:text-brand-400 transition-colors">
                     {task.site.name}
                   </button>
                   {task.trade && (
-                    <span className="text-xs font-medium text-orange-300 bg-orange-900/30 px-2 py-1 rounded">
+                    <span className="text-xs font-medium text-brand-300 bg-brand-700/30 px-2 py-1 rounded">
                       {task.trade.name}
                     </span>
                   )}
@@ -421,7 +421,7 @@ export default function TasksManager() {
                   </span>
                 </div>
                 <button onClick={() => openTask(task.id, task.title)} className="text-left">
-                  <h3 className="font-medium text-white hover:text-orange-400 transition-colors">{task.title}</h3>
+                  <h3 className="font-medium text-white hover:text-brand-400 transition-colors">{task.title}</h3>
                 </button>
                 {task.description && (
                   <p className="text-sm text-slate-300 mt-1">{task.description}</p>
@@ -435,7 +435,7 @@ export default function TasksManager() {
               <div className="flex gap-2 ml-4">
                 <button
                   onClick={() => startEdit(task)}
-                  className="p-2 text-slate-300 hover:text-orange-400 hover:bg-orange-900/30 rounded transition-colors"
+                  className="p-2 text-slate-300 hover:text-brand-400 hover:bg-brand-700/30 rounded transition-colors"
                 >
                   <Edit2 className="w-4 h-4" />
                 </button>

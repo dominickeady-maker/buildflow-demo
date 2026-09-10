@@ -168,7 +168,7 @@ export default function SitesManager() {
           </button>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white rounded-lg transition-colors"
           >
             <Plus className="w-4 h-4" />
             New Site
@@ -190,7 +190,7 @@ export default function SitesManager() {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-slate-500 transition-all"
+                className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white placeholder-slate-500 transition-all"
                 placeholder="e.g., Plot 12, Site A"
                 required
               />
@@ -203,7 +203,7 @@ export default function SitesManager() {
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-slate-500 transition-all"
+                className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white placeholder-slate-500 transition-all"
                 rows={3}
                 placeholder="Brief description of the site"
               />
@@ -212,7 +212,7 @@ export default function SitesManager() {
             <div className="flex gap-2">
               <button
                 type="submit"
-                className="flex-1 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white font-medium py-2 rounded-lg transition-colors"
+                className="flex-1 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white font-medium py-2 rounded-lg transition-colors"
               >
                 {editingSite ? 'Update Site' : 'Create Site'}
               </button>
@@ -240,7 +240,7 @@ export default function SitesManager() {
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
                     <button onClick={() => openSite(site.id, site.name)} className="text-left">
-                      <h3 className="font-semibold text-white text-lg hover:text-orange-400 transition-colors">{site.name}</h3>
+                      <h3 className="font-semibold text-white text-lg hover:text-brand-400 transition-colors">{site.name}</h3>
                     </button>
                     {site.description && (
                       <p className="text-sm text-slate-300 mt-1">{site.description}</p>
@@ -249,7 +249,7 @@ export default function SitesManager() {
                   <div className="flex gap-1 ml-2">
                     <button
                       onClick={() => startEdit(site)}
-                      className="p-1.5 text-slate-300 hover:text-orange-400 hover:bg-orange-900/30 rounded transition-colors"
+                      className="p-1.5 text-slate-300 hover:text-brand-400 hover:bg-brand-700/30 rounded transition-colors"
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
@@ -278,7 +278,7 @@ export default function SitesManager() {
 
                 <button
                   onClick={() => toggleSiteExpanded(site.id)}
-                  className="flex items-center gap-2 text-sm text-orange-400 hover:text-orange-300 transition-colors"
+                  className="flex items-center gap-2 text-sm text-brand-400 hover:text-brand-300 transition-colors"
                 >
                   {isExpanded ? (
                     <>

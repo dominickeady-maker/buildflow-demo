@@ -34,7 +34,7 @@ export default function TaskDetail({ taskId }: { taskId: string }) {
   }
 
   if (loading || !task) {
-    return <div className="flex items-center justify-center h-64"><Clock className="w-8 h-8 animate-spin text-orange-500" /></div>;
+    return <div className="flex items-center justify-center h-64"><Clock className="w-8 h-8 animate-spin text-brand-500" /></div>;
   }
 
   return (
@@ -43,7 +43,7 @@ export default function TaskDetail({ taskId }: { taskId: string }) {
       <div className="bg-slate-700 border border-slate-600 rounded-lg p-5">
         <div className="flex items-center gap-2 mb-3">
           {task.trade && (
-            <span className="text-xs font-medium text-orange-300 bg-orange-900/30 px-2 py-1 rounded">{task.trade.name}</span>
+            <span className="text-xs font-medium text-brand-300 bg-brand-900/30 px-2 py-1 rounded">{task.trade.name}</span>
           )}
           <span className={`text-xs font-medium px-2 py-1 rounded ${
             task.status === 'complete' ? 'bg-green-900/50 text-green-400' :
@@ -61,7 +61,7 @@ export default function TaskDetail({ taskId }: { taskId: string }) {
         {task.site && (
           <button
             onClick={() => pushView({ type: 'site', id: task.site!.id, label: task.site!.name, subTab: 'overview' })}
-            className="bg-slate-700 border border-slate-600 rounded-lg p-4 text-left hover:border-orange-500/50 transition-colors"
+            className="bg-slate-700 border border-slate-600 rounded-lg p-4 text-left hover:border-brand-500/50 transition-colors"
           >
             <div className="flex items-center gap-2 mb-2">
               <MapPin className="w-5 h-5 text-blue-400" />
@@ -69,7 +69,7 @@ export default function TaskDetail({ taskId }: { taskId: string }) {
             </div>
             <p className="text-sm text-slate-300">{task.site.name}</p>
             {task.site.description && <p className="text-xs text-slate-500 mt-1">{task.site.description}</p>}
-            <div className="flex items-center gap-1 mt-2 text-xs text-orange-400">
+            <div className="flex items-center gap-1 mt-2 text-xs text-brand-400">
               Open site <ArrowRight className="w-3 h-3" />
             </div>
           </button>
@@ -79,16 +79,16 @@ export default function TaskDetail({ taskId }: { taskId: string }) {
         {task.assignee && (
           <button
             onClick={() => pushView({ type: 'worker', id: task.assignee!.id, label: task.assignee!.full_name })}
-            className="bg-slate-700 border border-slate-600 rounded-lg p-4 text-left hover:border-orange-500/50 transition-colors"
+            className="bg-slate-700 border border-slate-600 rounded-lg p-4 text-left hover:border-brand-500/50 transition-colors"
           >
             <div className="flex items-center gap-2 mb-2">
-              <UserCheck className="w-5 h-5 text-orange-400" />
+              <UserCheck className="w-5 h-5 text-brand-400" />
               <h3 className="font-semibold text-white">Assigned To</h3>
             </div>
             <p className="text-sm text-slate-300">{task.assignee.full_name}</p>
             <p className="text-xs text-slate-500 mt-1 capitalize">{task.assignee.role}</p>
             {task.trade && <p className="text-xs text-slate-500">{task.trade.name}</p>}
-            <div className="flex items-center gap-1 mt-2 text-xs text-orange-400">
+            <div className="flex items-center gap-1 mt-2 text-xs text-brand-400">
               Open worker <ArrowRight className="w-3 h-3" />
             </div>
           </button>
@@ -98,7 +98,7 @@ export default function TaskDetail({ taskId }: { taskId: string }) {
       {/* Related materials */}
       <div className="bg-slate-700 border border-slate-600 rounded-lg p-4">
         <div className="flex items-center gap-2 mb-3">
-          <Package className="w-5 h-5 text-orange-400" />
+          <Package className="w-5 h-5 text-brand-400" />
           <h3 className="font-semibold text-white">Related Material Requests</h3>
           <span className="text-sm text-slate-400">({materials.length})</span>
         </div>
@@ -113,7 +113,7 @@ export default function TaskDetail({ taskId }: { taskId: string }) {
                 m.status === 'delivered' ? 'bg-green-900/50 text-green-400' :
                 m.status === 'ordered' ? 'bg-purple-900/30 text-purple-400' :
                 m.status === 'approved' ? 'bg-blue-900/30 text-blue-400' :
-                'bg-orange-900/30 text-orange-400'
+                'bg-brand-900/30 text-brand-400'
               }`}>{m.status}</span>
             </div>
           ))}

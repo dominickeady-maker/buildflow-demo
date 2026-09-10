@@ -280,7 +280,7 @@ export default function MaterialsRequest() {
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white rounded-lg transition-all shadow-lg"
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white rounded-lg transition-all shadow-lg"
         >
           <Plus className="w-4 h-4" />
           New Request
@@ -298,7 +298,7 @@ export default function MaterialsRequest() {
               <select
                 value={formData.site_id}
                 onChange={(e) => setFormData({ ...formData, site_id: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white transition-all"
+                className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white transition-all"
                 required
               >
                 <option value="">Select a site</option>
@@ -325,7 +325,7 @@ export default function MaterialsRequest() {
                       setShowDropdown(true);
                     }}
                     onFocus={() => setShowDropdown(true)}
-                    className="w-full pl-10 pr-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-slate-500 transition-all"
+                    className="w-full pl-10 pr-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white placeholder-slate-500 transition-all"
                     placeholder="Search materials..."
                     required={!isCustom}
                   />
@@ -357,7 +357,7 @@ export default function MaterialsRequest() {
                   type="text"
                   value={formData.item_name}
                   onChange={(e) => setFormData({ ...formData, item_name: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-slate-500 transition-all"
+                  className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white placeholder-slate-500 transition-all"
                   placeholder="Enter custom material name"
                   required
                 />
@@ -374,7 +374,7 @@ export default function MaterialsRequest() {
                   step="0.01"
                   value={formData.quantity}
                   onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-slate-500 transition-all"
+                  className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white placeholder-slate-500 transition-all"
                   placeholder="e.g., 100"
                   required
                 />
@@ -386,7 +386,7 @@ export default function MaterialsRequest() {
                 <select
                   value={formData.unit}
                   onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white transition-all"
+                  className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white transition-all"
                   required
                 >
                   <option value="kg">kg (kilogram)</option>
@@ -405,12 +405,12 @@ export default function MaterialsRequest() {
 
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-1">
-                Notes {isCustom && <span className="text-orange-400">(Required for custom materials)</span>}
+                Notes {isCustom && <span className="text-brand-400">(Required for custom materials)</span>}
               </label>
               <textarea
                 value={formData.comment}
                 onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-slate-500 transition-all"
+                className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-white placeholder-slate-500 transition-all"
                 rows={3}
                 placeholder={isCustom ? "Describe the material specifications, brand, size, etc." : "Additional notes or specifications (optional)"}
                 required={isCustom}
@@ -421,7 +421,7 @@ export default function MaterialsRequest() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white font-semibold py-2 rounded-lg transition-all disabled:opacity-50 shadow-lg"
+                className="flex-1 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white font-semibold py-2 rounded-lg transition-all disabled:opacity-50 shadow-lg"
               >
                 {loading ? 'Submitting...' : 'Submit Request'}
               </button>
