@@ -24,7 +24,7 @@ interface Task {
   status: string;
 }
 
-export default function WorkersManager() {
+export default function WorkersManager({ isDemoMode = false }: { isDemoMode?: boolean }) {
   const openWorker = useWorkerLink();
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [sites, setSites] = useState<Site[]>([]);
@@ -247,12 +247,14 @@ export default function WorkersManager() {
                     </p>
                   </div>
                 </div>
-                <button
-                  onClick={() => handleDeleteWorker(worker.id)}
-                  className="text-red-400 hover:text-red-300 transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                {!isDemoMode && (
+                  <button
+                    onClick={() => handleDeleteWorker(worker.id)}
+                    className="text-red-400 hover:text-red-300 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
               </div>
 
               <div className="space-y-2">

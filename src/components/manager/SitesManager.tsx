@@ -9,7 +9,7 @@ interface SiteWithDetails extends Site {
   tasks?: Array<{ id: string; title: string; status: string; assigned_to: string | null }>;
 }
 
-export default function SitesManager() {
+export default function SitesManager({ isDemoMode = false }: { isDemoMode?: boolean }) {
   const openSite = useSiteLink();
   const [sites, setSites] = useState<SiteWithDetails[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -253,12 +253,14 @@ export default function SitesManager() {
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
-                    <button
-                      onClick={() => handleDelete(site.id)}
-                      className="p-1.5 text-slate-300 hover:text-red-400 hover:bg-red-900/30 rounded transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    {!isDemoMode && (
+                      <button
+                        onClick={() => handleDelete(site.id)}
+                        className="p-1.5 text-slate-300 hover:text-red-400 hover:bg-red-900/30 rounded transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                 </div>
 

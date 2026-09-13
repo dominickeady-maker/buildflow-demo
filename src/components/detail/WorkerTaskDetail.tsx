@@ -6,7 +6,7 @@ import { Clock, MapPin, FileText, Package, Camera, Upload, Loader2, CheckCircle2
 import heic2any from 'heic2any';
 import { processImageForUpload } from '../../utils/imageResize';
 
-export default function WorkerTaskDetail({ taskId }: { taskId: string }) {
+export default function WorkerTaskDetail({ taskId, isDemoMode = false }: { taskId: string; isDemoMode?: boolean }) {
   const { user } = useAuth();
   const { organizationId } = useOrganization();
   const [task, setTask] = useState<(Task & { site?: Site; trade?: Trade }) | null>(null);
@@ -225,14 +225,21 @@ export default function WorkerTaskDetail({ taskId }: { taskId: string }) {
         </div>
         <input ref={cameraInputRef} type="file" accept="image/jpeg,image/png,image/jpg,image/heic" capture="environment" className="hidden" onChange={(e) => handlePhotoSelection(e.target.files)} multiple />
         <input ref={galleryInputRef} type="file" accept="image/jpeg,image/png,image/jpg,image/heic" className="hidden" onChange={(e) => handlePhotoSelection(e.target.files)} multiple />
-        <div className="flex flex-col sm:flex-row gap-2 mb-3">
-          <button onClick={() => cameraInputRef.current?.click()} disabled={uploading} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-500 text-white font-medium rounded-lg transition-all disabled:opacity-50 text-sm">
-            <Camera className="w-4 h-4" /> Take Photo
-          </button>
-          <button onClick={() => galleryInputRef.current?.click()} disabled={uploading} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-600 hover:bg-slate-500 text-white font-medium rounded-lg transition-colors disabled:opacity-50 text-sm">
-            <Upload className="w-4 h-4" /> Upload
-          </button>
-        </div>
+        {isDemoMode ? (
+          <div className="flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-600 text-slate-400 font-medium rounded-lg text-sm opacity-60">
+            <Camera className="w-4 h-4" />
+            Photo upload is disabled in the demo
+          </div>
+        ) : (
+          <div className="flex flex-col sm:flex-row gap-2 mb-3">
+            <button onClick={() => cameraInputRef.current?.click()} disabled={uploading} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-500 text-white font-medium rounded-lg transition-all disabled:opacity-50 text-sm">
+              <Camera className="w-4 h-4" /> Take Photo
+            </button>
+            <button onClick={() => galleryInputRef.current?.click()} disabled={uploading} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-600 hover:bg-slate-500 text-white font-medium rounded-lg transition-colors disabled:opacity-50 text-sm">
+              <Upload className="w-4 h-4" /> Upload
+            </button>
+          </div>
+        )}
         {uploading && <p className="text-sm text-blue-400 mb-2">Uploading...</p>}
         {photos.length > 0 && (
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">

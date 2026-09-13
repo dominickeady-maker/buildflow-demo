@@ -5,7 +5,7 @@ import { useOrganization } from '../../hooks/useOrganization';
 import { useSiteLink } from '../../contexts/NavContext';
 import { FileText, Upload, Download, Trash2, Eye, Filter, Loader2 } from 'lucide-react';
 
-export default function DrawingsManager() {
+export default function DrawingsManager({ isDemoMode = false }: { isDemoMode?: boolean }) {
   const { user } = useAuth();
   const { organizationId } = useOrganization();
   const openSite = useSiteLink();
@@ -226,10 +226,15 @@ export default function DrawingsManager() {
         </div>
         <button
           onClick={() => fileInputRef.current?.click()}
-          disabled={uploading}
+          disabled={uploading || isDemoMode}
           className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
         >
-          {uploading ? (
+          {isDemoMode ? (
+            <>
+              <Upload className="w-4 h-4" />
+              Upload disabled in demo
+            </>
+          ) : uploading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
               Uploading...
@@ -351,6 +356,7 @@ export default function DrawingsManager() {
                           onClick={() => handleDelete(drawing)}
                           className="p-1 text-red-400 hover:text-red-300"
                           title="Delete"
+                          style={isDemoMode ? { display: 'none' } : undefined}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>

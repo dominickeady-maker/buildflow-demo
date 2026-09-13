@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { NavProvider, useNav } from './contexts/NavContext';
+import { DemoModeProvider, useDemoMode } from './contexts/DemoModeContext';
 import Auth from './components/Auth';
 import WorkerDashboard from './components/worker/WorkerDashboard';
 import MaterialsRequest from './components/worker/MaterialsRequest';
@@ -20,11 +21,12 @@ import SiteDetail from './components/detail/SiteDetail';
 import WorkerDetail from './components/detail/WorkerDetail';
 import TaskDetail from './components/detail/TaskDetail';
 import WorkerTaskDetail from './components/detail/WorkerTaskDetail';
-import { Hammer, LayoutDashboard, ListTodo, Package, MapPin, Clock, LogOut, Sparkles, Camera, FileText, Users, User, MessageCircle, MoreHorizontal, X } from 'lucide-react';
+import { Hammer, LayoutDashboard, ListTodo, Package, MapPin, Clock, LogOut, Sparkles, Camera, FileText, Users, User, MessageCircle, MoreHorizontal, X, Info } from 'lucide-react';
 
 function AppContent() {
   const { user, profile, loading, signOut } = useAuth();
   const { activeView } = useNav();
+  const { isDemoMode } = useDemoMode();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
 
@@ -88,22 +90,22 @@ function AppContent() {
     if (activeView.type === 'site') return <SiteDetail siteId={activeView.id} />;
     if (activeView.type === 'worker') return <WorkerDetail workerId={activeView.id} />;
     if (activeView.type === 'task') return <TaskDetail taskId={activeView.id} />;
-    if (activeView.type === 'worker_task') return <WorkerTaskDetail taskId={activeView.id} />;
+    if (activeView.type === 'worker_task') return <WorkerTaskDetail taskId={activeView.id} isDemoMode={isDemoMode} />;
     return null;
   }
 
   function renderTab() {
-    if (activeTab === 'photos') return <PhotoManager />;
-    if (activeTab === 'drawings') return <DrawingsManager />;
+    if (activeTab === 'photos') return <PhotoManager isDemoMode={isDemoMode} />;
+    if (activeTab === 'drawings') return <DrawingsManager isDemoMode={isDemoMode} />;
     if (activeTab === 'profile') return <AccountProfile />;
     if (activeTab === 'messages') return <Messages />;
     if (isManager) {
       if (activeTab === 'dashboard') return <ManagerDashboard />;
-      if (activeTab === 'tasks') return <TasksManager />;
-      if (activeTab === 'workers') return <WorkersManager />;
+      if (activeTab === 'tasks') return <TasksManager isDemoMode={isDemoMode} />;
+      if (activeTab === 'workers') return <WorkersManager isDemoMode={isDemoMode} />;
       if (activeTab === 'timesheets') return <TimesheetsManager />;
       if (activeTab === 'materials') return <MaterialsManager />;
-      if (activeTab === 'sites') return <SitesManager />;
+      if (activeTab === 'sites') return <SitesManager isDemoMode={isDemoMode} />;
     } else {
       if (activeTab === 'dashboard') return <WorkerDashboard />;
       if (activeTab === 'hours') return <HoursBooking />;
@@ -131,6 +133,13 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-navy pb-28 md:pb-0">
+      {/* Demo mode banner */}
+      {isDemoMode && (
+        <div className="bg-amber-500/95 text-amber-950 text-center py-1.5 px-4 text-xs font-medium sticky top-0 z-50 flex items-center justify-center gap-2">
+          <Info className="w-3.5 h-3.5 flex-shrink-0" />
+          <span>Demo — data resets every hour. Photo upload and delete are switched off.</span>
+        </div>
+      )}
       {/* Top bar — always visible */}
       <nav className="bg-slate-900 border-b border-brand-500/20 sticky top-0 z-40 backdrop-blur-md bg-opacity-90 shadow-lg shadow-brand-900/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -260,9 +269,11 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <NavProvider>
-        <AppContent />
-      </NavProvider>
+      <DemoModeProvider>
+        <NavProvider>
+          <AppContent />
+        </NavProvider>
+      </DemoModeProvider>
     </AuthProvider>
   );
 }

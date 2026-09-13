@@ -13,7 +13,7 @@ interface PendingPhoto {
   previewUrl: string;
 }
 
-export default function PhotoManager() {
+export default function PhotoManager({ isDemoMode = false }: { isDemoMode?: boolean }) {
   const { user } = useAuth();
   const { organizationId } = useOrganization();
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -425,32 +425,41 @@ export default function PhotoManager() {
           multiple
         />
 
-        <button
-          className="flex-1 flex items-center justify-center gap-3 bg-brand-500 text-white px-6 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-          onClick={() => cameraInputRef.current?.click()}
-          disabled={uploading}
-        >
-          {uploading ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              Uploading...
-            </>
-          ) : (
-            <>
-              <Camera className="w-5 h-5" />
-              Take Photo
-            </>
-          )}
-        </button>
+        {isDemoMode ? (
+          <div className="flex-1 flex items-center justify-center gap-3 bg-slate-700 text-slate-400 px-6 py-4 rounded-xl font-medium border border-slate-600 cursor-not-allowed opacity-60">
+            <Camera className="w-5 h-5" />
+            Photo upload is disabled in the demo
+          </div>
+        ) : (
+          <>
+            <button
+              className="flex-1 flex items-center justify-center gap-3 bg-brand-500 text-white px-6 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              onClick={() => cameraInputRef.current?.click()}
+              disabled={uploading}
+            >
+              {uploading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <Camera className="w-5 h-5" />
+                  Take Photo
+                </>
+              )}
+            </button>
 
-        <button
-          className="flex-1 flex items-center justify-center gap-3 bg-slate-700 text-white px-6 py-4 rounded-xl font-semibold border border-slate-600 hover:bg-slate-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          onClick={() => galleryInputRef.current?.click()}
-          disabled={uploading}
-        >
-          <Upload className="w-5 h-5" />
-          Upload from Gallery
-        </button>
+            <button
+              className="flex-1 flex items-center justify-center gap-3 bg-slate-700 text-white px-6 py-4 rounded-xl font-semibold border border-slate-600 hover:bg-slate-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => galleryInputRef.current?.click()}
+              disabled={uploading}
+            >
+              <Upload className="w-5 h-5" />
+              Upload from Gallery
+            </button>
+          </>
+        )}
       </div>
 
       {/* Photo Grid */}
@@ -551,14 +560,16 @@ export default function PhotoManager() {
               <FileText className="w-5 h-5" />
               Generate Report ({selectedPhotos.size})
             </button>
-            <button
-              className="flex items-center justify-center gap-3 bg-gradient-to-r from-red-600 to-red-500 text-white px-6 py-4 rounded-xl font-bold shadow-2xl hover:shadow-red-500/50 transform hover:scale-105 transition-all"
-              onClick={deleteSelectedPhotos}
-              disabled={uploading}
-            >
-              <Trash2 className="w-5 h-5" />
-              Delete ({selectedPhotos.size})
-            </button>
+            {!isDemoMode && (
+              <button
+                className="flex items-center justify-center gap-3 bg-gradient-to-r from-red-600 to-red-500 text-white px-6 py-4 rounded-xl font-bold shadow-2xl hover:shadow-red-500/50 transform hover:scale-105 transition-all"
+                onClick={deleteSelectedPhotos}
+                disabled={uploading}
+              >
+                <Trash2 className="w-5 h-5" />
+                Delete ({selectedPhotos.size})
+              </button>
+            )}
           </div>
         </div>
       )}

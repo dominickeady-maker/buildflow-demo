@@ -4,7 +4,7 @@ import { useSiteLink, useWorkerLink, useTaskLink } from '../../contexts/NavConte
 import { Plus, CreditCard as Edit2, Trash2, Filter, Download } from 'lucide-react';
 import { exportToCSV, formatDataForExport } from '../../utils/exportToCSV';
 
-export default function TasksManager() {
+export default function TasksManager({ isDemoMode = false }: { isDemoMode?: boolean }) {
   const openSite = useSiteLink();
   const openWorker = useWorkerLink();
   const openTask = useTaskLink();
@@ -217,13 +217,15 @@ export default function TasksManager() {
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-white">Manage Tasks</h2>
         <div className="flex gap-2">
-          <button
-            onClick={handleDeleteCompleted}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-          >
-            <Trash2 className="w-4 h-4" />
-            Delete Completed
-          </button>
+          {!isDemoMode && (
+            <button
+              onClick={handleDeleteCompleted}
+              className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete Completed
+            </button>
+          )}
           <button
             onClick={handleExport}
             className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors border border-slate-600"
@@ -439,12 +441,14 @@ export default function TasksManager() {
                 >
                   <Edit2 className="w-4 h-4" />
                 </button>
-                <button
-                  onClick={() => handleDelete(task.id)}
-                  className="p-2 text-slate-300 hover:text-red-400 hover:bg-red-900/30 rounded transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                {!isDemoMode && (
+                  <button
+                    onClick={() => handleDelete(task.id)}
+                    className="p-2 text-slate-300 hover:text-red-400 hover:bg-red-900/30 rounded transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
               </div>
             </div>
           </div>
