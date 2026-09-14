@@ -81,15 +81,15 @@ export type Timesheet = {
   worker?: Profile;
 };
 
-export type ProgrammeStage = {
+export type ProgrammeMilestone = {
   id: string;
   organization_id: string;
   site_id: string;
-  name: string;
-  start_date: string;
-  end_date: string;
-  percent_complete: number;
+  milestone_name: string;
   sort_order: number;
+  target_date: string | null;
+  actual_date: string | null;
+  notes: string;
   created_at: string;
   updated_at: string;
 };

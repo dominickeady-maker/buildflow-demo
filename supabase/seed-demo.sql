@@ -183,31 +183,123 @@ INSERT INTO messages (sender_id, receiver_id, message, read, created_at, organiz
 ('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '923b1109-85c9-402f-a443-3c88588a60ec', 'Done, uploaded four just now.', false, '2026-09-10T07:30:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801');
 
 -- ============================================================
--- 6. PROGRAMME STAGES — project timelines per site
+-- 6. PROGRAMME MILESTONES — programme of works per site
 -- ============================================================
-DELETE FROM programme_stages WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801';
+DELETE FROM programme_milestones WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801';
 
-INSERT INTO programme_stages (organization_id, site_id, name, start_date, end_date, percent_complete, sort_order) VALUES
--- Plot 4 — Marsden Road: 6 stages spanning Jul 2026 to Feb 2027
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Groundworks', '2026-07-06', '2026-07-31', 100, 0),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Foundations', '2026-08-03', '2026-08-28', 100, 1),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Superstructure', '2026-09-01', '2026-10-30', 35, 2),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Roof', '2026-11-02', '2026-11-27', 0, 3),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'First & Second Fix', '2026-12-01', '2027-01-29', 0, 4),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Snagging & Handover', '2027-02-01', '2027-02-26', 0, 5),
--- Rear Extension — Holmfirth: 5 stages spanning Aug 2026 to Dec 2026
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Demolition & Break Out', '2026-08-03', '2026-08-21', 100, 0),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Structural Works (RSJ)', '2026-08-24', '2026-09-18', 80, 1),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Superstructure', '2026-09-21', '2026-10-30', 10, 2),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Roof & Waterproofing', '2026-11-02', '2026-11-20', 0, 3),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Fit Out & Snagging', '2026-11-23', '2026-12-18', 0, 4),
--- New Build — Meltham Road: 6 stages spanning Sep 2026 to May 2027
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Site Setup & Groundworks', '2026-09-07', '2026-10-02', 40, 0),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Foundations', '2026-10-05', '2026-10-30', 0, 1),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Superstructure', '2026-11-02', '2027-01-29', 0, 2),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Roof', '2027-02-01', '2027-02-26', 0, 3),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'First & Second Fix', '2027-03-01', '2027-04-30', 0, 4),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Snagging & Handover', '2027-05-03', '2027-05-28', 0, 5);
+-- Plot 4 — Marsden Road: New build preset with dates on first 6 milestones
+-- Milestones 0-1: complete (actual dates set)
+-- Milestone 2: target in past, no actual → overdue
+-- Milestone 3: target within 7 days → due
+-- Milestones 4-5: target in future → not started
+-- Rest: TBC
+INSERT INTO programme_milestones (organization_id, site_id, milestone_name, sort_order, target_date, actual_date, notes) VALUES
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Site set-up & welfare', 0, '2026-07-06', '2026-07-08', ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Site strip / reduce dig', 1, '2026-07-09', '2026-07-15', ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Setting out', 2, '2026-08-01', NULL, 'Waiting on setting-out engineer'),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Temporary services', 3, '2026-09-18', NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Foundations dug', 4, '2026-09-25', NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'NHBC/BC excavation inspection', 5, '2026-09-29', NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Foundations poured', 6, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Footings up to DPC', 7, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'DPC laid (FFL to DPC)', 8, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Below-ground drainage', 9, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Oversite / ground floor slab', 10, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Beam & block floor laid', 11, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'First lift', 12, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Ground floor lintels & frames', 13, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Scaffold first lift', 14, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'First floor joists on (floors on)', 15, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Second lift', 16, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Gables up', 17, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Wall plate on', 18, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Steels in (RSJ)', 19, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Roof trusses / rafters set', 20, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Roof on (felt & batten)', 21, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Tiling / slating complete', 22, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Fascias, soffits & guttering', 23, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Windows & external doors in', 24, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Watertight / weathertight', 25, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'NHBC/BC superstructure inspection', 26, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Internal studwork & partitions', 27, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', '1st fix carpentry', 28, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', '1st fix electrics', 29, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', '1st fix plumbing & heating', 30, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Insulation & airtightness', 31, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'NHBC/BC pre-plaster inspection', 32, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Plasterboard / dot & dab', 33, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Plastering & skim', 34, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Floor screed', 35, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', '2nd fix carpentry (doors, skirting, architrave)', 36, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', '2nd fix electrics', 37, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', '2nd fix plumbing & sanitaryware', 38, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Kitchen fit', 39, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Wall & floor tiling', 40, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Decoration', 41, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Floor coverings', 42, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'External render / brick clean', 43, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Scaffold struck', 44, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Drives, paths & patios', 45, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Landscaping & turfing', 46, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Fencing & boundaries', 47, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Commissioning & testing', 48, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Air test / EPC', 49, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Building Control sign-off', 50, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Pre-handover inspection', 51, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Snagging', 52, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Practical completion / handover', 53, NULL, NULL, '');
+
+-- Rear Extension — Holmfirth: Extension preset with a few dates
+INSERT INTO programme_milestones (organization_id, site_id, milestone_name, sort_order, target_date, actual_date, notes) VALUES
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Site set-up & protection', 0, '2026-08-03', '2026-08-05', ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Break out / demolition', 1, '2026-08-06', '2026-08-15', ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Foundations dug', 2, '2026-08-18', '2026-08-25', ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Foundations poured', 3, '2026-08-27', '2026-08-29', ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Footings up to DPC', 4, '2026-09-01', NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Drainage & manhole alterations', 5, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Oversite / slab', 6, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Superstructure blockwork', 7, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Steels in (RSJ)', 8, NULL, NULL, 'Waiting on steel fabrication'),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Wall plate on', 9, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Roof structure', 10, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Roof covering', 11, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Windows & external doors in', 12, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Watertight', 13, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Knock-through / opening formed', 14, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', '1st fix trades', 15, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Plastering', 16, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', '2nd fix trades', 17, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Kitchen / bathroom fit', 18, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Decoration', 19, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'External works & making good', 20, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Snagging', 21, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Handover', 22, NULL, NULL, '');
+
+-- New Build — Meltham Road: Extension preset, all TBC
+INSERT INTO programme_milestones (organization_id, site_id, milestone_name, sort_order, target_date, actual_date, notes) VALUES
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Site set-up & protection', 0, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Break out / demolition', 1, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Foundations dug', 2, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Foundations poured', 3, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Footings up to DPC', 4, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Drainage & manhole alterations', 5, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Oversite / slab', 6, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Superstructure blockwork', 7, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Steels in (RSJ)', 8, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Wall plate on', 9, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Roof structure', 10, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Roof covering', 11, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Windows & external doors in', 12, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Watertight', 13, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Knock-through / opening formed', 14, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', '1st fix trades', 15, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Plastering', 16, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', '2nd fix trades', 17, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Kitchen / bathroom fit', 18, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Decoration', 19, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'External works & making good', 20, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Snagging', 21, NULL, NULL, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Handover', 22, NULL, NULL, '');
 
 -- ============================================================
 -- VERIFICATION
@@ -235,7 +327,7 @@ SELECT cp.description, t.title as task_title
 FROM construction_photos cp LEFT JOIN tasks t ON cp.task_id = t.id
 ORDER BY cp.created_at;
 
-SELECT 'Programme stages:' as info;
-SELECT ps.name, ps.start_date, ps.end_date, ps.percent_complete, s.name as site_name
-FROM programme_stages ps JOIN sites s ON ps.site_id = s.id
-ORDER BY ps.site_id, ps.sort_order;
+SELECT 'Programme milestones:' as info;
+SELECT pm.milestone_name, pm.target_date, pm.actual_date, pm.notes, s.name as site_name
+FROM programme_milestones pm JOIN sites s ON pm.site_id = s.id
+ORDER BY pm.site_id, pm.sort_order;
