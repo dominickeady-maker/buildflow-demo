@@ -1,3 +1,4 @@
+// © 2026 Cornerstone Developments Ltd. All rights reserved. Unauthorised copying prohibited.
 import { createContext, useContext, useMemo, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 

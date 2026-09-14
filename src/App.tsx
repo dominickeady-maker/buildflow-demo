@@ -1,3 +1,4 @@
+// © 2026 Cornerstone Developments Ltd. All rights reserved. Unauthorised copying prohibited.
 import { useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { NavProvider, useNav } from './contexts/NavContext';
@@ -22,6 +23,8 @@ import WorkerDetail from './components/detail/WorkerDetail';
 import TaskDetail from './components/detail/TaskDetail';
 import WorkerTaskDetail from './components/detail/WorkerTaskDetail';
 import { Hammer, LayoutDashboard, ListTodo, Package, MapPin, Clock, LogOut, Sparkles, Camera, FileText, Users, User, MessageCircle, MoreHorizontal, X, Info } from 'lucide-react';
+import Footer from './components/Footer';
+import TermsOfService from './components/TermsOfService';
 
 function AppContent() {
   const { user, profile, loading, signOut } = useAuth();
@@ -29,6 +32,7 @@ function AppContent() {
   const { isDemoMode } = useDemoMode();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
 
   if (loading) {
     return (
@@ -42,7 +46,7 @@ function AppContent() {
   }
 
   if (!user || !profile) {
-    return <Auth />;
+    return <Auth onTermsClick={() => setShowTerms(true)} showTerms={showTerms} onCloseTerms={() => setShowTerms(false)} />;
   }
 
   const isManager = profile.role === 'manager';
@@ -228,6 +232,23 @@ function AppContent() {
           </button>
         </div>
       </div>
+
+      {/* Footer */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 hidden md:block">
+        <Footer onTermsClick={() => setShowTerms(true)} />
+      </div>
+
+      {/* Terms modal */}
+      {showTerms && <TermsOfService onClose={() => setShowTerms(false)} />}
+
+      {/* Demo watermark — fixed, always visible during demo */}
+      {isDemoMode && (
+        <div className="fixed bottom-16 md:bottom-2 right-2 z-30 pointer-events-none select-none">
+          <div className="bg-slate-900/80 text-slate-400 text-[10px] font-medium px-2.5 py-1 rounded border border-slate-700/50 backdrop-blur-sm rotate-[-2deg]">
+            Demo environment — not for redistribution
+          </div>
+        </div>
+      )}
 
       {/* Mobile More menu */}
       {moreMenuOpen && (

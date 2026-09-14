@@ -1,8 +1,11 @@
+// © 2026 Cornerstone Developments Ltd. All rights reserved. Unauthorised copying prohibited.
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { HardHat } from 'lucide-react';
+import Footer from './Footer';
+import TermsOfService from './TermsOfService';
 
-export default function Auth() {
+export default function Auth({ onTermsClick, showTerms, onCloseTerms }: { onTermsClick?: () => void; showTerms?: boolean; onCloseTerms?: () => void }) {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -31,7 +34,7 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen bg-navy flex items-center justify-center p-4">
+    <div className="min-h-screen bg-navy flex flex-col items-center justify-center p-4">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(59,130,246,0.1),transparent_50%)]" />
 
       <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-2xl w-full max-w-md p-8 border border-slate-700">
@@ -143,6 +146,11 @@ export default function Auth() {
           </button>
         </form>
       </div>
+
+      <div className="relative z-10 mt-4">
+        <Footer onTermsClick={onTermsClick} />
+      </div>
+      {showTerms && <TermsOfService onClose={onCloseTerms!} />}
     </div>
   );
 }
