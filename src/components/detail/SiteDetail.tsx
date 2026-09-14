@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Component, ReactNode } from 'react';
 import { supabase, Site, Task, Profile, Material, Timesheet, Trade, Drawing } from '../../lib/supabase';
 import { useNav } from '../../contexts/NavContext';
-import { MapPin, CheckCircle2, Clock, ListTodo, Package, FileText, Camera, MessageCircle, BarChart3, ArrowRight, GanttChart } from 'lucide-react';
+import { MapPin, CheckCircle2, Clock, ListTodo, Package, FileText, Camera, MessageCircle, BarChart3, ArrowRight, GanttChart, AlertTriangle } from 'lucide-react';
 import ProgrammeTab from './ProgrammeTab';
 
 const SUB_TABS = [
@@ -149,8 +149,10 @@ export default function SiteDetail({ siteId }: { siteId: string }) {
         <SiteMaterials materials={materials} onWorkerClick={(workerId, name) => pushView({ type: 'worker', id: workerId, label: name })} />
       )}
 
-      {currentSubTab === 'programme' && site.organization_id && (
-        <ProgrammeTab siteId={site.id} organizationId={site.organization_id} />
+      {currentSubTab === 'programme' && (
+        <ProgrammeErrorBoundary>
+          <ProgrammeTab siteId={site.id} organizationId={site.organization_id ?? null} />
+        </ProgrammeErrorBoundary>
       )}
 
       {currentSubTab === 'drawings' && <SiteDrawings drawings={drawings} />}
@@ -468,4 +470,38 @@ function SiteMessages({ siteName }: { siteName: string }) {
       <p className="text-slate-500 text-sm mt-1">Use the Messages tab in the top bar to communicate with the team about this site.</p>
     </div>
   );
+}
+
+class ProgrammeErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; message: string }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false, message: '' };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, message: error.message || 'Unknown error' };
+  }
+
+  componentDidCatch(error: Error, info: { componentStack: string }) {
+    console.error('ProgrammeTab render error:', error, info);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="bg-red-900/30 border border-red-700/50 rounded-lg p-6 text-center">
+          <AlertTriangle className="w-8 h-8 text-red-400 mx-auto mb-3" />
+          <p className="text-red-300 font-medium">The Programme tab hit an error and couldn't render.</p>
+          <p className="text-red-400/70 text-sm mt-1">{this.state.message}</p>
+          <button
+            onClick={() => this.setState({ hasError: false, message: '' })}
+            className="mt-3 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg transition-colors"
+          >
+            Try again
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
 }

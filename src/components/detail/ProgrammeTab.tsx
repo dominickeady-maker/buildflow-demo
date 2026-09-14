@@ -74,11 +74,12 @@ function dateInputValue(dateStr: string | null): string {
   return dateStr;
 }
 
-export default function ProgrammeTab({ siteId, organizationId }: { siteId: string; organizationId: string }) {
+export default function ProgrammeTab({ siteId, organizationId }: { siteId: string; organizationId: string | null }) {
   const { profile } = useAuth();
   const { isDemoMode } = useDemoMode();
   const isManager = profile?.role === 'manager';
   const canEdit = isManager && !isDemoMode;
+  const orgId = organizationId || profile?.organization_id || null;
 
   const [milestones, setMilestones] = useState<ProgrammeMilestone[]>([]);
   const [loading, setLoading] = useState(true);
@@ -112,7 +113,7 @@ export default function ProgrammeTab({ siteId, organizationId }: { siteId: strin
     const { data, error } = await supabase
       .from('programme_milestones')
       .insert({
-        organization_id: organizationId,
+        organization_id: orgId,
         site_id: siteId,
         milestone_name: name,
         sort_order: maxOrder + 1,
@@ -185,7 +186,7 @@ export default function ProgrammeTab({ siteId, organizationId }: { siteId: strin
     const startOrder = milestones.length > 0 ? Math.max(...milestones.map(m => m.sort_order)) + 1 : 0;
 
     const rows = names.map((name, i) => ({
-      organization_id: organizationId,
+      organization_id: orgId,
       site_id: siteId,
       milestone_name: name,
       sort_order: startOrder + i,
