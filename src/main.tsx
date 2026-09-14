@@ -1,4 +1,4 @@
-// © 2026 Cornerstone Developments Ltd. All rights reserved. Unauthorised copying prohibited.
+// © 2026 DM.AI 4U. All rights reserved. Unauthorised copying prohibited.
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';

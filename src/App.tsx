@@ -1,4 +1,4 @@
-// © 2026 Cornerstone Developments Ltd. All rights reserved. Unauthorised copying prohibited.
+// © 2026 DM.AI 4U. All rights reserved. Unauthorised copying prohibited.
 import { useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { NavProvider, useNav } from './contexts/NavContext';
@@ -141,7 +141,7 @@ function AppContent() {
       {isDemoMode && (
         <div className="bg-amber-500/95 text-amber-950 text-center py-1.5 px-4 text-xs font-medium sticky top-0 z-50 flex items-center justify-center gap-2">
           <Info className="w-3.5 h-3.5 flex-shrink-0" />
-          <span>Demo — data resets every hour. Photo upload and delete are switched off.</span>
+          <span>Demo environment — data resets regularly. Not for commercial use.</span>
         </div>
       )}
       {/* Top bar — always visible */}

@@ -1,4 +1,4 @@
-// © 2026 Cornerstone Developments Ltd. All rights reserved. Unauthorised copying prohibited.
+// © 2026 DM.AI 4U. All rights reserved. Unauthorised copying prohibited.
 import { createContext, useContext, useEffect, useState, useRef, ReactNode } from 'react';
 import { supabase, Profile } from '../lib/supabase';
 import { User } from '@supabase/supabase-js';

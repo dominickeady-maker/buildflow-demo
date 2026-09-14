@@ -1,5 +1,5 @@
-// © 2026 Cornerstone Developments Ltd. All rights reserved. Unauthorised copying prohibited.
-import { X, Shield, FileText, AlertTriangle, Scale } from 'lucide-react';
+// © 2026 DM.AI 4U. All rights reserved. Unauthorised copying prohibited.
+import { X, Shield, FileText, AlertTriangle, Scale, Mail } from 'lucide-react';
 
 export default function TermsOfService({ onClose }: { onClose: () => void }) {
   const year = new Date().getFullYear();
@@ -33,10 +33,9 @@ export default function TermsOfService({ onClose }: { onClose: () => void }) {
               <h2 className="text-base font-semibold text-white">1. Ownership</h2>
             </div>
             <p>
-              BuildFlow and its source code, design, content, and all associated materials are the
-              exclusive property of Cornerstone Developments Ltd. All intellectual property rights,
-              including but not limited to copyright, trade marks, and database rights, are retained
-              by Cornerstone Developments Ltd.
+              BuildFlow, its source code, design, and content are the property of DM.AI 4U.
+              All intellectual property rights, including but not limited to copyright, trade marks,
+              and database rights, are retained by DM.AI 4U.
             </p>
           </section>
 
@@ -48,9 +47,9 @@ export default function TermsOfService({ onClose }: { onClose: () => void }) {
             <p>
               Users are granted a limited, non-exclusive, non-transferable licence to access and use
               BuildFlow for the purposes of construction project management within their organisation.
-              Users may not copy, modify, reverse-engineer, decompile, resell, sublicense, rent, lease,
+              Users may not copy, reverse-engineer, decompile, resell, sublicense, rent, lease,
               or redistribute the software, in whole or in part, without prior written consent from
-              Cornerstone Developments Ltd.
+              DM.AI 4U.
             </p>
           </section>
 
@@ -60,10 +59,9 @@ export default function TermsOfService({ onClose }: { onClose: () => void }) {
               <h2 className="text-base font-semibold text-white">3. Demo Environment</h2>
             </div>
             <p>
-              The demo version of BuildFlow is provided for evaluation purposes only and is not
-              licensed for commercial use. Demo data is synthetic and periodically reset. The demo
-              environment must not be used for real business operations or relied upon for
-              decision-making.
+              The demo environment is provided for evaluation only and carries no warranty.
+              Demo data may be reset or deleted at any time without notice. The demo must not
+              be used for real business operations or relied upon for decision-making.
             </p>
           </section>
 
@@ -76,8 +74,8 @@ export default function TermsOfService({ onClose }: { onClose: () => void }) {
               BuildFlow is provided &ldquo;as is&rdquo; and &ldquo;as available,&rdquo; without
               warranties of any kind, whether express or implied, including but not limited to
               implied warranties of merchantability, fitness for a particular purpose, or
-              non-infringement. Cornerstone Developments Ltd does not warrant that the software
-              will be error-free, uninterrupted, or that data will not be lost.
+              non-infringement. DM.AI 4U does not warrant that the software will be error-free,
+              uninterrupted, or that data will not be lost.
             </p>
           </section>
 
@@ -87,10 +85,10 @@ export default function TermsOfService({ onClose }: { onClose: () => void }) {
               <h2 className="text-base font-semibold text-white">5. Limitation of Liability</h2>
             </div>
             <p>
-              To the maximum extent permitted by law, Cornerstone Developments Ltd shall not be
-              liable for any indirect, incidental, special, consequential, or punitive damages,
-              including loss of profits, data, or business interruption, arising out of or in
-              connection with the use of or inability to use BuildFlow.
+              To the maximum extent permitted by law, DM.AI 4U shall not be liable for any
+              indirect, incidental, special, consequential, or punitive damages, including loss
+              of profits, data, or business interruption, arising out of or in connection with
+              the use of or inability to use BuildFlow.
             </p>
           </section>
 
@@ -102,11 +100,24 @@ export default function TermsOfService({ onClose }: { onClose: () => void }) {
               the courts of England and Wales.
             </p>
           </section>
+
+          <section>
+            <div className="flex items-center gap-2 mb-2">
+              <Mail className="w-4 h-4 text-brand-400 flex-shrink-0" />
+              <h2 className="text-base font-semibold text-white">7. Contact</h2>
+            </div>
+            <p>
+              For any questions regarding this licence or the software, contact:
+              <a href="mailto:dom@dm4u.ai" className="text-brand-400 hover:text-brand-300 ml-1 underline-offset-2 hover:underline">
+                dom@dm4u.ai
+              </a>
+            </p>
+          </section>
         </div>
 
         <div className="border-t border-slate-700 mt-6 pt-4">
           <p className="text-xs text-slate-500 text-center">
-            &copy; {year} Cornerstone Developments Ltd. All rights reserved.
+            &copy; {year} DM.AI 4U. All rights reserved.
           </p>
         </div>
 

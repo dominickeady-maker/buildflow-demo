@@ -1,4 +1,4 @@
-// © 2026 Cornerstone Developments Ltd. All rights reserved. Unauthorised copying prohibited.
+// © 2026 DM.AI 4U. All rights reserved. Unauthorised copying prohibited.
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 
 export type ViewType = 'site' | 'worker' | 'task' | 'worker_task';

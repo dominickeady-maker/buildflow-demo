@@ -1,4 +1,4 @@
-// © 2026 Cornerstone Developments Ltd. All rights reserved. Unauthorised copying prohibited.
+// © 2026 DM.AI 4U. All rights reserved. Unauthorised copying prohibited.
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { HardHat } from 'lucide-react';
