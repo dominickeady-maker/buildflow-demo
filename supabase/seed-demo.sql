@@ -183,6 +183,33 @@ INSERT INTO messages (sender_id, receiver_id, message, read, created_at, organiz
 ('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '923b1109-85c9-402f-a443-3c88588a60ec', 'Done, uploaded four just now.', false, '2026-09-10T07:30:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801');
 
 -- ============================================================
+-- 6. PROGRAMME STAGES — project timelines per site
+-- ============================================================
+DELETE FROM programme_stages WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801';
+
+INSERT INTO programme_stages (organization_id, site_id, name, start_date, end_date, percent_complete, sort_order) VALUES
+-- Plot 4 — Marsden Road: 6 stages spanning Jul 2026 to Feb 2027
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Groundworks', '2026-07-06', '2026-07-31', 100, 0),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Foundations', '2026-08-03', '2026-08-28', 100, 1),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Superstructure', '2026-09-01', '2026-10-30', 35, 2),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Roof', '2026-11-02', '2026-11-27', 0, 3),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'First & Second Fix', '2026-12-01', '2027-01-29', 0, 4),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Snagging & Handover', '2027-02-01', '2027-02-26', 0, 5),
+-- Rear Extension — Holmfirth: 5 stages spanning Aug 2026 to Dec 2026
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Demolition & Break Out', '2026-08-03', '2026-08-21', 100, 0),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Structural Works (RSJ)', '2026-08-24', '2026-09-18', 80, 1),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Superstructure', '2026-09-21', '2026-10-30', 10, 2),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Roof & Waterproofing', '2026-11-02', '2026-11-20', 0, 3),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Fit Out & Snagging', '2026-11-23', '2026-12-18', 0, 4),
+-- New Build — Meltham Road: 6 stages spanning Sep 2026 to May 2027
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Site Setup & Groundworks', '2026-09-07', '2026-10-02', 40, 0),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Foundations', '2026-10-05', '2026-10-30', 0, 1),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Superstructure', '2026-11-02', '2027-01-29', 0, 2),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Roof', '2027-02-01', '2027-02-26', 0, 3),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'First & Second Fix', '2027-03-01', '2027-04-30', 0, 4),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Snagging & Handover', '2027-05-03', '2027-05-28', 0, 5);
+
+-- ============================================================
 -- VERIFICATION
 -- ============================================================
 SELECT 'Sites:' as info;
@@ -207,3 +234,8 @@ SELECT 'Photos:' as info;
 SELECT cp.description, t.title as task_title
 FROM construction_photos cp LEFT JOIN tasks t ON cp.task_id = t.id
 ORDER BY cp.created_at;
+
+SELECT 'Programme stages:' as info;
+SELECT ps.name, ps.start_date, ps.end_date, ps.percent_complete, s.name as site_name
+FROM programme_stages ps JOIN sites s ON ps.site_id = s.id
+ORDER BY ps.site_id, ps.sort_order;

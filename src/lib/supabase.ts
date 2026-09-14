@@ -19,6 +19,7 @@ export type Site = {
   id: string;
   name: string;
   description: string;
+  organization_id: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -77,6 +78,19 @@ export type Timesheet = {
   updated_at: string;
   site?: Site;
   worker?: Profile;
+};
+
+export type ProgrammeStage = {
+  id: string;
+  organization_id: string;
+  site_id: string;
+  name: string;
+  start_date: string;
+  end_date: string;
+  percent_complete: number;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
 };
 
 export type Drawing = {

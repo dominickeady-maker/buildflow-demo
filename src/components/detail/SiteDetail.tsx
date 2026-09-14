@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { supabase, Site, Task, Profile, Material, Timesheet, Trade, Drawing } from '../../lib/supabase';
 import { useNav } from '../../contexts/NavContext';
-import { MapPin, CheckCircle2, Clock, ListTodo, Package, FileText, Camera, MessageCircle, BarChart3, ArrowRight } from 'lucide-react';
+import { MapPin, CheckCircle2, Clock, ListTodo, Package, FileText, Camera, MessageCircle, BarChart3, ArrowRight, GanttChart } from 'lucide-react';
+import ProgrammeTab from './ProgrammeTab';
 
 const SUB_TABS = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
   { id: 'tasks', label: 'Tasks', icon: ListTodo },
+  { id: 'programme', label: 'Programme', icon: GanttChart },
   { id: 'timesheets', label: 'Timesheets', icon: Clock },
   { id: 'materials', label: 'Materials', icon: Package },
   { id: 'drawings', label: 'Drawings', icon: FileText },
@@ -145,6 +147,10 @@ export default function SiteDetail({ siteId }: { siteId: string }) {
 
       {currentSubTab === 'materials' && (
         <SiteMaterials materials={materials} onWorkerClick={(workerId, name) => pushView({ type: 'worker', id: workerId, label: name })} />
+      )}
+
+      {currentSubTab === 'programme' && site.organization_id && (
+        <ProgrammeTab siteId={site.id} organizationId={site.organization_id} />
       )}
 
       {currentSubTab === 'drawings' && <SiteDrawings drawings={drawings} />}
