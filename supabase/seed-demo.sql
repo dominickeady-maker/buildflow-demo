@@ -184,122 +184,171 @@ INSERT INTO messages (sender_id, receiver_id, message, read, created_at, organiz
 
 -- ============================================================
 -- 6. PROGRAMME MILESTONES — programme of works per site
+-- All dates are relative to CURRENT_DATE so the demo never goes stale.
+-- Negative intervals = past dates, small positive = due/overdue, larger = future.
 -- ============================================================
 DELETE FROM programme_milestones WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801';
 
--- Plot 4 — Marsden Road: New build preset with dates on first 6 milestones
--- Milestones 0-1: complete (actual dates set)
--- Milestone 2: target in past, no actual → overdue
--- Milestone 3: target within 7 days → due
--- Milestones 4-5: target in future → not started
--- Rest: TBC
-INSERT INTO programme_milestones (organization_id, site_id, milestone_name, sort_order, target_date, actual_date, notes) VALUES
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Site set-up & welfare', 0, '2026-07-06', '2026-07-08', ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Site strip / reduce dig', 1, '2026-07-09', '2026-07-15', ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Setting out', 2, '2026-08-01', NULL, 'Waiting on setting-out engineer'),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Temporary services', 3, '2026-09-18', NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Foundations dug', 4, '2026-09-25', NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'NHBC/BC excavation inspection', 5, '2026-09-29', NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Foundations poured', 6, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Footings up to DPC', 7, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'DPC laid (FFL to DPC)', 8, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Below-ground drainage', 9, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Oversite / ground floor slab', 10, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Beam & block floor laid', 11, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'First lift', 12, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Ground floor lintels & frames', 13, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Scaffold first lift', 14, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'First floor joists on (floors on)', 15, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Second lift', 16, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Gables up', 17, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Wall plate on', 18, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Steels in (RSJ)', 19, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Roof trusses / rafters set', 20, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Roof on (felt & batten)', 21, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Tiling / slating complete', 22, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Fascias, soffits & guttering', 23, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Windows & external doors in', 24, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Watertight / weathertight', 25, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'NHBC/BC superstructure inspection', 26, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Internal studwork & partitions', 27, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', '1st fix carpentry', 28, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', '1st fix electrics', 29, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', '1st fix plumbing & heating', 30, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Insulation & airtightness', 31, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'NHBC/BC pre-plaster inspection', 32, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Plasterboard / dot & dab', 33, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Plastering & skim', 34, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Floor screed', 35, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', '2nd fix carpentry (doors, skirting, architrave)', 36, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', '2nd fix electrics', 37, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', '2nd fix plumbing & sanitaryware', 38, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Kitchen fit', 39, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Wall & floor tiling', 40, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Decoration', 41, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Floor coverings', 42, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'External render / brick clean', 43, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Scaffold struck', 44, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Drives, paths & patios', 45, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Landscaping & turfing', 46, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Fencing & boundaries', 47, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Commissioning & testing', 48, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Air test / EPC', 49, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Building Control sign-off', 50, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Pre-handover inspection', 51, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Snagging', 52, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Practical completion / handover', 53, NULL, NULL, '');
+-- ────────────────────────────────────────────────────────────
+-- Site 1: Plot 4 — Marsden Road (new build, early stage)
+-- New build preset. 2 complete, 1 overdue, 1 due, 2 future, rest TBC.
+-- ────────────────────────────────────────────────────────────
+INSERT INTO programme_milestones (organization_id, site_id, milestone_name, sort_order, target_date, actual_date, notes)
+SELECT '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', m.milestone_name, m.sort_order,
+       m.target_date, m.actual_date, m.notes
+FROM (VALUES
+  ('Site set-up & welfare',                       0,  (CURRENT_DATE - INTERVAL '42 days')::date, (CURRENT_DATE - INTERVAL '40 days')::date, ''),
+  ('Site strip / reduce dig',                     1,  (CURRENT_DATE - INTERVAL '35 days')::date, (CURRENT_DATE - INTERVAL '30 days')::date, ''),
+  ('Setting out',                                 2,  (CURRENT_DATE - INTERVAL '8 days')::date,  NULL, 'Waiting on setting-out engineer'),
+  ('Temporary services',                          3,  (CURRENT_DATE + INTERVAL '3 days')::date,   NULL, ''),
+  ('Foundations dug',                             4,  (CURRENT_DATE + INTERVAL '10 days')::date,  NULL, ''),
+  ('NHBC/BC excavation inspection',               5,  (CURRENT_DATE + INTERVAL '14 days')::date,  NULL, ''),
+  ('Foundations poured',                          6,  NULL::date, NULL::date, ''),
+  ('Footings up to DPC',                          7,  NULL::date, NULL::date, ''),
+  ('DPC laid (FFL to DPC)',                       8,  NULL::date, NULL::date, ''),
+  ('Below-ground drainage',                       9,  NULL::date, NULL::date, ''),
+  ('Oversite / ground floor slab',               10,  NULL::date, NULL::date, ''),
+  ('Beam & block floor laid',                    11,  NULL::date, NULL::date, ''),
+  ('First lift',                                 12,  NULL::date, NULL::date, ''),
+  ('Ground floor lintels & frames',              13,  NULL::date, NULL::date, ''),
+  ('Scaffold first lift',                        14,  NULL::date, NULL::date, ''),
+  ('First floor joists on (floors on)',          15,  NULL::date, NULL::date, ''),
+  ('Second lift',                                16,  NULL::date, NULL::date, ''),
+  ('Gables up',                                  17,  NULL::date, NULL::date, ''),
+  ('Wall plate on',                              18,  NULL::date, NULL::date, ''),
+  ('Steels in (RSJ)',                            19,  NULL::date, NULL::date, ''),
+  ('Roof trusses / rafters set',                 20,  NULL::date, NULL::date, ''),
+  ('Roof on (felt & batten)',                    21,  NULL::date, NULL::date, ''),
+  ('Tiling / slating complete',                  22,  NULL::date, NULL::date, ''),
+  ('Fascias, soffits & guttering',               23,  NULL::date, NULL::date, ''),
+  ('Windows & external doors in',                24,  NULL::date, NULL::date, ''),
+  ('Watertight / weathertight',                  25,  NULL::date, NULL::date, ''),
+  ('NHBC/BC superstructure inspection',          26,  NULL::date, NULL::date, ''),
+  ('Internal studwork & partitions',             27,  NULL::date, NULL::date, ''),
+  ('1st fix carpentry',                          28,  NULL::date, NULL::date, ''),
+  ('1st fix electrics',                          29,  NULL::date, NULL::date, ''),
+  ('1st fix plumbing & heating',                 30,  NULL::date, NULL::date, ''),
+  ('Insulation & airtightness',                  31,  NULL::date, NULL::date, ''),
+  ('NHBC/BC pre-plaster inspection',             32,  NULL::date, NULL::date, ''),
+  ('Plasterboard / dot & dab',                   33,  NULL::date, NULL::date, ''),
+  ('Plastering & skim',                          34,  NULL::date, NULL::date, ''),
+  ('Floor screed',                               35,  NULL::date, NULL::date, ''),
+  ('2nd fix carpentry (doors, skirting, architrave)', 36, NULL::date, NULL::date, ''),
+  ('2nd fix electrics',                          37,  NULL::date, NULL::date, ''),
+  ('2nd fix plumbing & sanitaryware',            38,  NULL::date, NULL::date, ''),
+  ('Kitchen fit',                                39,  NULL::date, NULL::date, ''),
+  ('Wall & floor tiling',                        40,  NULL::date, NULL::date, ''),
+  ('Decoration',                                 41,  NULL::date, NULL::date, ''),
+  ('Floor coverings',                            42,  NULL::date, NULL::date, ''),
+  ('External render / brick clean',              43,  NULL::date, NULL::date, ''),
+  ('Scaffold struck',                            44,  NULL::date, NULL::date, ''),
+  ('Drives, paths & patios',                     45,  NULL::date, NULL::date, ''),
+  ('Landscaping & turfing',                      46,  NULL::date, NULL::date, ''),
+  ('Fencing & boundaries',                       47,  NULL::date, NULL::date, ''),
+  ('Commissioning & testing',                    48,  NULL::date, NULL::date, ''),
+  ('Air test / EPC',                             49,  NULL::date, NULL::date, ''),
+  ('Building Control sign-off',                  50,  NULL::date, NULL::date, ''),
+  ('Pre-handover inspection',                    51,  NULL::date, NULL::date, ''),
+  ('Snagging',                                   52,  NULL::date, NULL::date, ''),
+  ('Practical completion / handover',            53,  NULL::date, NULL::date, '')
+) AS m(milestone_name, sort_order, target_date, actual_date, notes);
 
--- Rear Extension — Holmfirth: Extension preset with a few dates
-INSERT INTO programme_milestones (organization_id, site_id, milestone_name, sort_order, target_date, actual_date, notes) VALUES
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Site set-up & protection', 0, '2026-08-03', '2026-08-05', ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Break out / demolition', 1, '2026-08-06', '2026-08-15', ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Foundations dug', 2, '2026-08-18', '2026-08-25', ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Foundations poured', 3, '2026-08-27', '2026-08-29', ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Footings up to DPC', 4, '2026-09-01', NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Drainage & manhole alterations', 5, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Oversite / slab', 6, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Superstructure blockwork', 7, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Steels in (RSJ)', 8, NULL, NULL, 'Waiting on steel fabrication'),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Wall plate on', 9, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Roof structure', 10, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Roof covering', 11, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Windows & external doors in', 12, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Watertight', 13, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Knock-through / opening formed', 14, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', '1st fix trades', 15, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Plastering', 16, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', '2nd fix trades', 17, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Kitchen / bathroom fit', 18, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Decoration', 19, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'External works & making good', 20, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Snagging', 21, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Handover', 22, NULL, NULL, '');
+-- ────────────────────────────────────────────────────────────
+-- Site 2: Rear Extension — Holmfirth (extension, further along)
+-- Extension preset. 9 complete, 1 due this week, 4 future, rest TBC.
+-- ────────────────────────────────────────────────────────────
+INSERT INTO programme_milestones (organization_id, site_id, milestone_name, sort_order, target_date, actual_date, notes)
+SELECT '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', m.milestone_name, m.sort_order,
+       m.target_date, m.actual_date, m.notes
+FROM (VALUES
+  ('Site set-up & protection',                     0, (CURRENT_DATE - INTERVAL '70 days')::date, (CURRENT_DATE - INTERVAL '68 days')::date, ''),
+  ('Break out / demolition',                       1, (CURRENT_DATE - INTERVAL '65 days')::date, (CURRENT_DATE - INTERVAL '58 days')::date, ''),
+  ('Foundations dug',                              2, (CURRENT_DATE - INTERVAL '55 days')::date, (CURRENT_DATE - INTERVAL '50 days')::date, ''),
+  ('Foundations poured',                           3, (CURRENT_DATE - INTERVAL '48 days')::date, (CURRENT_DATE - INTERVAL '46 days')::date, ''),
+  ('Footings up to DPC',                           4, (CURRENT_DATE - INTERVAL '40 days')::date, (CURRENT_DATE - INTERVAL '36 days')::date, ''),
+  ('Drainage & manhole alterations',               5, (CURRENT_DATE - INTERVAL '33 days')::date, (CURRENT_DATE - INTERVAL '29 days')::date, 'Building control signed off drainage'),
+  ('Oversite / slab',                              6, (CURRENT_DATE - INTERVAL '25 days')::date, (CURRENT_DATE - INTERVAL '22 days')::date, ''),
+  ('Superstructure blockwork',                     7, (CURRENT_DATE - INTERVAL '18 days')::date, (CURRENT_DATE - INTERVAL '12 days')::date, ''),
+  ('Steels in (RSJ)',                              8, (CURRENT_DATE - INTERVAL '10 days')::date, (CURRENT_DATE - INTERVAL '7 days')::date,  'Steel delivery put back a week'),
+  ('Wall plate on',                                9, (CURRENT_DATE + INTERVAL '2 days')::date,   NULL::date, ''),
+  ('Roof structure',                              10, (CURRENT_DATE + INTERVAL '9 days')::date,   NULL::date, ''),
+  ('Roof covering',                               11, (CURRENT_DATE + INTERVAL '16 days')::date,  NULL::date, ''),
+  ('Windows & external doors in',                 12, (CURRENT_DATE + INTERVAL '23 days')::date,  NULL::date, ''),
+  ('Watertight',                                  13, (CURRENT_DATE + INTERVAL '28 days')::date,  NULL::date, ''),
+  ('Knock-through / opening formed',              14, NULL::date, NULL::date, ''),
+  ('1st fix trades',                              15, NULL::date, NULL::date, ''),
+  ('Plastering',                                  16, NULL::date, NULL::date, ''),
+  ('2nd fix trades',                              17, NULL::date, NULL::date, ''),
+  ('Kitchen / bathroom fit',                      18, NULL::date, NULL::date, ''),
+  ('Decoration',                                  19, NULL::date, NULL::date, ''),
+  ('External works & making good',                20, NULL::date, NULL::date, ''),
+  ('Snagging',                                    21, NULL::date, NULL::date, ''),
+  ('Handover',                                    22, NULL::date, NULL::date, '')
+) AS m(milestone_name, sort_order, target_date, actual_date, notes);
 
--- New Build — Meltham Road: Extension preset, all TBC
-INSERT INTO programme_milestones (organization_id, site_id, milestone_name, sort_order, target_date, actual_date, notes) VALUES
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Site set-up & protection', 0, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Break out / demolition', 1, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Foundations dug', 2, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Foundations poured', 3, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Footings up to DPC', 4, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Drainage & manhole alterations', 5, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Oversite / slab', 6, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Superstructure blockwork', 7, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Steels in (RSJ)', 8, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Wall plate on', 9, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Roof structure', 10, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Roof covering', 11, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Windows & external doors in', 12, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Watertight', 13, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Knock-through / opening formed', 14, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', '1st fix trades', 15, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Plastering', 16, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', '2nd fix trades', 17, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Kitchen / bathroom fit', 18, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Decoration', 19, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'External works & making good', 20, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Snagging', 21, NULL, NULL, ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Handover', 22, NULL, NULL, '');
+-- ────────────────────────────────────────────────────────────
+-- Site 3: New Build — Meltham Road (new build, foundation stage)
+-- New build preset. 7 complete, 1 overdue, 1 due, 4 future, rest TBC.
+-- ────────────────────────────────────────────────────────────
+INSERT INTO programme_milestones (organization_id, site_id, milestone_name, sort_order, target_date, actual_date, notes)
+SELECT '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', m.milestone_name, m.sort_order,
+       m.target_date, m.actual_date, m.notes
+FROM (VALUES
+  ('Site set-up & welfare',                         0,  (CURRENT_DATE - INTERVAL '50 days')::date, (CURRENT_DATE - INTERVAL '48 days')::date, ''),
+  ('Site strip / reduce dig',                       1,  (CURRENT_DATE - INTERVAL '45 days')::date, (CURRENT_DATE - INTERVAL '40 days')::date, ''),
+  ('Setting out',                                   2,  (CURRENT_DATE - INTERVAL '38 days')::date, (CURRENT_DATE - INTERVAL '36 days')::date, ''),
+  ('Temporary services',                            3,  (CURRENT_DATE - INTERVAL '32 days')::date, (CURRENT_DATE - INTERVAL '30 days')::date, ''),
+  ('Foundations dug',                               4,  (CURRENT_DATE - INTERVAL '25 days')::date, (CURRENT_DATE - INTERVAL '21 days')::date, ''),
+  ('NHBC/BC excavation inspection',                 5,  (CURRENT_DATE - INTERVAL '20 days')::date, (CURRENT_DATE - INTERVAL '19 days')::date, 'Waiting on building control'),
+  ('Foundations poured',                            6,  (CURRENT_DATE - INTERVAL '15 days')::date, (CURRENT_DATE - INTERVAL '12 days')::date, ''),
+  ('Footings up to DPC',                            7,  (CURRENT_DATE - INTERVAL '6 days')::date,  NULL::date, 'Concrete delayed — rescheduled with supplier'),
+  ('DPC laid (FFL to DPC)',                         8,  (CURRENT_DATE + INTERVAL '3 days')::date,   NULL::date, ''),
+  ('Below-ground drainage',                         9,  (CURRENT_DATE + INTERVAL '10 days')::date,  NULL::date, ''),
+  ('Oversite / ground floor slab',                 10,  (CURRENT_DATE + INTERVAL '17 days')::date,  NULL::date, ''),
+  ('First lift',                                   11,  (CURRENT_DATE + INTERVAL '24 days')::date,  NULL::date, ''),
+  ('First floor joists on (floors on)',            12,  (CURRENT_DATE + INTERVAL '31 days')::date,  NULL::date, ''),
+  ('Beam & block floor laid',                      13,  NULL::date, NULL::date, ''),
+  ('Ground floor lintels & frames',                14,  NULL::date, NULL::date, ''),
+  ('Scaffold first lift',                          15,  NULL::date, NULL::date, ''),
+  ('Second lift',                                  16,  NULL::date, NULL::date, ''),
+  ('Gables up',                                    17,  NULL::date, NULL::date, ''),
+  ('Wall plate on',                                18,  NULL::date, NULL::date, ''),
+  ('Steels in (RSJ)',                              19,  NULL::date, NULL::date, ''),
+  ('Roof trusses / rafters set',                   20,  NULL::date, NULL::date, ''),
+  ('Roof on (felt & batten)',                      21,  NULL::date, NULL::date, ''),
+  ('Tiling / slating complete',                    22,  NULL::date, NULL::date, ''),
+  ('Fascias, soffits & guttering',                 23,  NULL::date, NULL::date, ''),
+  ('Windows & external doors in',                  24,  NULL::date, NULL::date, ''),
+  ('Watertight / weathertight',                    25,  NULL::date, NULL::date, ''),
+  ('NHBC/BC superstructure inspection',            26,  NULL::date, NULL::date, ''),
+  ('Internal studwork & partitions',               27,  NULL::date, NULL::date, ''),
+  ('1st fix carpentry',                            28,  NULL::date, NULL::date, ''),
+  ('1st fix electrics',                            29,  NULL::date, NULL::date, ''),
+  ('1st fix plumbing & heating',                   30,  NULL::date, NULL::date, ''),
+  ('Insulation & airtightness',                    31,  NULL::date, NULL::date, ''),
+  ('NHBC/BC pre-plaster inspection',               32,  NULL::date, NULL::date, ''),
+  ('Plasterboard / dot & dab',                     33,  NULL::date, NULL::date, ''),
+  ('Plastering & skim',                            34,  NULL::date, NULL::date, ''),
+  ('Floor screed',                                 35,  NULL::date, NULL::date, ''),
+  ('2nd fix carpentry (doors, skirting, architrave)', 36, NULL::date, NULL::date, ''),
+  ('2nd fix electrics',                            37,  NULL::date, NULL::date, ''),
+  ('2nd fix plumbing & sanitaryware',              38,  NULL::date, NULL::date, ''),
+  ('Kitchen fit',                                  39,  NULL::date, NULL::date, ''),
+  ('Wall & floor tiling',                          40,  NULL::date, NULL::date, ''),
+  ('Decoration',                                   41,  NULL::date, NULL::date, ''),
+  ('Floor coverings',                              42,  NULL::date, NULL::date, ''),
+  ('External render / brick clean',                43,  NULL::date, NULL::date, ''),
+  ('Scaffold struck',                              44,  NULL::date, NULL::date, ''),
+  ('Drives, paths & patios',                       45,  NULL::date, NULL::date, ''),
+  ('Landscaping & turfing',                        46,  NULL::date, NULL::date, ''),
+  ('Fencing & boundaries',                         47,  NULL::date, NULL::date, ''),
+  ('Commissioning & testing',                      48,  NULL::date, NULL::date, ''),
+  ('Air test / EPC',                               49,  NULL::date, NULL::date, ''),
+  ('Building Control sign-off',                    50,  NULL::date, NULL::date, ''),
+  ('Pre-handover inspection',                      51,  NULL::date, NULL::date, ''),
+  ('Snagging',                                     52,  NULL::date, NULL::date, ''),
+  ('Practical completion / handover',              53,  NULL::date, NULL::date, '')
+) AS m(milestone_name, sort_order, target_date, actual_date, notes);
 
 -- ============================================================
 -- VERIFICATION
@@ -327,7 +376,11 @@ SELECT cp.description, t.title as task_title
 FROM construction_photos cp LEFT JOIN tasks t ON cp.task_id = t.id
 ORDER BY cp.created_at;
 
-SELECT 'Programme milestones:' as info;
-SELECT pm.milestone_name, pm.target_date, pm.actual_date, pm.notes, s.name as site_name
+SELECT 'Programme milestones summary:' as info;
+SELECT s.name as site_name, count(*) as total_rows,
+       count(*) FILTER (WHERE pm.actual_date IS NOT NULL) as complete,
+       count(*) FILTER (WHERE pm.actual_date IS NULL AND pm.target_date IS NOT NULL AND pm.target_date < CURRENT_DATE) as overdue,
+       count(*) FILTER (WHERE pm.actual_date IS NULL AND pm.target_date IS NOT NULL AND pm.target_date >= CURRENT_DATE AND pm.target_date <= CURRENT_DATE + INTERVAL '7 days') as due_soon,
+       count(*) FILTER (WHERE pm.target_date IS NULL) as tbc
 FROM programme_milestones pm JOIN sites s ON pm.site_id = s.id
-ORDER BY pm.site_id, pm.sort_order;
+GROUP BY s.name ORDER BY s.name;
