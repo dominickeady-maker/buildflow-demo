@@ -137,15 +137,16 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-navy pb-28 md:pb-0">
+      <div className="sticky top-0 z-50">
       {/* Demo mode banner */}
       {isDemoMode && (
-        <div className="bg-amber-500/95 text-amber-950 text-center py-1.5 px-4 text-xs font-medium sticky top-0 z-50 flex items-center justify-center gap-2">
+        <div className="bg-amber-500/95 text-amber-950 text-center py-1.5 px-4 text-xs font-medium flex items-center justify-center gap-2">
           <Info className="w-3.5 h-3.5 flex-shrink-0" />
           <span>Demo environment — data resets regularly. Not for commercial use.</span>
         </div>
       )}
       {/* Top bar — always visible */}
-      <nav className="bg-slate-900 border-b border-brand-500/20 sticky top-0 z-40 backdrop-blur-md bg-opacity-90 shadow-lg shadow-brand-900/10">
+      <nav className="bg-slate-900 border-b border-brand-500/20 backdrop-blur-md bg-opacity-90 shadow-lg shadow-brand-900/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
             <div className="flex items-center gap-3 md:gap-4">
@@ -178,6 +179,7 @@ function AppContent() {
           </div>
         </div>
       </nav>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
         {/* Desktop tab bar — always visible */}

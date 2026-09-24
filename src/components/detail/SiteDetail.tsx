@@ -414,6 +414,7 @@ function SiteDrawings({ drawings }: { drawings: Drawing[] }) {
       {drawings.length === 0 ? (
         <p className="text-slate-400 text-center py-8">No drawings for this site</p>
       ) : (
+        <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-slate-800">
             <tr>
@@ -438,6 +439,7 @@ function SiteDrawings({ drawings }: { drawings: Drawing[] }) {
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </div>
   );

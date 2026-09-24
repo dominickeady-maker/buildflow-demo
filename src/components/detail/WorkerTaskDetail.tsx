@@ -285,7 +285,7 @@ export default function WorkerTaskDetail({ taskId, isDemoMode = false }: { taskI
       {/* Photo upload modal */}
       {showPhotoModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-slate-800 rounded-xl shadow-2xl border border-slate-700 max-w-md w-full p-6">
+          <div className="bg-slate-800 rounded-xl shadow-2xl border border-slate-700 max-w-md w-full p-6 max-h-[85vh] overflow-y-auto overscroll-contain">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-white">Add Photo Details</h3>
               <button onClick={cancelUpload} className="text-slate-400 hover:text-white"><X className="w-5 h-5" /></button>

@@ -577,7 +577,7 @@ export default function PhotoManager({ isDemoMode = false }: { isDemoMode?: bool
       {/* Upload Modal */}
       {showUploadModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-slate-800 rounded-xl shadow-2xl border border-slate-700 max-w-md w-full p-6">
+          <div className="bg-slate-800 rounded-xl shadow-2xl border border-slate-700 max-w-md w-full p-6 max-h-[85vh] overflow-y-auto overscroll-contain">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-white">Add Photo Details</h3>
               <button
@@ -660,7 +660,7 @@ export default function PhotoManager({ isDemoMode = false }: { isDemoMode?: bool
       {/* Settings Modal */}
       {settingsOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setSettingsOpen(false)}>
-          <div className="bg-slate-800 rounded-xl shadow-2xl border border-slate-700 max-w-md w-full p-6" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-slate-800 rounded-xl shadow-2xl border border-slate-700 max-w-md w-full p-6 max-h-[85vh] overflow-y-auto overscroll-contain" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-white">Settings</h3>
               <button

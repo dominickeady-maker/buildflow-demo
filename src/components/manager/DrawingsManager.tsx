@@ -372,7 +372,7 @@ export default function DrawingsManager({ isDemoMode = false }: { isDemoMode?: b
 
       {showUploadModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-slate-800 rounded-xl shadow-2xl border border-slate-700 max-w-lg w-full p-6">
+          <div className="bg-slate-800 rounded-xl shadow-2xl border border-slate-700 max-w-lg w-full p-6 max-h-[85vh] overflow-y-auto overscroll-contain">
             <h3 className="text-xl font-bold text-white mb-4">Upload Drawing</h3>
 
             <div className="space-y-4">
