@@ -9,7 +9,6 @@ type AuthContextType = {
   loading: boolean;
   demoError: string;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, fullName: string, role: 'worker' | 'manager') => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -106,28 +105,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
   }
 
-  async function signUp(email: string, password: string, fullName: string, role: 'worker' | 'manager') {
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) throw error;
-
-    if (data.user) {
-      const { data: org } = await supabase
-        .from('organizations')
-        .select('id')
-        .eq('slug', 'demo-construction')
-        .maybeSingle();
-
-      const { error: profileError } = await supabase.from('profiles').insert({
-        id: data.user.id,
-        email,
-        full_name: fullName,
-        role,
-        organization_id: org?.id || null,
-      });
-      if (profileError) throw profileError;
-    }
-  }
-
   async function signOut() {
     try {
       const { error } = await supabase.auth.signOut();
@@ -152,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, demoError, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, profile, loading, demoError, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
