@@ -1,0 +1,21 @@
+{
+  "name": "Banksman",
+  "short_name": "Banksman",
+  "description": "Construction site management by Banksman.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1120",
+  "theme_color": "#0d1120",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

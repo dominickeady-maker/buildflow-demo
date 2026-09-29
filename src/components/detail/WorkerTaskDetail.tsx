@@ -301,7 +301,7 @@ export default function WorkerTaskDetail({ taskId, isDemoMode = false }: { taskI
             </div>
             <div className="flex gap-3">
               <button onClick={cancelUpload} className="flex-1 px-4 py-2.5 bg-slate-700 text-white rounded-lg font-medium hover:bg-slate-600">Cancel</button>
-              <button onClick={uploadPhotos} className="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-lg font-medium">Upload</button>
+              <button onClick={uploadPhotos} className="flex-1 px-4 py-2.5 bg-brand-500 text-white rounded-lg font-medium">Upload</button>
             </div>
           </div>
         </div>

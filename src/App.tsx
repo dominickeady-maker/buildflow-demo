@@ -22,7 +22,7 @@ import SiteDetail from './components/detail/SiteDetail';
 import WorkerDetail from './components/detail/WorkerDetail';
 import TaskDetail from './components/detail/TaskDetail';
 import WorkerTaskDetail from './components/detail/WorkerTaskDetail';
-import { Hammer, LayoutDashboard, ListTodo, Package, MapPin, Clock, LogOut, Sparkles, Camera, FileText, Users, User, MessageCircle, MoreHorizontal, X, Info } from 'lucide-react';
+import { LayoutDashboard, ListTodo, Package, MapPin, Clock, LogOut, Camera, FileText, Users, User, MessageCircle, MoreHorizontal, X, Info } from 'lucide-react';
 import Footer from './components/Footer';
 import TermsOfService from './components/TermsOfService';
 
@@ -38,7 +38,7 @@ function AppContent() {
     return (
       <div className="min-h-screen bg-navy flex items-center justify-center">
         <div className="text-center">
-          <Hammer className="w-12 h-12 text-brand-500 mx-auto mb-4 animate-pulse" />
+          <img src="/banksman-header-logo-dark-bg.png" alt="Banksman" className="h-7 md:h-8 mx-auto mb-4 animate-pulse" />
           <p className="text-slate-300">Loading...</p>
         </div>
       </div>
@@ -150,19 +150,8 @@ function AppContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
             <div className="flex items-center gap-3 md:gap-4">
-              <div className="relative">
-                <div className="absolute inset-0 bg-brand-500 rounded-xl blur opacity-50"></div>
-                <div className="relative bg-brand-500 p-2 md:p-2.5 rounded-xl shadow-lg">
-                  <Hammer className="w-6 h-6 md:w-7 md:h-7 text-white" />
-                </div>
-              </div>
+              <img src="/banksman-header-logo-dark-bg.png" alt="Banksman" className="h-6 md:h-8" />
               <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-xl md:text-2xl font-black bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent tracking-tight">
-                    BuildFlow
-                  </h1>
-                  <Sparkles className="w-4 h-4 text-brand-400 animate-pulse" />
-                </div>
                 <p className="text-xs text-slate-400 font-medium mt-0.5 hidden sm:block">
                   {profile.full_name} <span className="text-brand-500">•</span> <span className="capitalize">{profile.role}</span>
                 </p>
@@ -191,12 +180,12 @@ function AppContent() {
 
         {/* Content area */}
         {activeView ? (
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-2xl border border-slate-700 p-4 md:p-6">
+          <div className="bg-slate-800 rounded-xl shadow-2xl border border-slate-700 p-4 md:p-6">
             <Breadcrumbs rootLabel={rootLabel} />
             {renderDetail()}
           </div>
         ) : (
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-2xl border border-slate-700 p-4 md:p-6">
+          <div className="bg-slate-800 rounded-xl shadow-2xl border border-slate-700 p-4 md:p-6">
             {renderTab()}
           </div>
         )}

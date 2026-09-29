@@ -154,7 +154,7 @@ function SiteProgressCard({ stats }: { stats: SiteStats }) {
       </div>
 
       <div className="w-full bg-slate-800 rounded-full h-2 mb-2 md:mb-3">
-        <div className="bg-gradient-to-r from-brand-600 to-brand-500 h-2 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
+        <div className="bg-brand-500 h-2 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
       </div>
 
       <div className="flex gap-3 md:gap-4 text-xs md:text-sm">

@@ -117,7 +117,7 @@ export default function AccountProfile() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center gap-3">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-3 rounded-xl shadow-lg">
+        <div className="bg-brand-500 p-3 rounded-xl shadow-lg">
           <User className="w-6 h-6 text-white" />
         </div>
         <div>
@@ -190,7 +190,7 @@ export default function AccountProfile() {
             <button
               onClick={handleSaveProfile}
               disabled={saving}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-3 bg-brand-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50"
             >
               {saving ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

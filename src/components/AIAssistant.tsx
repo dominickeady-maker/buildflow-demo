@@ -3,7 +3,7 @@ import { Bot, Send, X } from 'lucide-react';
 
 export default function AIAssistant() {
   const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([
-    { role: 'assistant', content: 'Hello! I\'m the BuildFlow AI Assistant. You can ask me about task statuses, site progress, material requests, and more. (Integration with Voiceflow API coming soon)' }
+    { role: 'assistant', content: 'Hello! I\'m the Banksman AI Assistant. You can ask me about task statuses, site progress, material requests, and more. (Integration with Voiceflow API coming soon)' }
   ]);
   const [input, setInput] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -28,16 +28,16 @@ export default function AIAssistant() {
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-24 md:bottom-6 right-6 w-14 h-14 bg-brand-500 hover:bg-brand-600 text-white rounded-full shadow-xl shadow-brand-900/50 flex items-center justify-center transition-all z-50 transform hover:scale-110"
+        className="fixed bottom-24 md:bottom-6 right-6 w-14 h-14 bg-brand-500 hover:bg-brand-600 text-white rounded-full shadow-lg flex items-center justify-center transition-all z-50 transform hover:scale-110"
       >
         {isOpen ? <X className="w-6 h-6" /> : <Bot className="w-6 h-6" />}
       </button>
 
       {isOpen && (
-        <div className="fixed bottom-24 md:bottom-24 right-6 w-96 h-[500px] bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl shadow-2xl flex flex-col z-50">
+        <div className="fixed bottom-24 md:bottom-24 right-6 w-96 h-[500px] bg-slate-800 border border-slate-700 rounded-xl shadow-2xl flex flex-col z-50">
           <div className="bg-brand-500 text-white px-4 py-3 rounded-t-xl flex items-center gap-2">
             <Bot className="w-5 h-5" />
-            <h3 className="font-semibold">BuildFlow AI Assistant</h3>
+            <h3 className="font-semibold">Banksman AI Assistant</h3>
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 space-y-3">

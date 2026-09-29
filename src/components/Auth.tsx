@@ -1,7 +1,7 @@
 // © 2026 DM.AI 4U. All rights reserved. Unauthorised copying prohibited.
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { HardHat, ExternalLink } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import Footer from './Footer';
 import TermsOfService from './TermsOfService';
 
@@ -28,12 +28,9 @@ export default function Auth({ onTermsClick, showTerms, onCloseTerms }: { onTerm
 
   return (
     <div className="min-h-screen bg-navy flex flex-col items-center justify-center p-4">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(59,130,246,0.1),transparent_50%)]" />
-
-      <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-2xl w-full max-w-md p-8 border border-slate-700">
+      <div className="relative bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md p-8 border border-slate-700">
         <div className="flex items-center justify-center mb-8">
-          <HardHat className="w-12 h-12 text-brand-500 mr-3" />
-          <h1 className="text-3xl font-bold text-white">BuildFlow</h1>
+          <img src="/banksman-logo-full-dark-bg.png" alt="Banksman" className="max-w-[280px] w-full h-auto" />
         </div>
 
         <div className="mb-6">
@@ -91,9 +88,9 @@ export default function Auth({ onTermsClick, showTerms, onCloseTerms }: { onTerm
 
         <div className="mt-6 pt-6 border-t border-slate-700">
           <h2 className="text-sm font-semibold text-slate-200 mb-1">Not got an account yet?</h2>
-          <p className="text-sm text-slate-400 mb-3">BuildFlow accounts are set up when you subscribe.</p>
+          <p className="text-sm text-slate-400 mb-3">Banksman accounts are set up when you subscribe.</p>
           <a
-            href="https://buildflowconstructionapp.com/#pricing"
+            href="https://banksman.app/#pricing"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-400 hover:text-brand-300 transition-colors"

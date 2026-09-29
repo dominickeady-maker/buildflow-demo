@@ -245,7 +245,7 @@ export default function ProgrammeTab({ siteId, organizationId }: { siteId: strin
         {total > 0 && (
           <div className="w-full bg-slate-800 rounded-full h-2.5">
             <div
-              className="bg-gradient-to-r from-brand-600 to-brand-500 h-2.5 rounded-full transition-all duration-500"
+              className="bg-brand-500 h-2.5 rounded-full transition-all duration-500"
               style={{ width: `${pct}%` }}
             />
           </div>

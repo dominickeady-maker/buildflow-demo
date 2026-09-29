@@ -349,7 +349,7 @@ export default function PhotoManager({ isDemoMode = false }: { isDemoMode?: bool
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-3 rounded-xl shadow-lg">
+          <div className="bg-brand-500 p-3 rounded-xl shadow-lg">
             <Camera className="w-6 h-6 text-white" />
           </div>
           <div>
@@ -520,7 +520,7 @@ export default function PhotoManager({ isDemoMode = false }: { isDemoMode?: bool
                   </div>
                 )}
 
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-3">
+                <div className="absolute bottom-0 left-0 right-0 bg-black/90 p-3">
                   {photo.description && (
                     <p className="text-white text-xs mb-1 line-clamp-2">
                       {photo.description}
@@ -551,10 +551,10 @@ export default function PhotoManager({ isDemoMode = false }: { isDemoMode?: bool
 
       {/* Action Buttons */}
       {selectedPhotos.size > 0 && (
-        <div className="sticky bottom-0 -mx-6 -mb-6 p-6 bg-gradient-to-t from-slate-900 to-transparent backdrop-blur-md border-t border-slate-700">
+        <div className="sticky bottom-0 -mx-6 -mb-6 p-6 bg-slate-900 backdrop-blur-md border-t border-slate-700">
           <div className="flex gap-3">
             <button
-              className="flex-1 flex items-center justify-center gap-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-4 rounded-xl font-bold shadow-2xl hover:shadow-blue-500/50 transform hover:scale-105 transition-all"
+              className="flex-1 flex items-center justify-center gap-3 bg-brand-500 text-white px-6 py-4 rounded-xl font-bold shadow-2xl transform hover:scale-105 transition-all"
               onClick={generateReport}
             >
               <FileText className="w-5 h-5" />
@@ -562,7 +562,7 @@ export default function PhotoManager({ isDemoMode = false }: { isDemoMode?: bool
             </button>
             {!isDemoMode && (
               <button
-                className="flex items-center justify-center gap-3 bg-gradient-to-r from-red-600 to-red-500 text-white px-6 py-4 rounded-xl font-bold shadow-2xl hover:shadow-red-500/50 transform hover:scale-105 transition-all"
+                className="flex items-center justify-center gap-3 bg-red-600 text-white px-6 py-4 rounded-xl font-bold shadow-2xl transform hover:scale-105 transition-all"
                 onClick={deleteSelectedPhotos}
                 disabled={uploading}
               >
@@ -648,7 +648,7 @@ export default function PhotoManager({ isDemoMode = false }: { isDemoMode?: bool
               </button>
               <button
                 onClick={uploadPhotos}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-lg font-semibold shadow-lg hover:shadow-blue-500/50 transition-all"
+                className="flex-1 px-4 py-3 bg-brand-500 text-white rounded-lg font-semibold shadow-lg transition-all"
               >
                 Upload {pendingPhotos.length > 1 ? `${pendingPhotos.length} Photos` : 'Photo'}
               </button>

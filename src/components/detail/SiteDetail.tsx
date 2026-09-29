@@ -89,7 +89,7 @@ export default function SiteDetail({ siteId }: { siteId: string }) {
           </div>
         </div>
         <div className="w-full bg-slate-800 rounded-full h-2.5">
-          <div className="bg-gradient-to-r from-brand-600 to-brand-500 h-2.5 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
+          <div className="bg-brand-500 h-2.5 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
         </div>
       </div>
 
@@ -453,7 +453,7 @@ function SitePhotos({ photos }: { photos: any[] }) {
       {photos.map(p => (
         <div key={p.id} className="relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-800">
           <img src={p.image_url} alt={p.description || ''} className="w-full h-full object-cover" loading="lazy" />
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-3">
+          <div className="absolute bottom-0 left-0 right-0 bg-black/90 p-3">
             {p.description && <p className="text-white text-xs line-clamp-2">{p.description}</p>}
             <p className="text-slate-300 text-xs">{new Date(p.created_at).toLocaleDateString()}</p>
           </div>

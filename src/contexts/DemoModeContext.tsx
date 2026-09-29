@@ -3,8 +3,8 @@ import { createContext, useContext, useMemo, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 
 const DEMO_EMAILS = [
-  'manager@buildflowdemo.com',
-  'worker@buildflowdemo.com',
+  'manager@banksman.app',
+  'worker@banksman.app',
 ];
 
 type DemoModeContextType = {

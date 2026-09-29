@@ -13,8 +13,8 @@ type AuthContextType = {
 };
 
 const DEMO_ACCOUNTS: Record<string, { email: string; password: string }> = {
-  manager: { email: 'manager@buildflowdemo.com', password: 'demo123' },
-  worker: { email: 'worker@buildflowdemo.com', password: 'demo123' },
+  manager: { email: 'manager@banksman.app', password: 'demo123' },
+  worker: { email: 'worker@banksman.app', password: 'demo123' },
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

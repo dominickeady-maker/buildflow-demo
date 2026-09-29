@@ -6,7 +6,7 @@ export default function TermsOfService({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-start justify-center overflow-y-auto p-4">
-      <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-2xl border border-slate-700 max-w-2xl w-full my-8 p-6 md:p-8">
+      <div className="relative bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 max-w-2xl w-full my-8 p-6 md:p-8">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
@@ -20,7 +20,7 @@ export default function TermsOfService({ onClose }: { onClose: () => void }) {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-white">Terms of Service</h1>
-            <p className="text-sm text-slate-400">BuildFlow — Software License Agreement</p>
+            <p className="text-sm text-slate-400">Banksman — Software License Agreement</p>
           </div>
         </div>
 
@@ -33,7 +33,7 @@ export default function TermsOfService({ onClose }: { onClose: () => void }) {
               <h2 className="text-base font-semibold text-white">1. Ownership</h2>
             </div>
             <p>
-              BuildFlow, its source code, design, and content are the property of DM.AI 4U.
+              Banksman, its source code, design, and content are the property of DM.AI 4U.
               All intellectual property rights, including but not limited to copyright, trade marks,
               and database rights, are retained by DM.AI 4U.
             </p>
@@ -46,7 +46,7 @@ export default function TermsOfService({ onClose }: { onClose: () => void }) {
             </div>
             <p>
               Users are granted a limited, non-exclusive, non-transferable licence to access and use
-              BuildFlow for the purposes of construction project management within their organisation.
+              Banksman for the purposes of construction project management within their organisation.
               Users may not copy, reverse-engineer, decompile, resell, sublicense, rent, lease,
               or redistribute the software, in whole or in part, without prior written consent from
               DM.AI 4U.
@@ -71,7 +71,7 @@ export default function TermsOfService({ onClose }: { onClose: () => void }) {
               <h2 className="text-base font-semibold text-white">4. No Warranty</h2>
             </div>
             <p>
-              BuildFlow is provided &ldquo;as is&rdquo; and &ldquo;as available,&rdquo; without
+              Banksman is provided &ldquo;as is&rdquo; and &ldquo;as available,&rdquo; without
               warranties of any kind, whether express or implied, including but not limited to
               implied warranties of merchantability, fitness for a particular purpose, or
               non-infringement. DM.AI 4U does not warrant that the software will be error-free,
@@ -88,7 +88,7 @@ export default function TermsOfService({ onClose }: { onClose: () => void }) {
               To the maximum extent permitted by law, DM.AI 4U shall not be liable for any
               indirect, incidental, special, consequential, or punitive damages, including loss
               of profits, data, or business interruption, arising out of or in connection with
-              the use of or inability to use BuildFlow.
+              the use of or inability to use Banksman.
             </p>
           </section>
 

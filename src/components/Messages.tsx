@@ -233,7 +233,7 @@ export default function Messages() {
   return (
     <div className="flex flex-col h-[calc(100vh-250px)]">
       <div className="flex items-center gap-3 mb-4">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-3 rounded-xl shadow-lg">
+        <div className="bg-brand-500 p-3 rounded-xl shadow-lg">
           <MessageCircle className="w-6 h-6 text-white" />
         </div>
         <div>
