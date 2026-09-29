@@ -2,6 +2,7 @@ import { useState, useEffect, Component, ReactNode } from 'react';
 import { supabase, Site, Task, Profile, Material, Timesheet, Trade, Drawing } from '../../lib/supabase';
 import { useNav } from '../../contexts/NavContext';
 import { MapPin, CheckCircle2, Clock, ListTodo, Package, FileText, Camera, MessageCircle, BarChart3, ArrowRight, GanttChart, AlertTriangle } from 'lucide-react';
+import { formatDateUK } from '../../utils/dateFormat';
 import ProgrammeTab from './ProgrammeTab';
 
 const SUB_TABS = [
@@ -278,7 +279,7 @@ function SiteOverview({ tasks, todoTasks, inProgressTasks, completedTasks, worke
                 className="w-full flex items-center justify-between p-2 hover:bg-slate-600/50 rounded-lg transition-colors text-left"
               >
                 <span className="text-sm text-slate-300">{item.title}</span>
-                <span className="text-xs text-slate-500">{new Date(item.date).toLocaleDateString()}</span>
+                <span className="text-xs text-slate-500">{formatDateUK(item.date)}</span>
               </button>
             ))}
           {tasks.length === 0 && <p className="text-sm text-slate-400">No recent activity</p>}
@@ -352,7 +353,7 @@ function SiteTimesheets({ timesheets, onWorkerClick }: {
                     {entry.worker.full_name}
                   </button>
                 )}
-                <span>{new Date(entry.date_worked).toLocaleDateString()}</span>
+                <span>{formatDateUK(entry.date_worked)}</span>
               </div>
               {entry.notes && <p className="text-sm text-slate-400 mt-2">{entry.notes}</p>}
             </div>
@@ -431,7 +432,7 @@ function SiteDrawings({ drawings }: { drawings: Drawing[] }) {
                 <td className="py-3 px-4 text-white font-medium">{d.title}</td>
                 <td className="py-3 px-4 text-slate-300">{d.category}</td>
                 <td className="py-3 px-4 text-slate-300">{d.version}</td>
-                <td className="py-3 px-4 text-slate-400 text-sm">{new Date(d.created_at).toLocaleDateString()}</td>
+                <td className="py-3 px-4 text-slate-400 text-sm">{formatDateUK(d.created_at)}</td>
                 <td className="py-3 px-4 text-right">
                   <button onClick={() => window.open(d.file_url, '_blank')} className="text-blue-400 hover:text-blue-300 text-sm">View</button>
                 </td>
@@ -455,7 +456,7 @@ function SitePhotos({ photos }: { photos: any[] }) {
           <img src={p.image_url} alt={p.description || ''} className="w-full h-full object-cover" loading="lazy" />
           <div className="absolute bottom-0 left-0 right-0 bg-black/90 p-3">
             {p.description && <p className="text-white text-xs line-clamp-2">{p.description}</p>}
-            <p className="text-slate-300 text-xs">{new Date(p.created_at).toLocaleDateString()}</p>
+            <p className="text-slate-300 text-xs">{formatDateUK(p.created_at)}</p>
           </div>
         </div>
       ))}

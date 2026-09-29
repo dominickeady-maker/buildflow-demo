@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useDemoMode } from '../contexts/DemoModeContext';
 import { supabase } from '../lib/supabase';
 import { User, Mail, Lock, Bell, Save, Loader2 } from 'lucide-react';
 
@@ -11,6 +12,7 @@ interface ProfileData {
 
 export default function AccountProfile() {
   const { user } = useAuth();
+  const { isDemoMode } = useDemoMode();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [profileData, setProfileData] = useState<ProfileData>({
@@ -156,8 +158,12 @@ export default function AccountProfile() {
                 onChange={(e) =>
                   setProfileData({ ...profileData, full_name: e.target.value })
                 }
-                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={isDemoMode}
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
               />
+              {isDemoMode && (
+                <p className="text-xs text-amber-400 mt-1">Disabled in the demo</p>
+              )}
             </div>
 
             <div>
@@ -189,8 +195,8 @@ export default function AccountProfile() {
 
             <button
               onClick={handleSaveProfile}
-              disabled={saving}
-              className="flex items-center gap-2 px-6 py-3 bg-brand-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+              disabled={saving || isDemoMode}
+              className="flex items-center gap-2 px-6 py-3 bg-brand-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {saving ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -199,6 +205,9 @@ export default function AccountProfile() {
               )}
               Save Changes
             </button>
+            {isDemoMode && (
+              <p className="text-xs text-amber-400">Disabled in the demo</p>
+            )}
           </div>
         </div>
       </div>
@@ -211,6 +220,9 @@ export default function AccountProfile() {
           </div>
 
           <div className="space-y-4">
+            {isDemoMode && (
+              <p className="text-xs text-amber-400">Disabled in the demo</p>
+            )}
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
                 New Password
@@ -222,7 +234,8 @@ export default function AccountProfile() {
                   setPasswordData({ ...passwordData, newPassword: e.target.value })
                 }
                 placeholder="Enter new password"
-                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                disabled={isDemoMode}
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-60 disabled:cursor-not-allowed"
               />
             </div>
 
@@ -237,14 +250,15 @@ export default function AccountProfile() {
                   setPasswordData({ ...passwordData, confirmPassword: e.target.value })
                 }
                 placeholder="Confirm new password"
-                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                disabled={isDemoMode}
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-60 disabled:cursor-not-allowed"
               />
             </div>
 
             <button
               onClick={handleChangePassword}
-              disabled={saving || !passwordData.newPassword}
-              className="flex items-center gap-2 px-6 py-3 bg-brand-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+              disabled={saving || !passwordData.newPassword || isDemoMode}
+              className="flex items-center gap-2 px-6 py-3 bg-brand-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {saving ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

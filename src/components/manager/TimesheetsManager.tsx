@@ -3,6 +3,7 @@ import { supabase, Timesheet, Site, Profile } from '../../lib/supabase';
 import { useSiteLink, useWorkerLink } from '../../contexts/NavContext';
 import { Clock, PoundSterling, Filter, Calendar, Download } from 'lucide-react';
 import { exportToCSV, formatDataForExport } from '../../utils/exportToCSV';
+import { formatDateUK } from '../../utils/dateFormat';
 
 export default function TimesheetsManager() {
   const openSite = useSiteLink();
@@ -180,7 +181,8 @@ export default function TimesheetsManager() {
 
       <div className="bg-slate-700 border border-slate-600 rounded-lg p-4">
         <h3 className="text-lg font-semibold text-white mb-4">All Workers Summary</h3>
-        <div className="overflow-x-auto">
+        {/* Desktop table */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-600">
@@ -209,6 +211,30 @@ export default function TimesheetsManager() {
               )}
             </tbody>
           </table>
+        </div>
+        {/* Mobile stacked cards */}
+        <div className="md:hidden space-y-3">
+          {workerSummary.length === 0 ? (
+            <p className="text-slate-400 text-center py-8">No timesheet data</p>
+          ) : (
+            workerSummary.map(({ worker, dayworkHours, priceAmount, entriesCount }) => (
+              <div key={worker.id} className="bg-slate-800 border border-slate-600 rounded-lg p-3 space-y-2">
+                <button onClick={() => openWorker(worker.id, worker.full_name)} className="text-white font-medium hover:text-brand-400 transition-colors block">{worker.full_name}</button>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-400">Daywork</span>
+                  <span className="text-blue-300">{dayworkHours.toFixed(1)} hrs</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-400">Pricework</span>
+                  <span className="text-brand-300">£{priceAmount.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-400">Entries</span>
+                  <span className="text-slate-300">{entriesCount}</span>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
@@ -284,7 +310,7 @@ export default function TimesheetsManager() {
                 <h3 className="font-medium text-white">{entry.task_description}</h3>
                 <div className="flex items-center gap-4 mt-2 text-sm text-slate-300">
                   <button onClick={() => openWorker(entry.worker.id, entry.worker.full_name)} className="text-blue-400 hover:text-blue-300 transition-colors">Worker: {entry.worker.full_name}</button>
-                  <span>Date: {new Date(entry.date_worked).toLocaleDateString()}</span>
+                  <span>Date: {formatDateUK(entry.date_worked)}</span>
                 </div>
                 {entry.notes && (
                   <p className="text-sm text-slate-400 mt-2">Note: {entry.notes}</p>

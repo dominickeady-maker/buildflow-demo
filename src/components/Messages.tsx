@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { MessageCircle, Send, User, Search, Loader2, ArrowLeft } from 'lucide-react';
+import { formatDateUK, formatTimeUK } from '../utils/dateFormat';
 
 interface Message {
   id: string;
@@ -298,84 +299,90 @@ export default function Messages() {
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="bg-brand-500 rounded-full p-2 relative">
+                      <div className="bg-blue-500 rounded-full p-2 flex-shrink-0">
                         <User className="w-4 h-4 text-white" />
-                        {conv.unreadCount > 0 && (
-                          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                            {conv.unreadCount}
-                          </span>
-                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
                           <p className="text-white font-medium truncate">{conv.userName}</p>
-                          <p className="text-xs text-slate-400">
-                            {new Date(conv.lastMessageTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </p>
+                          {conv.unreadCount > 0 && (
+                            <span className="bg-red-500 text-white text-xs rounded-full px-2 py-0.5 ml-2">
+                              {conv.unreadCount}
+                            </span>
+                          )}
                         </div>
-                        <p className="text-sm text-slate-300 truncate">{conv.lastMessage}</p>
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-xs text-slate-400 truncate">{conv.lastMessage}</p>
+                          <span className="text-xs text-slate-500 flex-shrink-0">
+                            {formatTimeUK(conv.lastMessageTime)}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </button>
                 ))}
                 {conversations.length === 0 && (
-                  <div className="text-center py-8">
-                    <MessageCircle className="w-12 h-12 text-slate-500 mx-auto mb-2" />
-                    <p className="text-slate-400 text-sm">No conversations yet</p>
-                    <p className="text-slate-500 text-xs mt-1">Search for users to start chatting</p>
-                  </div>
+                  <p className="text-slate-400 text-sm text-center py-8">No conversations yet</p>
                 )}
               </div>
             )}
           </div>
         </div>
 
-        {/* === Thread view === */}
-        <div className={`flex-1 bg-slate-700 rounded-lg border border-slate-600 flex flex-col ${selectedUser ? 'flex' : 'hidden md:flex'}`}>
+        {/* === Chat panel === */}
+        <div className="flex-1 bg-slate-700 rounded-lg border border-slate-600 flex flex-col min-h-0">
           {selectedUser ? (
             <>
-              <div className="p-4 border-b border-slate-600 bg-slate-800">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setSelectedUser(null)}
-                    className="md:hidden text-slate-300 hover:text-white p-1 -ml-1"
-                  >
-                    <ArrowLeft className="w-5 h-5" />
-                  </button>
-                  <div className="bg-brand-500 rounded-full p-2">
-                    <User className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-white font-semibold">{selectedUserData?.full_name}</h3>
-                    <p className="text-xs text-slate-400 capitalize">{selectedUserData?.role}</p>
-                  </div>
+              <div className="p-4 border-b border-slate-600 flex items-center gap-3">
+                <button
+                  onClick={() => setSelectedUser(null)}
+                  className="md:hidden text-slate-400 hover:text-white"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <div className="bg-blue-500 rounded-full p-2">
+                  <User className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <p className="text-white font-medium">{selectedUserData?.full_name || 'User'}</p>
+                  <p className="text-xs text-slate-400 capitalize">{selectedUserData?.role || ''}</p>
                 </div>
               </div>
 
-              <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4 space-y-3 pb-4">
-                {messages.map(msg => {
+              <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+                {messages.map((msg, idx) => {
                   const isOwn = msg.sender_id === user?.id;
+                  const prevMsg = messages[idx - 1];
+                  const showDateDivider = !prevMsg || formatDateUK(prevMsg.created_at) !== formatDateUK(msg.created_at);
+
                   return (
-                    <div
-                      key={msg.id}
-                      className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
-                    >
-                      <div
-                        className={`max-w-xs lg:max-w-md xl:max-w-lg px-4 py-2 rounded-lg ${
-                          isOwn
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-slate-600 text-white'
-                        }`}
-                      >
-                        <p className="text-sm">{msg.message}</p>
-                        <p className={`text-xs mt-1 ${isOwn ? 'text-blue-200' : 'text-slate-400'}`}>
-                          {new Date(msg.created_at).toLocaleString([], {
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </p>
+                    <div key={msg.id}>
+                      {showDateDivider && (
+                        <div className="flex items-center justify-center my-3">
+                          <span className="text-xs text-slate-500 bg-slate-600/50 px-3 py-1 rounded-full">
+                            {formatDateUK(msg.created_at)}
+                          </span>
+                        </div>
+                      )}
+                      <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
+                        <div
+                          className={`max-w-[75%] rounded-lg p-3 ${
+                            isOwn
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-slate-600 text-white'
+                          }`}
+                        >
+                          <p className="text-sm">{msg.message}</p>
+                          <p className={`text-xs mt-1 ${isOwn ? 'text-blue-200' : 'text-slate-400'}`}>
+                            {new Date(msg.created_at).toLocaleString('en-GB', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   );

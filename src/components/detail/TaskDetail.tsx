@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase, Task, Site, Profile, Trade, Material } from '../../lib/supabase';
 import { useNav } from '../../contexts/NavContext';
 import { Clock, Package, MapPin, UserCheck, ArrowRight } from 'lucide-react';
+import { formatDateUK } from '../../utils/dateFormat';
 
 export default function TaskDetail({ taskId }: { taskId: string }) {
   const { pushView } = useNav();
@@ -137,12 +138,12 @@ export default function TaskDetail({ taskId }: { taskId: string }) {
           </div>
           <div className="flex justify-between">
             <span className="text-slate-400">Created</span>
-            <span className="text-white">{new Date(task.created_at).toLocaleDateString()}</span>
+            <span className="text-white">{formatDateUK(task.created_at)}</span>
           </div>
           {task.completed_at && (
             <div className="flex justify-between">
               <span className="text-slate-400">Completed</span>
-              <span className="text-white">{new Date(task.completed_at).toLocaleDateString()}</span>
+              <span className="text-white">{formatDateUK(task.completed_at)}</span>
             </div>
           )}
         </div>

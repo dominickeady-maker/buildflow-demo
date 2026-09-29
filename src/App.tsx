@@ -141,7 +141,7 @@ function AppContent() {
       {isDemoMode && (
         <div className="bg-amber-500/95 text-amber-950 text-center py-1.5 px-4 text-xs font-medium flex items-center justify-center gap-2">
           <Info className="w-3.5 h-3.5 flex-shrink-0" />
-          <span>Demo environment — data resets regularly. Not for commercial use.</span>
+          <span>Demo environment — not for redistribution · data resets regularly</span>
         </div>
       )}
       {/* Top bar — always visible */}
@@ -230,15 +230,6 @@ function AppContent() {
 
       {/* Terms modal */}
       {showTerms && <TermsOfService onClose={() => setShowTerms(false)} />}
-
-      {/* Demo watermark — fixed, always visible during demo */}
-      {isDemoMode && (
-        <div className="fixed bottom-16 md:bottom-2 right-2 z-30 pointer-events-none select-none">
-          <div className="bg-slate-900/80 text-slate-400 text-[10px] font-medium px-2.5 py-1 rounded border border-slate-700/50 backdrop-blur-sm rotate-[-2deg]">
-            Demo environment — not for redistribution
-          </div>
-        </div>
-      )}
 
       {/* Mobile More menu */}
       {moreMenuOpen && (

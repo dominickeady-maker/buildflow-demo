@@ -3,6 +3,7 @@ import { supabase, Material, Site, Profile } from '../../lib/supabase';
 import { useSiteLink, useWorkerLink } from '../../contexts/NavContext';
 import { Package, Filter, Download } from 'lucide-react';
 import { exportToCSV, formatDataForExport } from '../../utils/exportToCSV';
+import { formatDateUK } from '../../utils/dateFormat';
 
 export default function MaterialsManager() {
   const openSite = useSiteLink();
@@ -181,7 +182,7 @@ export default function MaterialsManager() {
                   Requested by: {material.requester.full_name}
                 </button>
                 <p className="text-xs text-slate-400">
-                  {new Date(material.created_at).toLocaleString()}
+                  {formatDateUK(material.created_at)}
                 </p>
               </div>
             </div>

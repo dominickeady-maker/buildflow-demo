@@ -111,15 +111,16 @@ DELETE FROM tasks WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801'
 
 -- ============================================================
 -- 5. TASKS — 18 tasks across 3 sites
+-- All dates relative to CURRENT_DATE so the demo never goes stale.
 -- ============================================================
 INSERT INTO tasks (id, organization_id, site_id, title, description, assigned_to, status, completed_at, completed_by) VALUES
--- Plot 4 — Marsden Road (Site 1) — 6 tasks
+-- Plot 4 — Marsden Road (Site 1) — 7 tasks
 ('fc383a8b-f887-4bc3-a7c8-7faf0852d964', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001',
   'Pour strip footings — Plot 4', 'Pour concrete strip footings to drawing specification. Check rebar placement before pour.',
-  '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'complete', '2026-09-01T16:00:00Z'::timestamptz, '164abd7c-ba0c-40f4-a7ad-c287c9336f67'),
+  '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'complete', (CURRENT_DATE - INTERVAL '9 days' + INTERVAL '16 hours')::timestamptz, '164abd7c-ba0c-40f4-a7ad-c287c9336f67'),
 ('b7a29bbe-6ae7-42e8-bd3f-6d3876cf6dd7', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001',
   'Set out foundations', 'Set out foundation lines from architects drawing. Check offsets and boundary distances.',
-  '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'complete', '2026-09-02T15:00:00Z'::timestamptz, '164abd7c-ba0c-40f4-a7ad-c287c9336f67'),
+  '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'complete', (CURRENT_DATE - INTERVAL '8 days' + INTERVAL '15 hours')::timestamptz, '164abd7c-ba0c-40f4-a7ad-c287c9336f67'),
 ('1b3e0005-a4a2-4b6d-955b-5803e4d07730', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001',
   'Brickwork to DPC level', 'Brickwork and blockwork up to DPC. Cavity trays, weep vents and gas membrane as per drawing.',
   '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'in_progress', NULL, NULL),
@@ -139,7 +140,7 @@ INSERT INTO tasks (id, organization_id, site_id, title, description, assigned_to
 -- Rear Extension — Holmfirth (Site 2) — 6 tasks
 ('78f64dee-c5ef-461d-acd3-a22b372e85a4', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002',
   'Break out existing rear wall', 'Break out existing rear wall opening for extension. Temporary props as required.',
-  '78ec9ba8-22d8-4f57-ab1e-20ce6b49c6b2', 'complete', '2026-09-04T14:00:00Z'::timestamptz, '78ec9ba8-22d8-4f57-ab1e-20ce6b49c6b2'),
+  '78ec9ba8-22d8-4f57-ab1e-20ce6b49c6b2', 'complete', (CURRENT_DATE - INTERVAL '6 days' + INTERVAL '14 hours')::timestamptz, '78ec9ba8-22d8-4f57-ab1e-20ce6b49c6b2'),
 ('355d3cd4-c964-4245-bd11-21dafcd59642', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002',
   'Blockwork — extension walls', 'External and internal blockwork up to plate height. Check cavity width maintained.',
   '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'todo', NULL, NULL),
@@ -159,13 +160,13 @@ INSERT INTO tasks (id, organization_id, site_id, title, description, assigned_to
 -- New Build — Meltham Road (Site 3) — 5 tasks
 ('3afa2b82-bedb-4314-8210-a4431ed343e6', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003',
   'Excavate strip footings', 'Excavate strip footings to depth shown on drawings. Watch for services crossing trench.',
-  '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'complete', '2026-09-02T17:00:00Z'::timestamptz, '164abd7c-ba0c-40f4-a7ad-c287c9336f67'),
+  '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'complete', (CURRENT_DATE - INTERVAL '8 days' + INTERVAL '17 hours')::timestamptz, '164abd7c-ba0c-40f4-a7ad-c287c9336f67'),
 ('74c52ec6-271c-40ee-84fd-54425adf8507', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003',
   'Pour concrete foundations', 'Pour C25 concrete to strip footings. Vibrate and level. Keep samples for cube test.',
   '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'in_progress', NULL, NULL),
 ('c3000001-0000-0000-0000-000000000001', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003',
   'Set out foundations — Meltham', 'Set out foundation lines from architects drawing. Check offsets and boundary distances.',
-  '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'complete', '2026-09-02T15:00:00Z'::timestamptz, '164abd7c-ba0c-40f4-a7ad-c287c9336f67'),
+  '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'complete', (CURRENT_DATE - INTERVAL '8 days' + INTERVAL '15 hours')::timestamptz, '164abd7c-ba0c-40f4-a7ad-c287c9336f67'),
 ('ef114afb-c699-48ba-b4ae-823ae100d1fd', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003',
   'Submit building regs drawings', 'Finalise and submit building regs package to local authority. Include structural calcs.',
   '923b1109-85c9-402f-a443-3c88588a60ec', 'todo', NULL, NULL),
@@ -174,34 +175,39 @@ INSERT INTO tasks (id, organization_id, site_id, title, description, assigned_to
   'b0000001-0000-0000-0000-000000000003', 'todo', NULL, NULL);
 
 -- ============================================================
--- 6. TIMESHEETS — 11 entries
+-- 6. TIMESHEETS — 11 entries, dates relative to CURRENT_DATE
+-- Spread across last 10 days with several in the current week.
 -- ============================================================
 INSERT INTO timesheets (organization_id, worker_id, site_id, plot_number, work_type, task_description, hours_worked, pricework_amount, date_worked, notes) VALUES
-('51e8233d-3cd8-4580-a867-a6e58f860801', '78ec9ba8-22d8-4f57-ab1e-20ce6b49c6b2', 'a1000000-0000-0000-0000-000000000002', '', 'daywork', 'Break out rear wall', 8, NULL, '2026-08-13', ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'a1000000-0000-0000-0000-000000000001', '', 'daywork', 'Set out foundations', 8, NULL, '2026-08-13', ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'a1000000-0000-0000-0000-000000000001', '', 'daywork', 'Strip footings excavation', 8, NULL, '2026-08-14', ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'b0000001-0000-0000-0000-000000000001', 'a1000000-0000-0000-0000-000000000002', '', 'daywork', 'Blockwork to extension', 8, NULL, '2026-08-14', ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'a1000000-0000-0000-0000-000000000001', '', 'price', 'Brickwork to DPC', NULL, 320.00, '2026-08-15', '1000 bricks + 600 blocks'),
-('51e8233d-3cd8-4580-a867-a6e58f860801', '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'a1000000-0000-0000-0000-000000000003', '', 'daywork', 'Excavate strip footings', 4, NULL, '2026-08-15', 'Half day — machine breakdown'),
-('51e8233d-3cd8-4580-a867-a6e58f860801', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'a1000000-0000-0000-0000-000000000001', '', 'price', 'Cavity wall insulation', NULL, 180.00, '2026-08-16', ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'a1000000-0000-0000-0000-000000000003', '', 'daywork', 'Pour concrete foundations', 8, NULL, '2026-08-16', ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'a1000000-0000-0000-0000-000000000001', '', 'daywork', 'Brickwork continuation', 7, NULL, '2026-08-17', ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'a1000000-0000-0000-0000-000000000002', '', 'price', 'RSJ installation', NULL, 250.00, '2026-08-18', 'Steel beam + padstones'),
-('51e8233d-3cd8-4580-a867-a6e58f860801', '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'a1000000-0000-0000-0000-000000000003', '', 'daywork', 'Foundations continuation', 8, NULL, '2026-08-19', '');
+('51e8233d-3cd8-4580-a867-a6e58f860801', '78ec9ba8-22d8-4f57-ab1e-20ce6b49c6b2', 'a1000000-0000-0000-0000-000000000002', '', 'daywork', 'Break out rear wall', 8, NULL, (CURRENT_DATE - INTERVAL '10 days')::date, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'a1000000-0000-0000-0000-000000000001', '', 'daywork', 'Set out foundations', 8, NULL, (CURRENT_DATE - INTERVAL '10 days')::date, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'a1000000-0000-0000-0000-000000000001', '', 'daywork', 'Strip footings excavation', 8, NULL, (CURRENT_DATE - INTERVAL '9 days')::date, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'b0000001-0000-0000-0000-000000000001', 'a1000000-0000-0000-0000-000000000002', '', 'daywork', 'Blockwork to extension', 8, NULL, (CURRENT_DATE - INTERVAL '9 days')::date, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'a1000000-0000-0000-0000-000000000001', '', 'price', 'Brickwork to DPC', NULL, 320.00, (CURRENT_DATE - INTERVAL '8 days')::date, '1000 bricks + 600 blocks'),
+('51e8233d-3cd8-4580-a867-a6e58f860801', '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'a1000000-0000-0000-0000-000000000003', '', 'daywork', 'Excavate strip footings', 4, NULL, (CURRENT_DATE - INTERVAL '8 days')::date, 'Half day — machine breakdown'),
+('51e8233d-3cd8-4580-a867-a6e58f860801', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'a1000000-0000-0000-0000-000000000001', '', 'price', 'Cavity wall insulation', NULL, 180.00, (CURRENT_DATE - INTERVAL '3 days')::date, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'a1000000-0000-0000-0000-000000000003', '', 'daywork', 'Pour concrete foundations', 8, NULL, (CURRENT_DATE - INTERVAL '2 days')::date, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'a1000000-0000-0000-0000-000000000001', '', 'daywork', 'Brickwork continuation', 7, NULL, (CURRENT_DATE - INTERVAL '1 day')::date, ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'a1000000-0000-0000-0000-000000000002', '', 'price', 'RSJ installation', NULL, 250.00, (CURRENT_DATE - INTERVAL '1 day')::date, 'Steel beam + padstones'),
+('51e8233d-3cd8-4580-a867-a6e58f860801', '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'a1000000-0000-0000-0000-000000000003', '', 'daywork', 'Foundations continuation', 8, NULL, CURRENT_DATE, '');
 
 -- ============================================================
--- 7. MATERIALS — 9 requests
+-- 7. MATERIALS — 11 requests (includes 2 from Jake Brennan)
+-- Dates relative to CURRENT_DATE.
 -- ============================================================
-INSERT INTO materials (organization_id, site_id, item_name, quantity, unit, requested_by, status, comment) VALUES
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Knauf DriTherm 32 Batts 100mm', 20, 'batts', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'new', ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Ibstock Tradesman Red Bricks', 3000, 'bricks', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'ordered', 'Travis Perkins, delivery Wed'),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'OPC Cement 25kg bags', 40, 'bags', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'delivered', ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Cavity Wall Ties (box)', 2, 'boxes', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'approved', ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'OSB Board 18mm sheets', 25, 'sheets', 'b0000001-0000-0000-0000-000000000001', 'approved', ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Underfloor Heating Pipe 100m', 100, 'metres', 'b0000001-0000-0000-0000-000000000002', 'new', ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Thermalite Blocks 100mm', 300, 'blocks', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'ordered', ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Concrete C25 Ready Mix', 12, 'm3', '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'approved', ''),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'DPC Roll 600mm', 5, 'rolls', '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'new', '');
+INSERT INTO materials (organization_id, site_id, item_name, quantity, unit, requested_by, status, comment, created_at) VALUES
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Knauf DriTherm 32 Batts 100mm', 20, 'batts', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'new', '', (CURRENT_DATE - INTERVAL '2 days')::timestamptz),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Ibstock Tradesman Red Bricks', 3000, 'bricks', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'ordered', 'Travis Perkins, delivery Wed', (CURRENT_DATE - INTERVAL '7 days')::timestamptz),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'OPC Cement 25kg bags', 40, 'bags', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'delivered', '', (CURRENT_DATE - INTERVAL '9 days')::timestamptz),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Cavity Wall Ties (box)', 2, 'boxes', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'approved', '', (CURRENT_DATE - INTERVAL '5 days')::timestamptz),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'OSB Board 18mm sheets', 25, 'sheets', 'b0000001-0000-0000-0000-000000000001', 'approved', '', (CURRENT_DATE - INTERVAL '6 days')::timestamptz),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Underfloor Heating Pipe 100m', 100, 'metres', 'b0000001-0000-0000-0000-000000000002', 'new', '', (CURRENT_DATE - INTERVAL '1 day')::timestamptz),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Thermalite Blocks 100mm', 300, 'blocks', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'ordered', '', (CURRENT_DATE - INTERVAL '4 days')::timestamptz),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Concrete C25 Ready Mix', 12, 'm3', '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'approved', '', (CURRENT_DATE - INTERVAL '8 days')::timestamptz),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'DPC Roll 600mm', 5, 'rolls', '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'new', '', (CURRENT_DATE - INTERVAL '3 days')::timestamptz),
+-- Jake Brennan material requests: 1 pending (new), 1 approved
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Wall Ties Stainless Steel 200mm', 1, 'boxes', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'new', 'Need these for the cavity wall before Thursday', (CURRENT_DATE - INTERVAL '1 day')::timestamptz),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Plasterboard 12.5mm 2400x1200', 50, 'boards', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'approved', 'For drylining the extension walls', (CURRENT_DATE - INTERVAL '5 days')::timestamptz);
 
 -- ============================================================
 -- 8. DRAWINGS — 7 drawings, all uploaded by manager
@@ -225,39 +231,39 @@ INSERT INTO construction_photos (user_id, organization_id, image_url, thumbnail_
 ('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '51e8233d-3cd8-4580-a867-a6e58f860801',
   'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/construction-photos/91fcdfdd-d9d0-42d7-a837-df84fb34ebc2/photo-brickwork-dpc-sm.webp',
   'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/construction-photos/91fcdfdd-d9d0-42d7-a837-df84fb34ebc2/thumbs/photo-brickwork-dpc-sm.webp',
-  'Brickwork to DPC — east elevation', '1b3e0005-a4a2-4b6d-955b-5803e4d07730', '[]'::jsonb, false, '{"uploadedAt": "2026-09-08T08:00:00Z"}'::jsonb),
+  'Brickwork to DPC — east elevation', '1b3e0005-a4a2-4b6d-955b-5803e4d07730', '[]'::jsonb, false, json_build_object('uploadedAt', (CURRENT_DATE - INTERVAL '2 days' + INTERVAL '8 hours'))::jsonb),
 ('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '51e8233d-3cd8-4580-a867-a6e58f860801',
   'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/construction-photos/91fcdfdd-d9d0-42d7-a837-df84fb34ebc2/photo-joists-install-sm.webp',
   'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/construction-photos/91fcdfdd-d9d0-42d7-a837-df84fb34ebc2/thumbs/photo-joists-install-sm.webp',
-  'Cavity wall ready for insulation — west elevation', '1368af72-a6eb-4d1d-adce-fa32456d0637', '[]'::jsonb, false, '{"uploadedAt": "2026-09-08T09:30:00Z"}'::jsonb),
+  'Cavity wall ready for insulation — west elevation', '1368af72-a6eb-4d1d-adce-fa32456d0637', '[]'::jsonb, false, json_build_object('uploadedAt', (CURRENT_DATE - INTERVAL '2 days' + INTERVAL '9 hours 30 mins'))::jsonb),
 ('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '51e8233d-3cd8-4580-a867-a6e58f860801',
   'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/construction-photos/91fcdfdd-d9d0-42d7-a837-df84fb34ebc2/photo-rsj-installed-sm.webp',
   'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/construction-photos/91fcdfdd-d9d0-42d7-a837-df84fb34ebc2/thumbs/photo-rsj-installed-sm.webp',
-  'RSJ installed, padstones bedded', '355d3cd4-c964-4245-bd11-21dafcd59642', '[]'::jsonb, false, '{"uploadedAt": "2026-09-07T14:00:00Z"}'::jsonb),
+  'RSJ installed, padstones bedded', '355d3cd4-c964-4245-bd11-21dafcd59642', '[]'::jsonb, false, json_build_object('uploadedAt', (CURRENT_DATE - INTERVAL '3 days' + INTERVAL '14 hours'))::jsonb),
 ('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '51e8233d-3cd8-4580-a867-a6e58f860801',
   'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/construction-photos/91fcdfdd-d9d0-42d7-a837-df84fb34ebc2/photo-blockwork-walls-sm.webp',
   'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/construction-photos/91fcdfdd-d9d0-42d7-a837-df84fb34ebc2/thumbs/photo-blockwork-walls-sm.webp',
-  'Blockwork to extension walls — progress shot', '355d3cd4-c964-4245-bd11-21dafcd59642', '[]'::jsonb, false, '{"uploadedAt": "2026-09-08T11:00:00Z"}'::jsonb),
+  'Blockwork to extension walls — progress shot', '355d3cd4-c964-4245-bd11-21dafcd59642', '[]'::jsonb, false, json_build_object('uploadedAt', (CURRENT_DATE - INTERVAL '2 days' + INTERVAL '11 hours'))::jsonb),
 ('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '51e8233d-3cd8-4580-a867-a6e58f860801',
   'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/construction-photos/91fcdfdd-d9d0-42d7-a837-df84fb34ebc2/photo-foundations-poured-sm.webp',
   'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/construction-photos/91fcdfdd-d9d0-42d7-a837-df84fb34ebc2/thumbs/photo-foundations-poured-sm.webp',
-  'Foundations poured — strip footings complete', '3afa2b82-bedb-4314-8210-a4431ed343e6', '[]'::jsonb, false, '{"uploadedAt": "2026-09-06T16:00:00Z"}'::jsonb);
+  'Foundations poured — strip footings complete', '3afa2b82-bedb-4314-8210-a4431ed343e6', '[]'::jsonb, false, json_build_object('uploadedAt', (CURRENT_DATE - INTERVAL '4 days' + INTERVAL '16 hours'))::jsonb);
 
 -- ============================================================
 -- 10. MESSAGES — 8 messages across 3 threads
 -- ============================================================
 INSERT INTO messages (sender_id, receiver_id, message, read, created_at, organization_id) VALUES
 -- Thread 1: Jake Brennan <-> Manager, Plot 4 Marsden Road
-('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '923b1109-85c9-402f-a443-3c88588a60ec', 'Blocks are down to about half a pack. Will need another 2 packs before Thursday or we''ll be stood about.', true, '2026-09-08T07:15:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
-('923b1109-85c9-402f-a443-3c88588a60ec', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'Ordered this morning, Travis are delivering Wednesday am. Leave the drop next to the site cabin, not the driveway.', true, '2026-09-08T08:30:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
-('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '923b1109-85c9-402f-a443-3c88588a60ec', 'No problem. DPC will be done by then.', false, '2026-09-08T09:45:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
+('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '923b1109-85c9-402f-a443-3c88588a60ec', 'Blocks are down to about half a pack. Will need another 2 packs before Thursday or we''ll be stood about.', true, (CURRENT_DATE - INTERVAL '2 days' + INTERVAL '7 hours 15 mins')::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
+('923b1109-85c9-402f-a443-3c88588a60ec', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'Ordered this morning, Travis are delivering Wednesday am. Leave the drop next to the site cabin, not the driveway.', true, (CURRENT_DATE - INTERVAL '2 days' + INTERVAL '8 hours 30 mins')::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
+('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '923b1109-85c9-402f-a443-3c88588a60ec', 'No problem. DPC will be done by then.', false, (CURRENT_DATE - INTERVAL '2 days' + INTERVAL '9 hours 45 mins')::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
 -- Thread 2: Ryan Sutcliffe <-> Manager, Rear Extension Holmfirth
-('b0000001-0000-0000-0000-000000000001', '923b1109-85c9-402f-a443-3c88588a60ec', 'Is the RSJ detail on Rev A still current? Steel arrives Monday and the padstone sizes look different to what''s on site.', true, '2026-09-09T10:20:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
-('923b1109-85c9-402f-a443-3c88588a60ec', 'b0000001-0000-0000-0000-000000000001', 'Good spot. Rev B went up last night, padstones are 215 not 140. Use the Rev B drawing.', true, '2026-09-09T11:05:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
-('b0000001-0000-0000-0000-000000000001', '923b1109-85c9-402f-a443-3c88588a60ec', 'Got it, thanks.', false, '2026-09-09T11:30:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
+('b0000001-0000-0000-0000-000000000001', '923b1109-85c9-402f-a443-3c88588a60ec', 'Is the RSJ detail on Rev A still current? Steel arrives Monday and the padstone sizes look different to what''s on site.', true, (CURRENT_DATE - INTERVAL '1 day' + INTERVAL '10 hours 20 mins')::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
+('923b1109-85c9-402f-a443-3c88588a60ec', 'b0000001-0000-0000-0000-000000000001', 'Good spot. Rev B went up last night, padstones are 215 not 140. Use the Rev B drawing.', true, (CURRENT_DATE - INTERVAL '1 day' + INTERVAL '11 hours 5 mins')::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
+('b0000001-0000-0000-0000-000000000001', '923b1109-85c9-402f-a443-3c88588a60ec', 'Got it, thanks.', false, (CURRENT_DATE - INTERVAL '1 day' + INTERVAL '11 hours 30 mins')::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
 -- Thread 3: Manager <-> Jake Brennan, New Build Meltham Road
-('923b1109-85c9-402f-a443-3c88588a60ec', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'Can you get a few photos of the foundations before the pour so we''ve got them for building control?', true, '2026-09-10T06:45:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
-('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '923b1109-85c9-402f-a443-3c88588a60ec', 'Done, uploaded four just now.', false, '2026-09-10T07:30:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801');
+('923b1109-85c9-402f-a443-3c88588a60ec', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'Can you get a few photos of the foundations before the pour so we''ve got them for building control?', true, (CURRENT_DATE + INTERVAL '6 hours 45 mins')::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
+('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '923b1109-85c9-402f-a443-3c88588a60ec', 'Done, uploaded four just now.', false, (CURRENT_DATE + INTERVAL '7 hours 30 mins')::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801');
 
 -- ============================================================
 -- 11. PROGRAMME MILESTONES — programme of works per site

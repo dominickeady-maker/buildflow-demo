@@ -7,6 +7,7 @@ import { Camera, Upload, Settings, FileText, Image as ImageIcon, Loader2, X, Che
 import heic2any from 'heic2any';
 import { exportToCSV, formatDataForExport } from '../../utils/exportToCSV';
 import { processImageForUpload } from '../../utils/imageResize';
+import { formatDateUK } from '../../utils/dateFormat';
 
 interface PendingPhoto {
   file: File;
@@ -257,7 +258,7 @@ export default function PhotoManager({ isDemoMode = false }: { isDemoMode?: bool
     if (hours < 1) return 'Just now';
     if (hours < 24) return `${hours}h ago`;
     if (days < 7) return `${days}d ago`;
-    return date.toLocaleDateString();
+    return formatDateUK(date);
   }
 
   async function deleteSelectedPhotos() {
@@ -320,7 +321,7 @@ export default function PhotoManager({ isDemoMode = false }: { isDemoMode?: bool
     if (selectedPhotos.size === 0 || !organizationId) return;
 
     const selectedPhotoArray = Array.from(selectedPhotos);
-    const reportTitle = `Construction Report - ${new Date().toLocaleDateString()}`;
+    const reportTitle = `Construction Report - ${formatDateUK(new Date())}`;
 
     const { error } = await supabase
       .from('photo_reports')

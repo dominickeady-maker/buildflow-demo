@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase, Site, Timesheet } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { Clock, PoundSterling, Calendar } from 'lucide-react';
+import { formatDateUK } from '../../utils/dateFormat';
 
 export default function HoursBooking() {
   const { profile } = useAuth();
@@ -300,7 +301,7 @@ export default function HoursBooking() {
                     </div>
                     <h4 className="font-medium text-white">{entry.task_description}</h4>
                     <p className="text-sm text-slate-400 mt-1">
-                      {new Date(entry.date_worked).toLocaleDateString()}
+                      {formatDateUK(entry.date_worked)}
                     </p>
                   </div>
                   <div className="text-right">

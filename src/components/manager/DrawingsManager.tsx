@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useOrganization } from '../../hooks/useOrganization';
 import { useSiteLink } from '../../contexts/NavContext';
 import { FileText, Upload, Download, Trash2, Eye, Filter, Loader2 } from 'lucide-react';
+import { formatDateUK } from '../../utils/dateFormat';
 
 export default function DrawingsManager({ isDemoMode = false }: { isDemoMode?: boolean }) {
   const { user } = useAuth();
@@ -284,7 +285,8 @@ export default function DrawingsManager({ isDemoMode = false }: { isDemoMode?: b
         </div>
       </div>
 
-      <div className="bg-slate-700 border border-slate-600 rounded-lg overflow-hidden">
+      {/* Desktop table */}
+      <div className="hidden md:block bg-slate-700 border border-slate-600 rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-slate-800">
@@ -330,7 +332,7 @@ export default function DrawingsManager({ isDemoMode = false }: { isDemoMode?: b
                       {drawing.uploader?.full_name || 'Unknown'}
                     </td>
                     <td className="py-3 px-4 text-slate-400 text-sm">
-                      {new Date(drawing.created_at).toLocaleDateString()}
+                      {formatDateUK(drawing.created_at)}
                     </td>
                     <td className="py-3 px-4 text-slate-400 text-sm">
                       {(drawing.file_size / 1024 / 1024).toFixed(2)} MB
@@ -368,6 +370,49 @@ export default function DrawingsManager({ isDemoMode = false }: { isDemoMode?: b
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Mobile stacked cards */}
+      <div className="md:hidden space-y-3">
+        {filteredDrawings.length === 0 ? (
+          <p className="text-slate-400 text-center py-8 bg-slate-700 border border-slate-600 rounded-lg">No drawings uploaded yet</p>
+        ) : (
+          filteredDrawings.map(drawing => (
+            <div key={drawing.id} className="bg-slate-700 border border-slate-600 rounded-lg p-4 space-y-2">
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="text-white font-medium">{drawing.title}</div>
+                  {drawing.description && (
+                    <div className="text-sm text-slate-400 mt-0.5">{drawing.description}</div>
+                  )}
+                </div>
+                <span className="text-xs text-slate-300 bg-slate-600 px-2 py-1 rounded">{drawing.version}</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-slate-300">
+                <span className="bg-slate-600 px-2 py-0.5 rounded">{drawing.category}</span>
+                {drawing.site ? (
+                  <button onClick={() => openSite(drawing.site!.id, drawing.site!.name)} className="text-blue-300 hover:text-blue-200">
+                    {drawing.site.name}
+                  </button>
+                ) : <span>General</span>}
+              </div>
+              <div className="flex items-center justify-between text-xs text-slate-400">
+                <span>{drawing.uploader?.full_name || 'Unknown'}</span>
+                <span>{formatDateUK(drawing.created_at)}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-400">{(drawing.file_size / 1024 / 1024).toFixed(2)} MB</span>
+                <div className="flex items-center gap-3">
+                  <button onClick={() => window.open(drawing.file_url, '_blank')} className="text-blue-400" title="View"><Eye className="w-4 h-4" /></button>
+                  <a href={drawing.file_url} download className="text-green-400" title="Download"><Download className="w-4 h-4" /></a>
+                  {!isDemoMode && (
+                    <button onClick={() => handleDelete(drawing)} className="text-red-400" title="Delete"><Trash2 className="w-4 h-4" /></button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       {showUploadModal && (

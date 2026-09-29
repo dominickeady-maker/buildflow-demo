@@ -3,6 +3,7 @@ import { supabase, Site } from '../../lib/supabase';
 import { useSiteLink } from '../../contexts/NavContext';
 import { MapPin, Plus, Edit2, Trash2, Download, Users, Briefcase, ChevronDown, ChevronUp } from 'lucide-react';
 import { exportToCSV, formatDataForExport } from '../../utils/exportToCSV';
+import { formatDateUK } from '../../utils/dateFormat';
 
 interface SiteWithDetails extends Site {
   workers?: Array<{ id: string; full_name: string }>;
@@ -274,7 +275,7 @@ export default function SitesManager({ isDemoMode = false }: { isDemoMode?: bool
                     <span>{activeTasks.length} active task{activeTasks.length !== 1 ? 's' : ''}</span>
                   </div>
                   <div className="text-xs text-slate-400">
-                    Created {new Date(site.created_at).toLocaleDateString()}
+                    Created {formatDateUK(site.created_at)}
                   </div>
                 </div>
 

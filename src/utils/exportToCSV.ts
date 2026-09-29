@@ -44,8 +44,8 @@ export function formatDataForExport(data: any[], type: 'tasks' | 'materials' | '
         'Site': item.sites?.name || '',
         'Assigned To': item.profiles?.full_name || '',
         'Status': item.status,
-        'Created': new Date(item.created_at).toLocaleString(),
-        'Completed': item.completed_at ? new Date(item.completed_at).toLocaleString() : '',
+        'Created': new Date(item.created_at).toLocaleString('en-GB'),
+        'Completed': item.completed_at ? new Date(item.completed_at).toLocaleString('en-GB') : '',
       }));
 
     case 'materials':
@@ -57,7 +57,7 @@ export function formatDataForExport(data: any[], type: 'tasks' | 'materials' | '
         'Requested By': item.profiles?.full_name || '',
         'Comment': item.comment || '',
         'Status': item.status,
-        'Created': new Date(item.created_at).toLocaleString(),
+        'Created': new Date(item.created_at).toLocaleString('en-GB'),
       }));
 
     case 'timesheets':
@@ -69,7 +69,7 @@ export function formatDataForExport(data: any[], type: 'tasks' | 'materials' | '
         'Hours': item.hours,
         'Work Type': item.work_type,
         'Notes': item.notes || '',
-        'Created': new Date(item.created_at).toLocaleString(),
+        'Created': new Date(item.created_at).toLocaleString('en-GB'),
       }));
 
     case 'photos':
@@ -79,7 +79,7 @@ export function formatDataForExport(data: any[], type: 'tasks' | 'materials' | '
         'Task': item.tasks?.title || '',
         'Uploaded By': item.profiles?.full_name || '',
         'Image URL': item.image_url,
-        'Created': new Date(item.created_at).toLocaleString(),
+        'Created': new Date(item.created_at).toLocaleString('en-GB'),
       }));
 
     case 'sites':
@@ -87,7 +87,7 @@ export function formatDataForExport(data: any[], type: 'tasks' | 'materials' | '
         'Site ID': item.id,
         'Name': item.name,
         'Description': item.description || '',
-        'Created': new Date(item.created_at).toLocaleString(),
+        'Created': new Date(item.created_at).toLocaleString('en-GB'),
       }));
 
     default:
