@@ -150,7 +150,7 @@ function AppContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
             <div className="flex items-center gap-3 md:gap-4">
-              <img src="/banksman-header-logo-dark-bg.png" alt="Banksman" className="h-6 md:h-8" />
+              <img src="/banksman-header-logo-dark-bg.png" alt="Banksman" className="h-[26px] md:h-8" />
               <div>
                 <p className="text-xs text-slate-400 font-medium mt-0.5 hidden sm:block">
                   {profile.full_name} <span className="text-brand-500">•</span> <span className="capitalize">{profile.role}</span>

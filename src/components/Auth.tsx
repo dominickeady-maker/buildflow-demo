@@ -30,7 +30,7 @@ export default function Auth({ onTermsClick, showTerms, onCloseTerms }: { onTerm
     <div className="min-h-screen bg-navy flex flex-col items-center justify-center p-4">
       <div className="relative bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md p-8 border border-slate-700">
         <div className="flex items-center justify-center mb-8">
-          <img src="/banksman-logo-full-dark-bg.png" alt="Banksman" className="max-w-[280px] w-full h-auto" />
+          <img src="/banksman-logo-full-dark-bg.png" alt="Banksman" className="max-w-[300px] w-full h-auto" />
         </div>
 
         <div className="mb-6">
