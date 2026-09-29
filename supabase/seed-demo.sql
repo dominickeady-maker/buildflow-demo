@@ -118,21 +118,37 @@ WHERE id = '78f64dee-c5ef-461d-acd3-a22b372e85a4'; -- Break out existing rear wa
 -- ============================================================
 DELETE FROM drawings WHERE file_url LIKE '%/demo-seed/%';
 
-INSERT INTO drawings (organization_id, site_id, title, description, file_url, file_type, file_size, category, version) VALUES
+INSERT INTO drawings (organization_id, site_id, title, description, file_url, file_type, file_size, category, version, uploaded_by) VALUES
 -- Plot 4 — Marsden Road
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Ground Floor Plan — Rev C', 'Ground floor layout, dimensions, room sizes', 'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/drawings/demo-seed/drawing-ground-floor-plan-sm.webp', 'image/webp', 61688, 'Architectural', 'C'),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Foundation Detail — Rev B', 'Strip foundation cross-section, reinforcement detail', 'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/drawings/demo-seed/drawing-foundation-detail-sm.webp', 'image/webp', 77034, 'Structural', 'B'),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Elevations — Rev A', 'Front and rear elevations, brickwork, roofline', 'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/drawings/demo-seed/drawing-elevations-sm.webp', 'image/webp', 138130, 'Architectural', 'A'),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Ground Floor Plan — Rev C', 'Ground floor layout, dimensions, room sizes', 'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/drawings/demo-seed/drawing-ground-floor-plan-sm.webp', 'image/webp', 61688, 'Architectural', 'C', '923b1109-85c9-402f-a443-3c88588a60ec'),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Foundation Detail — Rev B', 'Strip foundation cross-section, reinforcement detail', 'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/drawings/demo-seed/drawing-foundation-detail-sm.webp', 'image/webp', 77034, 'Structural', 'B', '923b1109-85c9-402f-a443-3c88588a60ec'),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Elevations — Rev A', 'Front and rear elevations, brickwork, roofline', 'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/drawings/demo-seed/drawing-elevations-sm.webp', 'image/webp', 138130, 'Architectural', 'A', '923b1109-85c9-402f-a443-3c88588a60ec'),
 -- Rear Extension — Holmfirth
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Proposed Plans & Elevations — Rev D', 'Existing and proposed layout, two storey extension', 'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/drawings/demo-seed/drawing-proposed-plans-sm.webp', 'image/webp', 109439, 'Architectural', 'D'),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'RSJ / Padstone Detail — Rev A', 'Steel beam support, padstone specification, loading', 'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/drawings/demo-seed/drawing-rsj-padstone-sm.webp', 'image/webp', 52736, 'Structural', 'A'),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Proposed Plans & Elevations — Rev D', 'Existing and proposed layout, two storey extension', 'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/drawings/demo-seed/drawing-proposed-plans-sm.webp', 'image/webp', 109439, 'Architectural', 'D', '923b1109-85c9-402f-a443-3c88588a60ec'),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'RSJ / Padstone Detail — Rev A', 'Steel beam support, padstone specification, loading', 'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/drawings/demo-seed/drawing-rsj-padstone-sm.webp', 'image/webp', 52736, 'Structural', 'A', '923b1109-85c9-402f-a443-3c88588a60ec'),
 -- New Build — Meltham Road
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Site Layout — Rev B', 'Plot positions, access roads, boundaries', 'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/drawings/demo-seed/drawing-site-layout-sm.webp', 'image/webp', 153707, 'Site', 'B'),
-('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Drainage Layout — Rev A', 'Foul and surface water drains, manholes, gradients', 'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/drawings/demo-seed/drawing-drainage-layout-sm.webp', 'image/webp', 142106, 'Services', 'A');
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Site Layout — Rev B', 'Plot positions, access roads, boundaries', 'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/drawings/demo-seed/drawing-site-layout-sm.webp', 'image/webp', 153707, 'Site', 'B', '923b1109-85c9-402f-a443-3c88588a60ec'),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Drainage Layout — Rev A', 'Foul and surface water drains, manholes, gradients', 'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/drawings/demo-seed/drawing-drainage-layout-sm.webp', 'image/webp', 142106, 'Services', 'A', '923b1109-85c9-402f-a443-3c88588a60ec');
+
+-- ============================================================
+-- 3b. ENSURE CONNOR DOYLE HAS AN ACTIVE TASK
+-- ============================================================
+-- Connor (78ec9ba8) only had a completed task. Add an active one
+-- on Holmfirth so he shows up in the worker dashboard.
+DELETE FROM tasks WHERE title = 'Form opening for bi-fold doors' AND assigned_to = '78ec9ba8-22d8-4f57-ab1e-20ce6b49c6b2';
+INSERT INTO tasks (organization_id, site_id, title, description, assigned_to, status)
+VALUES ('51e8233d-3cd8-4580-a867-a6e58f860801',
+        'a1000000-0000-0000-0000-000000000002',
+        'Form opening for bi-fold doors',
+        'Cut out existing masonry opening to accept 3m bi-fold door set. Ensure temporary support remains until RSJ fully loaded.',
+        '78ec9ba8-22d8-4f57-ab1e-20ce6b49c6b2',
+        'todo');
 
 -- ============================================================
 -- 4. CONSTRUCTION PHOTOS (compressed, ~100-190 KB full, ~15-25 KB thumb)
 -- ============================================================
+-- Remove orphaned manager photos (no task, no description)
+DELETE FROM construction_photos WHERE user_id = '923b1109-85c9-402f-a443-3c88588a60ec' AND task_id IS NULL AND description IS NULL;
 DELETE FROM construction_photos WHERE image_url LIKE '%/91fcdfdd-d9d0-42d7-a837-df84fb34ebc2/photo-%';
 
 INSERT INTO construction_photos (user_id, organization_id, image_url, thumbnail_url, description, task_id, issues, ai_processing, metadata) VALUES
