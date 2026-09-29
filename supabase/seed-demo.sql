@@ -1,4 +1,4 @@
--- BuildFlow Demo Seed / Reset Script
+-- Banksman Demo Seed / Reset Script
 -- Run this to restore the demo to a known-good state.
 -- Safe to re-run: uses conditional DELETEs and re-inserts.
 --
