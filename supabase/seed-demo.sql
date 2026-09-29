@@ -1,68 +1,72 @@
 -- Banksman Demo Seed / Reset Script
 -- Run this to restore the demo to a known-good state.
--- Safe to re-run: uses conditional DELETEs and re-inserts.
+-- Safe to re-run: deletes demo-org data then re-inserts everything.
 --
 -- Usage via Supabase MCP:
 --   execute_sql with the contents of this file
 --
 -- Or via Supabase SQL Editor in the dashboard.
 --
+-- Org:    51e8233d-3cd8-4580-a867-a6e58f860801
+-- Sites:  a1000000-0000-0000-0000-000000000001 (Plot 4 — Marsden Road)
+--         a1000000-0000-0000-0000-000000000002 (Rear Extension — Holmfirth)
+--         a1000000-0000-0000-0000-000000000003 (New Build — Meltham Road)
+-- Manager:  923b1109-85c9-402f-a443-3c88588a60ec (Dom Keady / manager@banksman.app)
+-- Jake:     91fcdfdd-d9d0-42d7-a837-df84fb34ebc2 (worker@banksman.app)
+-- Connor:   78ec9ba8-22d8-4f57-ab1e-20ce6b49c6b2
+-- Danny:    164abd7c-ba0c-40f4-a7ad-c287c9336f67
+-- Ryan:     b0000001-0000-0000-0000-000000000001
+-- Mark:     b0000001-0000-0000-0000-000000000002
+-- Steve:    b0000001-0000-0000-0000-000000000003
+--
 -- Prerequisites:
 --   - Images must exist in storage at:
---     drawings/demo-seed/drawing-*-sm.webp  (compressed, ~50-150 KB each)
---     construction-photos/91fcdfdd-d9d0-42d7-a837-df84fb34ebc2/photo-*-sm.webp  (compressed, ~100-190 KB each)
---     construction-photos/91fcdfdd-d9d0-42d7-a837-df84fb34ebc2/thumbs/photo-*-sm.webp  (thumbnails, ~15-25 KB each)
+--     drawings/demo-seed/drawing-*-sm.webp
+--     construction-photos/91fcdfdd-d9d0-42d7-a837-df84fb34ebc2/photo-*-sm.webp
+--     construction-photos/91fcdfdd-d9d0-42d7-a837-df84fb34ebc2/thumbs/photo-*-sm.webp
 
 -- ============================================================
--- 1. REMOVE THIN/TEST SITES
+-- 0. CONSTANTS
 -- ============================================================
--- These four sites were early test entries with 0-1 tasks,
--- no client details, and lowercase names. Remove them and all
--- related data so the dashboard only shows the three real sites.
+-- Org ID used throughout
+-- 51e8233d-3cd8-4580-a867-a6e58f860801
 
--- Delete photos linked to tasks on those sites
+-- ============================================================
+-- 1. CLEAN UP OLD TEST SITES (not in the three demo sites)
+-- ============================================================
+-- These four sites were early test entries. Remove them and all related data.
 DELETE FROM construction_photos WHERE task_id IN (
   SELECT id FROM tasks WHERE site_id IN (
-    '0914e895-5dae-4952-af15-96844b88caf6', -- ainley top flats
-    'bdc137cc-bfa4-4cae-a2a5-846e2b3e3e2c', -- clough road
-    'd965c677-fa2a-49be-a1d9-95e746436f89', -- lingards fold
-    '5bf4b623-a474-443c-a6bb-0ff1f722fb3a'  -- New build in holmfirth
+    '0914e895-5dae-4952-af15-96844b88caf6',
+    'bdc137cc-bfa4-4cae-a2a5-846e2b3e3e2c',
+    'd965c677-fa2a-49be-a1d9-95e746436f89',
+    '5bf4b623-a474-443c-a6bb-0ff1f722fb3a'
   )
 );
-
--- Delete drawings on those sites
 DELETE FROM drawings WHERE site_id IN (
   '0914e895-5dae-4952-af15-96844b88caf6',
   'bdc137cc-bfa4-4cae-a2a5-846e2b3e3e2c',
   'd965c677-fa2a-49be-a1d9-95e746436f89',
   '5bf4b623-a474-443c-a6bb-0ff1f722fb3a'
 );
-
--- Delete timesheets on those sites
 DELETE FROM timesheets WHERE site_id IN (
   '0914e895-5dae-4952-af15-96844b88caf6',
   'bdc137cc-bfa4-4cae-a2a5-846e2b3e3e2c',
   'd965c677-fa2a-49be-a1d9-95e746436f89',
   '5bf4b623-a474-443c-a6bb-0ff1f722fb3a'
 );
-
--- Delete materials on those sites
 DELETE FROM materials WHERE site_id IN (
   '0914e895-5dae-4952-af15-96844b88caf6',
   'bdc137cc-bfa4-4cae-a2a5-846e2b3e3e2c',
   'd965c677-fa2a-49be-a1d9-95e746436f89',
   '5bf4b623-a474-443c-a6bb-0ff1f722fb3a'
 );
-
--- Delete tasks on those sites
 DELETE FROM tasks WHERE site_id IN (
   '0914e895-5dae-4952-af15-96844b88caf6',
   'bdc137cc-bfa4-4cae-a2a5-846e2b3e3e2c',
   'd965c677-fa2a-49be-a1d9-95e746436f89',
   '5bf4b623-a474-443c-a6bb-0ff1f722fb3a'
 );
-
--- Delete the sites themselves
 DELETE FROM sites WHERE id IN (
   '0914e895-5dae-4952-af15-96844b88caf6',
   'bdc137cc-bfa4-4cae-a2a5-846e2b3e3e2c',
@@ -71,53 +75,137 @@ DELETE FROM sites WHERE id IN (
 );
 
 -- ============================================================
--- 2. RESET TASK STATUSES
+-- 2. ENSURE PROFILES HAVE CORRECT ORG
 -- ============================================================
--- Target: ~1/3 todo, ~1/3 in_progress, ~1/3 complete
--- Jake Brennan (91fcdfdd) must have at least 2 tasks in "todo"
-
--- Reset all remaining tasks to todo first
-UPDATE tasks SET status = 'todo', completed_at = NULL, completed_by = NULL WHERE status IS NOT NULL;
-
--- Mark specific tasks as in_progress
-UPDATE tasks SET status = 'in_progress', completed_at = NULL, completed_by = NULL
+UPDATE profiles SET organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801'
 WHERE id IN (
-  '1b3e0005-a4a2-4b6d-955b-5803e4d07730', -- Brickwork to DPC level (Jake, Plot 4)
-  '74c52ec6-271c-40ee-84fd-54425adf8507', -- Pour concrete foundations (Danny, Meltham Road)
-  '1a68a77e-fe7b-44f7-b530-ecb7616bc696'  -- BCO sign-off — DPC level (Dom, Plot 4)
+  '923b1109-85c9-402f-a443-3c88588a60ec',  -- Dom Keady (manager)
+  '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2',  -- Jake Brennan (worker)
+  '78ec9ba8-22d8-4f57-ab1e-20ce6b49c6b2',  -- Connor Doyle
+  '164abd7c-ba0c-40f4-a7ad-c287c9336f67',  -- Danny Whitaker
+  'b0000001-0000-0000-0000-000000000001',  -- Ryan Sutcliffe
+  'b0000001-0000-0000-0000-000000000002',  -- Mark Ainsworth
+  'b0000001-0000-0000-0000-000000000003'   -- Steve Halliwell
 );
 
--- Mark specific tasks as complete
-UPDATE tasks SET status = 'complete',
-  completed_at = '2026-09-01T16:00:00Z'::timestamptz,
-  completed_by = '164abd7c-ba0c-40f4-a7ad-c287c9336f67'
-WHERE id = 'fc383a8b-f887-4bc3-a7c8-7faf0852d964'; -- Pour strip footings — Plot 4
-
-UPDATE tasks SET status = 'complete',
-  completed_at = '2026-09-02T15:00:00Z'::timestamptz,
-  completed_by = '164abd7c-ba0c-40f4-a7ad-c287c9336f67'
-WHERE id = 'b7a29bbe-6ae7-42e8-bd3f-6d3876cf6dd7'; -- Set out foundations
-
-UPDATE tasks SET status = 'complete',
-  completed_at = '2026-09-02T17:00:00Z'::timestamptz,
-  completed_by = '164abd7c-ba0c-40f4-a7ad-c287c9336f67'
-WHERE id = '3afa2b82-bedb-4314-8210-a4431ed343e6'; -- Excavate strip footings
-
-UPDATE tasks SET status = 'complete',
-  completed_at = '2026-09-03T12:00:00Z'::timestamptz,
-  completed_by = '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2'
-WHERE id = '5730f560-29e6-4923-8863-0606ed01af92'; -- Install RSJ — kitchen opening
-
-UPDATE tasks SET status = 'complete',
-  completed_at = '2026-09-04T14:00:00Z'::timestamptz,
-  completed_by = '78ec9ba8-22d8-4f57-ab1e-20ce6b49c6b2'
-WHERE id = '78f64dee-c5ef-461d-acd3-a22b372e85a4'; -- Break out existing rear wall
+-- ============================================================
+-- 3. ENSURE SITES HAVE CORRECT ORG
+-- ============================================================
+UPDATE sites SET organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801'
+WHERE id IN (
+  'a1000000-0000-0000-0000-000000000001',
+  'a1000000-0000-0000-0000-000000000002',
+  'a1000000-0000-0000-0000-000000000003'
+);
 
 -- ============================================================
--- 3. DRAWINGS (compressed images, ~50-150 KB each)
+-- 4. DELETE ALL EXISTING DEMO-ORG DATA (then re-insert)
 -- ============================================================
-DELETE FROM drawings WHERE file_url LIKE '%/demo-seed/%';
+DELETE FROM construction_photos WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801';
+DELETE FROM drawings WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801';
+DELETE FROM timesheets WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801';
+DELETE FROM materials WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801';
+DELETE FROM messages WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801';
+DELETE FROM programme_milestones WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801';
+DELETE FROM tasks WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801';
 
+-- ============================================================
+-- 5. TASKS — 18 tasks across 3 sites
+-- ============================================================
+INSERT INTO tasks (id, organization_id, site_id, title, description, assigned_to, status, completed_at, completed_by) VALUES
+-- Plot 4 — Marsden Road (Site 1) — 6 tasks
+('fc383a8b-f887-4bc3-a7c8-7faf0852d964', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001',
+  'Pour strip footings — Plot 4', 'Pour concrete strip footings to drawing specification. Check rebar placement before pour.',
+  '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'complete', '2026-09-01T16:00:00Z'::timestamptz, '164abd7c-ba0c-40f4-a7ad-c287c9336f67'),
+('b7a29bbe-6ae7-42e8-bd3f-6d3876cf6dd7', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001',
+  'Set out foundations', 'Set out foundation lines from architects drawing. Check offsets and boundary distances.',
+  '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'complete', '2026-09-02T15:00:00Z'::timestamptz, '164abd7c-ba0c-40f4-a7ad-c287c9336f67'),
+('1b3e0005-a4a2-4b6d-955b-5803e4d07730', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001',
+  'Brickwork to DPC level', 'Brickwork and blockwork up to DPC. Cavity trays, weep vents and gas membrane as per drawing.',
+  '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'in_progress', NULL, NULL),
+('1a68a77e-fe7b-44f7-b530-ecb7616bc696', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001',
+  'BCO sign-off — DPC level', 'Book BCO inspection for DPC stage. Have cavity trays and DPC details ready on site.',
+  '923b1109-85c9-402f-a443-3c88588a60ec', 'in_progress', NULL, NULL),
+('1368af72-a6eb-4d1d-adce-fa32456d0637', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001',
+  'Install cavity wall insulation', 'Install Knauf DriTherm 32 batts 100mm. Keep cavity clear, check wall ties spacing.',
+  '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'todo', NULL, NULL),
+('5fa99a0a-9b75-412c-bbd5-539b219bf0b9', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001',
+  'First floor joist installation', 'Install engineered I-joists at 400mm centres. Herringbone strutting at mid-span.',
+  'b0000001-0000-0000-0000-000000000001', 'todo', NULL, NULL),
+('5b4cfd16-f49a-4d61-9128-fbbf229c561c', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001',
+  'Order scaffold — second lift', 'Contact SG Scaffolding to book second lift for week commencing 14th.',
+  '923b1109-85c9-402f-a443-3c88588a60ec', 'todo', NULL, NULL),
+
+-- Rear Extension — Holmfirth (Site 2) — 6 tasks
+('78f64dee-c5ef-461d-acd3-a22b372e85a4', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002',
+  'Break out existing rear wall', 'Break out existing rear wall opening for extension. Temporary props as required.',
+  '78ec9ba8-22d8-4f57-ab1e-20ce6b49c6b2', 'complete', '2026-09-04T14:00:00Z'::timestamptz, '78ec9ba8-22d8-4f57-ab1e-20ce6b49c6b2'),
+('355d3cd4-c964-4245-bd11-21dafcd59642', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002',
+  'Blockwork — extension walls', 'External and internal blockwork up to plate height. Check cavity width maintained.',
+  '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'todo', NULL, NULL),
+('07966d38-a00f-475b-a7d3-d3ec26ba51d6', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002',
+  'Flat roof deck installation', 'Install timber firrings and plywood deck to flat roof. Fall to gutter 1:40.',
+  'b0000001-0000-0000-0000-000000000001', 'todo', NULL, NULL),
+('058d07e6-aad1-4b97-aa1f-ae35d6e436aa', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002',
+  'First fix plumbing — underfloor', 'First fix underfloor heating pipework and manifold. Pressure test before screed.',
+  'b0000001-0000-0000-0000-000000000002', 'todo', NULL, NULL),
+('31654f3c-0659-49b3-a66a-979cae49cca5', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002',
+  'Client walkround — Thursday 2pm', 'Mrs Patel on site Thursday at 2pm to view progress and discuss tile selections.',
+  '923b1109-85c9-402f-a443-3c88588a60ec', 'todo', NULL, NULL),
+('a2000001-0000-0000-0000-000000000001', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002',
+  'Form opening for bi-fold doors', 'Cut out existing masonry opening to accept 3m bi-fold door set. Ensure temporary support remains until RSJ fully loaded.',
+  '78ec9ba8-22d8-4f57-ab1e-20ce6b49c6b2', 'todo', NULL, NULL),
+
+-- New Build — Meltham Road (Site 3) — 5 tasks
+('3afa2b82-bedb-4314-8210-a4431ed343e6', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003',
+  'Excavate strip footings', 'Excavate strip footings to depth shown on drawings. Watch for services crossing trench.',
+  '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'complete', '2026-09-02T17:00:00Z'::timestamptz, '164abd7c-ba0c-40f4-a7ad-c287c9336f67'),
+('74c52ec6-271c-40ee-84fd-54425adf8507', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003',
+  'Pour concrete foundations', 'Pour C25 concrete to strip footings. Vibrate and level. Keep samples for cube test.',
+  '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'in_progress', NULL, NULL),
+('c3000001-0000-0000-0000-000000000001', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003',
+  'Set out foundations — Meltham', 'Set out foundation lines from architects drawing. Check offsets and boundary distances.',
+  '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'complete', '2026-09-02T15:00:00Z'::timestamptz, '164abd7c-ba0c-40f4-a7ad-c287c9336f67'),
+('ef114afb-c699-48ba-b4ae-823ae100d1fd', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003',
+  'Submit building regs drawings', 'Finalise and submit building regs package to local authority. Include structural calcs.',
+  '923b1109-85c9-402f-a443-3c88588a60ec', 'todo', NULL, NULL),
+('a2000001-0000-0000-0000-000000000002', '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003',
+  'Drainage connection — adoptable', 'Lay adoptable foul and surface water drainage. Coordinate with Yorkshire Water inspection.',
+  'b0000001-0000-0000-0000-000000000003', 'todo', NULL, NULL);
+
+-- ============================================================
+-- 6. TIMESHEETS — 11 entries
+-- ============================================================
+INSERT INTO timesheets (organization_id, worker_id, site_id, plot_number, work_type, task_description, hours_worked, pricework_amount, date_worked, notes) VALUES
+('51e8233d-3cd8-4580-a867-a6e58f860801', '78ec9ba8-22d8-4f57-ab1e-20ce6b49c6b2', 'a1000000-0000-0000-0000-000000000002', '', 'daywork', 'Break out rear wall', 8, NULL, '2026-08-13', ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'a1000000-0000-0000-0000-000000000001', '', 'daywork', 'Set out foundations', 8, NULL, '2026-08-13', ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'a1000000-0000-0000-0000-000000000001', '', 'daywork', 'Strip footings excavation', 8, NULL, '2026-08-14', ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'b0000001-0000-0000-0000-000000000001', 'a1000000-0000-0000-0000-000000000002', '', 'daywork', 'Blockwork to extension', 8, NULL, '2026-08-14', ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'a1000000-0000-0000-0000-000000000001', '', 'price', 'Brickwork to DPC', NULL, 320.00, '2026-08-15', '1000 bricks + 600 blocks'),
+('51e8233d-3cd8-4580-a867-a6e58f860801', '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'a1000000-0000-0000-0000-000000000003', '', 'daywork', 'Excavate strip footings', 4, NULL, '2026-08-15', 'Half day — machine breakdown'),
+('51e8233d-3cd8-4580-a867-a6e58f860801', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'a1000000-0000-0000-0000-000000000001', '', 'price', 'Cavity wall insulation', NULL, 180.00, '2026-08-16', ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'a1000000-0000-0000-0000-000000000003', '', 'daywork', 'Pour concrete foundations', 8, NULL, '2026-08-16', ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'a1000000-0000-0000-0000-000000000001', '', 'daywork', 'Brickwork continuation', 7, NULL, '2026-08-17', ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'a1000000-0000-0000-0000-000000000002', '', 'price', 'RSJ installation', NULL, 250.00, '2026-08-18', 'Steel beam + padstones'),
+('51e8233d-3cd8-4580-a867-a6e58f860801', '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'a1000000-0000-0000-0000-000000000003', '', 'daywork', 'Foundations continuation', 8, NULL, '2026-08-19', '');
+
+-- ============================================================
+-- 7. MATERIALS — 9 requests
+-- ============================================================
+INSERT INTO materials (organization_id, site_id, item_name, quantity, unit, requested_by, status, comment) VALUES
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Knauf DriTherm 32 Batts 100mm', 20, 'batts', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'new', ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Ibstock Tradesman Red Bricks', 3000, 'bricks', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'ordered', 'Travis Perkins, delivery Wed'),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'OPC Cement 25kg bags', 40, 'bags', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'delivered', ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Cavity Wall Ties (box)', 2, 'boxes', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'approved', ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'OSB Board 18mm sheets', 25, 'sheets', 'b0000001-0000-0000-0000-000000000001', 'approved', ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Underfloor Heating Pipe 100m', 100, 'metres', 'b0000001-0000-0000-0000-000000000002', 'new', ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', 'Thermalite Blocks 100mm', 300, 'blocks', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'ordered', ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Concrete C25 Ready Mix', 12, 'm3', '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'approved', ''),
+('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'DPC Roll 600mm', 5, 'rolls', '164abd7c-ba0c-40f4-a7ad-c287c9336f67', 'new', '');
+
+-- ============================================================
+-- 8. DRAWINGS — 7 drawings, all uploaded by manager
+-- ============================================================
 INSERT INTO drawings (organization_id, site_id, title, description, file_url, file_type, file_size, category, version, uploaded_by) VALUES
 -- Plot 4 — Marsden Road
 ('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', 'Ground Floor Plan — Rev C', 'Ground floor layout, dimensions, room sizes', 'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/drawings/demo-seed/drawing-ground-floor-plan-sm.webp', 'image/webp', 61688, 'Architectural', 'C', '923b1109-85c9-402f-a443-3c88588a60ec'),
@@ -131,26 +219,8 @@ INSERT INTO drawings (organization_id, site_id, title, description, file_url, fi
 ('51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', 'Drainage Layout — Rev A', 'Foul and surface water drains, manholes, gradients', 'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/drawings/demo-seed/drawing-drainage-layout-sm.webp', 'image/webp', 142106, 'Services', 'A', '923b1109-85c9-402f-a443-3c88588a60ec');
 
 -- ============================================================
--- 3b. ENSURE CONNOR DOYLE HAS AN ACTIVE TASK
+-- 9. CONSTRUCTION PHOTOS — 5 photos by Jake, linked to tasks
 -- ============================================================
--- Connor (78ec9ba8) only had a completed task. Add an active one
--- on Holmfirth so he shows up in the worker dashboard.
-DELETE FROM tasks WHERE title = 'Form opening for bi-fold doors' AND assigned_to = '78ec9ba8-22d8-4f57-ab1e-20ce6b49c6b2';
-INSERT INTO tasks (organization_id, site_id, title, description, assigned_to, status)
-VALUES ('51e8233d-3cd8-4580-a867-a6e58f860801',
-        'a1000000-0000-0000-0000-000000000002',
-        'Form opening for bi-fold doors',
-        'Cut out existing masonry opening to accept 3m bi-fold door set. Ensure temporary support remains until RSJ fully loaded.',
-        '78ec9ba8-22d8-4f57-ab1e-20ce6b49c6b2',
-        'todo');
-
--- ============================================================
--- 4. CONSTRUCTION PHOTOS (compressed, ~100-190 KB full, ~15-25 KB thumb)
--- ============================================================
--- Remove orphaned manager photos (no task, no description)
-DELETE FROM construction_photos WHERE user_id = '923b1109-85c9-402f-a443-3c88588a60ec' AND task_id IS NULL AND description IS NULL;
-DELETE FROM construction_photos WHERE image_url LIKE '%/91fcdfdd-d9d0-42d7-a837-df84fb34ebc2/photo-%';
-
 INSERT INTO construction_photos (user_id, organization_id, image_url, thumbnail_url, description, task_id, issues, ai_processing, metadata) VALUES
 ('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '51e8233d-3cd8-4580-a867-a6e58f860801',
   'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/construction-photos/91fcdfdd-d9d0-42d7-a837-df84fb34ebc2/photo-brickwork-dpc-sm.webp',
@@ -163,7 +233,7 @@ INSERT INTO construction_photos (user_id, organization_id, image_url, thumbnail_
 ('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '51e8233d-3cd8-4580-a867-a6e58f860801',
   'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/construction-photos/91fcdfdd-d9d0-42d7-a837-df84fb34ebc2/photo-rsj-installed-sm.webp',
   'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/construction-photos/91fcdfdd-d9d0-42d7-a837-df84fb34ebc2/thumbs/photo-rsj-installed-sm.webp',
-  'RSJ installed, padstones bedded', '5730f560-29e6-4923-8863-0606ed01af92', '[]'::jsonb, false, '{"uploadedAt": "2026-09-07T14:00:00Z"}'::jsonb),
+  'RSJ installed, padstones bedded', '355d3cd4-c964-4245-bd11-21dafcd59642', '[]'::jsonb, false, '{"uploadedAt": "2026-09-07T14:00:00Z"}'::jsonb),
 ('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '51e8233d-3cd8-4580-a867-a6e58f860801',
   'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/construction-photos/91fcdfdd-d9d0-42d7-a837-df84fb34ebc2/photo-blockwork-walls-sm.webp',
   'https://jpujykkjrskihqskbovu.supabase.co/storage/v1/object/public/construction-photos/91fcdfdd-d9d0-42d7-a837-df84fb34ebc2/thumbs/photo-blockwork-walls-sm.webp',
@@ -174,40 +244,28 @@ INSERT INTO construction_photos (user_id, organization_id, image_url, thumbnail_
   'Foundations poured — strip footings complete', '3afa2b82-bedb-4314-8210-a4431ed343e6', '[]'::jsonb, false, '{"uploadedAt": "2026-09-06T16:00:00Z"}'::jsonb);
 
 -- ============================================================
--- 5. MESSAGES — realistic demo threads
+-- 10. MESSAGES — 8 messages across 3 threads
 -- ============================================================
--- Manager: Dom Keady (923b1109-85c9-402f-a443-3c88588a60ec)
--- Jake Brennan: 91fcdfdd-d9d0-42d7-a837-df84fb34ebc2
--- Ryan Sutcliffe: b0000001-0000-0000-0000-000000000001
--- Org: 51e8233d-3cd8-4580-a867-a6e58f860801
-
-DELETE FROM messages;
-
 INSERT INTO messages (sender_id, receiver_id, message, read, created_at, organization_id) VALUES
 -- Thread 1: Jake Brennan <-> Manager, Plot 4 Marsden Road
 ('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '923b1109-85c9-402f-a443-3c88588a60ec', 'Blocks are down to about half a pack. Will need another 2 packs before Thursday or we''ll be stood about.', true, '2026-09-08T07:15:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
 ('923b1109-85c9-402f-a443-3c88588a60ec', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'Ordered this morning, Travis are delivering Wednesday am. Leave the drop next to the site cabin, not the driveway.', true, '2026-09-08T08:30:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
 ('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '923b1109-85c9-402f-a443-3c88588a60ec', 'No problem. DPC will be done by then.', false, '2026-09-08T09:45:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
-
 -- Thread 2: Ryan Sutcliffe <-> Manager, Rear Extension Holmfirth
 ('b0000001-0000-0000-0000-000000000001', '923b1109-85c9-402f-a443-3c88588a60ec', 'Is the RSJ detail on Rev A still current? Steel arrives Monday and the padstone sizes look different to what''s on site.', true, '2026-09-09T10:20:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
 ('923b1109-85c9-402f-a443-3c88588a60ec', 'b0000001-0000-0000-0000-000000000001', 'Good spot. Rev B went up last night, padstones are 215 not 140. Use the Rev B drawing.', true, '2026-09-09T11:05:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
 ('b0000001-0000-0000-0000-000000000001', '923b1109-85c9-402f-a443-3c88588a60ec', 'Got it, thanks.', false, '2026-09-09T11:30:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
-
 -- Thread 3: Manager <-> Jake Brennan, New Build Meltham Road
 ('923b1109-85c9-402f-a443-3c88588a60ec', '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', 'Can you get a few photos of the foundations before the pour so we''ve got them for building control?', true, '2026-09-10T06:45:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801'),
 ('91fcdfdd-d9d0-42d7-a837-df84fb34ebc2', '923b1109-85c9-402f-a443-3c88588a60ec', 'Done, uploaded four just now.', false, '2026-09-10T07:30:00Z'::timestamptz, '51e8233d-3cd8-4580-a867-a6e58f860801');
 
 -- ============================================================
--- 6. PROGRAMME MILESTONES — programme of works per site
+-- 11. PROGRAMME MILESTONES — programme of works per site
 -- All dates are relative to CURRENT_DATE so the demo never goes stale.
--- Negative intervals = past dates, small positive = due/overdue, larger = future.
 -- ============================================================
-DELETE FROM programme_milestones WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801';
 
 -- ────────────────────────────────────────────────────────────
 -- Site 1: Plot 4 — Marsden Road (new build, early stage)
--- New build preset. 2 complete, 1 overdue, 1 due, 2 future, rest TBC.
 -- ────────────────────────────────────────────────────────────
 INSERT INTO programme_milestones (organization_id, site_id, milestone_name, sort_order, target_date, actual_date, notes)
 SELECT '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000001', m.milestone_name, m.sort_order,
@@ -229,7 +287,7 @@ FROM (VALUES
   ('Ground floor lintels & frames',              13,  NULL::date, NULL::date, ''),
   ('Scaffold first lift',                        14,  NULL::date, NULL::date, ''),
   ('First floor joists on (floors on)',          15,  NULL::date, NULL::date, ''),
-  ('Second lift',                                16,  NULL::date, NULL::date, ''),
+  ('Second lift',                                 16,  NULL::date, NULL::date, ''),
   ('Gables up',                                  17,  NULL::date, NULL::date, ''),
   ('Wall plate on',                              18,  NULL::date, NULL::date, ''),
   ('Steels in (RSJ)',                            19,  NULL::date, NULL::date, ''),
@@ -271,7 +329,6 @@ FROM (VALUES
 
 -- ────────────────────────────────────────────────────────────
 -- Site 2: Rear Extension — Holmfirth (extension, further along)
--- Extension preset. 9 complete, 1 due this week, 4 future, rest TBC.
 -- ────────────────────────────────────────────────────────────
 INSERT INTO programme_milestones (organization_id, site_id, milestone_name, sort_order, target_date, actual_date, notes)
 SELECT '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000002', m.milestone_name, m.sort_order,
@@ -304,7 +361,6 @@ FROM (VALUES
 
 -- ────────────────────────────────────────────────────────────
 -- Site 3: New Build — Meltham Road (new build, foundation stage)
--- New build preset. 7 complete, 1 overdue, 1 due, 4 future, rest TBC.
 -- ────────────────────────────────────────────────────────────
 INSERT INTO programme_milestones (organization_id, site_id, milestone_name, sort_order, target_date, actual_date, notes)
 SELECT '51e8233d-3cd8-4580-a867-a6e58f860801', 'a1000000-0000-0000-0000-000000000003', m.milestone_name, m.sort_order,
@@ -369,34 +425,25 @@ FROM (VALUES
 -- ============================================================
 -- VERIFICATION
 -- ============================================================
-SELECT 'Sites:' as info;
-SELECT s.name, s.description, count(t.id) as task_count
-FROM sites s LEFT JOIN tasks t ON t.site_id = s.id
-GROUP BY s.id, s.name, s.description ORDER BY s.name;
+SELECT '--- ROW COUNTS ---' AS info;
+SELECT 'tasks' AS t, COUNT(*) AS c FROM tasks WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801'
+UNION ALL SELECT 'timesheets', COUNT(*) FROM timesheets WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801'
+UNION ALL SELECT 'materials', COUNT(*) FROM materials WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801'
+UNION ALL SELECT 'photos', COUNT(*) FROM construction_photos WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801'
+UNION ALL SELECT 'messages', COUNT(*) FROM messages WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801'
+UNION ALL SELECT 'drawings', COUNT(*) FROM drawings WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801'
+UNION ALL SELECT 'sites', COUNT(*) FROM sites WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801'
+UNION ALL SELECT 'milestones', COUNT(*) FROM programme_milestones WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801';
 
-SELECT 'Task status spread:' as info;
-SELECT status, count(*) FROM tasks GROUP BY status ORDER BY status;
+SELECT '--- TASK STATUS SPREAD ---' AS info;
+SELECT status, COUNT(*) FROM tasks WHERE organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801' GROUP BY status ORDER BY status;
 
-SELECT 'Jake Brennan tasks:' as info;
-SELECT t.title, t.status, s.name as site_name
-FROM tasks t JOIN sites s ON t.site_id = s.id
-WHERE t.assigned_to = '91fcdfdd-d9d0-42d7-a837-df84fb34ebc2'
-ORDER BY t.status, t.title;
+SELECT '--- WORKER TASK COUNTS ---' AS info;
+SELECT p.full_name, COUNT(t.id) AS total, COUNT(t.id) FILTER (WHERE t.status != 'complete') AS active
+FROM profiles p
+LEFT JOIN tasks t ON t.assigned_to = p.id AND t.organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801'
+WHERE p.role = 'worker' AND p.organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801'
+GROUP BY p.id, p.full_name ORDER BY p.full_name;
 
-SELECT 'Drawings:' as info;
-SELECT d.title, d.version, d.file_size, s.name as site_name
-FROM drawings d JOIN sites s ON d.site_id = s.id ORDER BY s.name;
-
-SELECT 'Photos:' as info;
-SELECT cp.description, t.title as task_title
-FROM construction_photos cp LEFT JOIN tasks t ON cp.task_id = t.id
-ORDER BY cp.created_at;
-
-SELECT 'Programme milestones summary:' as info;
-SELECT s.name as site_name, count(*) as total_rows,
-       count(*) FILTER (WHERE pm.actual_date IS NOT NULL) as complete,
-       count(*) FILTER (WHERE pm.actual_date IS NULL AND pm.target_date IS NOT NULL AND pm.target_date < CURRENT_DATE) as overdue,
-       count(*) FILTER (WHERE pm.actual_date IS NULL AND pm.target_date IS NOT NULL AND pm.target_date >= CURRENT_DATE AND pm.target_date <= CURRENT_DATE + INTERVAL '7 days') as due_soon,
-       count(*) FILTER (WHERE pm.target_date IS NULL) as tbc
-FROM programme_milestones pm JOIN sites s ON pm.site_id = s.id
-GROUP BY s.name ORDER BY s.name;
+SELECT '--- DRAWINGS UPLOADED_BY ---' AS info;
+SELECT d.title, d.uploaded_by IS NOT NULL AS has_uploader FROM drawings d WHERE d.organization_id = '51e8233d-3cd8-4580-a867-a6e58f860801' ORDER BY d.title;
