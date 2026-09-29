@@ -1,5 +1,5 @@
 // © 2026 DM.AI 4U. All rights reserved. Unauthorised copying prohibited.
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
 
 export type ViewType = 'site' | 'worker' | 'task' | 'worker_task';
 
@@ -11,8 +11,10 @@ export interface NavView {
 }
 
 interface NavContextType {
+  activeTab: string;
   views: NavView[];
   activeView: NavView | null;
+  setActiveTab: (tab: string) => void;
   pushView: (view: NavView) => void;
   popView: () => void;
   setSubTab: (subTab: string) => void;
@@ -23,9 +25,17 @@ interface NavContextType {
 const NavContext = createContext<NavContextType | undefined>(undefined);
 
 export function NavProvider({ children }: { children: ReactNode }) {
+  const [activeTab, setActiveTabState] = useState('dashboard');
   const [views, setViews] = useState<NavView[]>([]);
+  const isPopstateRef = useRef(false);
+  const isFirstRender = useRef(true);
 
   const activeView = views.length > 0 ? views[views.length - 1] : null;
+
+  const setActiveTab = useCallback((tab: string) => {
+    setActiveTabState(tab);
+    setViews([]);
+  }, []);
 
   const pushView = useCallback((view: NavView) => {
     setViews(prev => [...prev, view]);
@@ -52,28 +62,44 @@ export function NavProvider({ children }: { children: ReactNode }) {
     setViews([]);
   }, []);
 
+  // Set initial history state on mount so popstate has something to restore
   useEffect(() => {
-    function handlePopState() {
-      setViews(prev => {
-        if (prev.length > 0) {
-          return prev.slice(0, -1);
-        }
-        return prev;
-      });
-    }
+    window.history.replaceState({ tab: 'dashboard', views: [] }, '');
+  }, []);
 
+  // Push a history entry whenever the nav state changes (tab or view depth).
+  // Skips: first render (replaceState handles it), popstate restores.
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (isPopstateRef.current) {
+      isPopstateRef.current = false;
+      return;
+    }
+    window.history.pushState({ tab: activeTab, views }, '');
+  }, [activeTab, views.length]);
+
+  // Restore full nav state (tab + views) on browser back/forward
+  useEffect(() => {
+    function handlePopState(event: PopStateEvent) {
+      isPopstateRef.current = true;
+      const state = event.state;
+      if (state && typeof state.tab === 'string') {
+        setActiveTabState(state.tab);
+        setViews(state.views || []);
+      } else {
+        setActiveTabState('dashboard');
+        setViews([]);
+      }
+    }
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  useEffect(() => {
-    if (views.length > 0) {
-      window.history.pushState({ navDepth: views.length }, '');
-    }
-  }, [views.length]);
-
   return (
-    <NavContext.Provider value={{ views, activeView, pushView, popView, setSubTab, goToLevel, resetToRoot }}>
+    <NavContext.Provider value={{ activeTab, views, activeView, setActiveTab, pushView, popView, setSubTab, goToLevel, resetToRoot }}>
       {children}
     </NavContext.Provider>
   );

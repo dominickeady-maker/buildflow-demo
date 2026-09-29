@@ -28,9 +28,8 @@ import TermsOfService from './components/TermsOfService';
 
 function AppContent() {
   const { user, profile, loading, signOut } = useAuth();
-  const { activeView } = useNav();
+  const { activeView, activeTab, setActiveTab } = useNav();
   const { isDemoMode } = useDemoMode();
-  const [activeTab, setActiveTab] = useState('dashboard');
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
 
