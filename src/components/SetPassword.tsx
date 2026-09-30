@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useBranding } from '../contexts/BrandingContext';
-import { KeyRound, Check, Loader2 } from 'lucide-react';
+import { KeyRound, Check, Loader2, AlertCircle } from 'lucide-react';
 import Footer from './Footer';
 
 export default function SetPassword() {
@@ -13,17 +13,12 @@ export default function SetPassword() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [verifying, setVerifying] = useState(true);
+  const [hasSession, setHasSession] = useState(false);
 
   useEffect(() => {
-    // Check if we have a valid session from the invite/reset link
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        setVerifying(false);
-      } else {
-        // No session — the redirect from the email link should have set one
-        // If not, check the URL hash for access_token (Supabase uses hash-based redirects)
-        setVerifying(false);
-      }
+      setHasSession(!!session);
+      setVerifying(false);
     });
   }, []);
 
@@ -42,7 +37,6 @@ export default function SetPassword() {
 
     setLoading(true);
     const { error: updateError } = await supabase.auth.updateUser({ password });
-
     setLoading(false);
 
     if (updateError) {
@@ -52,6 +46,13 @@ export default function SetPassword() {
     }
   }
 
+  const logo = branding.isBranded && branding.logoUrl
+    ? branding.logoUrl
+    : '/banksman-logo-full-dark-bg.png';
+  const logoAlt = branding.isBranded && branding.displayName
+    ? branding.displayName
+    : 'Banksman';
+
   if (verifying) {
     return (
       <div className="min-h-screen bg-navy flex items-center justify-center">
@@ -60,12 +61,38 @@ export default function SetPassword() {
     );
   }
 
-  const logo = branding.isBranded && branding.logoUrl
-    ? branding.logoUrl
-    : '/banksman-logo-full-dark-bg.png';
-  const logoAlt = branding.isBranded && branding.displayName
-    ? branding.displayName
-    : 'Banksman';
+  // No valid session means the link expired or was already used.
+  if (!hasSession) {
+    return (
+      <div className="min-h-screen bg-navy flex flex-col items-center justify-center p-4">
+        <div className="relative bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md p-8 border border-slate-700">
+          <div className="flex items-center justify-center mb-8">
+            <img src={logo} alt={logoAlt} className="max-w-[300px] w-full h-auto" />
+          </div>
+          <div className="text-center space-y-4">
+            <div className="flex justify-center">
+              <div className="bg-amber-500/20 rounded-full p-3">
+                <AlertCircle className="w-8 h-8 text-amber-400" />
+              </div>
+            </div>
+            <h2 className="text-xl font-bold text-white">Link Expired</h2>
+            <p className="text-slate-400 text-sm">
+              This password link has expired or already been used. Please request a new one.
+            </p>
+            <a
+              href="/"
+              className="inline-block w-full bg-brand-500 hover:bg-brand-600 text-white font-semibold py-3 rounded-lg transition-all text-center"
+            >
+              Back to Sign In
+            </a>
+          </div>
+        </div>
+        <div className="relative z-10 mt-4 w-full max-w-md">
+          <Footer />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-navy flex flex-col items-center justify-center p-4">

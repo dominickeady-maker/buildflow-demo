@@ -1,5 +1,5 @@
 // © 2026 DM.AI 4U. All rights reserved. Unauthorised copying prohibited.
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Component, ReactNode } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { NavProvider, useNav } from './contexts/NavContext';
 import { DemoModeProvider, useDemoMode } from './contexts/DemoModeContext';
@@ -29,6 +29,43 @@ import { LayoutDashboard, ListTodo, Package, MapPin, Clock, LogOut, Camera, File
 import Footer from './components/Footer';
 import TermsOfService from './components/TermsOfService';
 
+class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }, { hasError: boolean }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: unknown) {
+    console.error('App error boundary caught:', error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-navy flex items-center justify-center p-4">
+          <div className="bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md p-8 border border-slate-700 text-center">
+            <h2 className="text-xl font-bold text-white mb-3">Something went wrong</h2>
+            <p className="text-slate-400 text-sm mb-6">
+              An unexpected error occurred. Reloading the page should fix it.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="w-full bg-brand-500 hover:bg-brand-600 text-white font-semibold py-3 rounded-lg transition-all"
+            >
+              Reload Page
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 function AppContent() {
   const { user, profile, loading, passwordRecovery, signOut } = useAuth();
   const { activeView, activeTab, setActiveTab } = useNav();
@@ -37,20 +74,23 @@ function AppContent() {
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
 
-  // Show SetPassword on ANY path when Supabase fires a PASSWORD_RECOVERY
-  // event or the URL hash contains type=recovery / type=invite. This must
-  // take priority over the dashboard so the user sets a new password first.
-  if (passwordRecovery) {
-    return <SetPassword />;
-  }
-
   // Platform admins land on the Customers page by default, not the dashboard.
-  // This runs once when the profile first becomes available.
   useEffect(() => {
     if (profile?.is_platform_admin && activeTab === 'dashboard') {
       setActiveTab('customers');
     }
   }, [profile, activeTab, setActiveTab]);
+
+  // All hooks are above every conditional return. No early return can skip a hook.
+
+  const isAuthConfirmPath = typeof window !== 'undefined' && window.location.pathname.startsWith('/auth/confirm');
+
+  // Show SetPassword on ANY path when Supabase fires a PASSWORD_RECOVERY
+  // event or the URL hash contains type=recovery / type=invite, or when
+  // the user is on /auth/confirm. This takes priority over the dashboard.
+  if (passwordRecovery || isAuthConfirmPath) {
+    return <SetPassword />;
+  }
 
   if (loading) {
     return (
@@ -297,15 +337,17 @@ function AppContent() {
 
 function App() {
   return (
-    <BrandingProvider>
-      <AuthProvider>
-        <DemoModeProvider>
-          <NavProvider>
-            <AppContent />
-          </NavProvider>
-        </DemoModeProvider>
-      </AuthProvider>
-    </BrandingProvider>
+    <ErrorBoundary>
+      <BrandingProvider>
+        <AuthProvider>
+          <DemoModeProvider>
+            <NavProvider>
+              <AppContent />
+            </NavProvider>
+          </DemoModeProvider>
+        </AuthProvider>
+      </BrandingProvider>
+    </ErrorBoundary>
   );
 }
 
