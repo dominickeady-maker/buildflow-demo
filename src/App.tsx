@@ -1,5 +1,5 @@
 // © 2026 DM.AI 4U. All rights reserved. Unauthorised copying prohibited.
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { NavProvider, useNav } from './contexts/NavContext';
 import { DemoModeProvider, useDemoMode } from './contexts/DemoModeContext';
@@ -30,18 +30,27 @@ import Footer from './components/Footer';
 import TermsOfService from './components/TermsOfService';
 
 function AppContent() {
-  const { user, profile, loading, signOut } = useAuth();
+  const { user, profile, loading, passwordRecovery, signOut } = useAuth();
   const { activeView, activeTab, setActiveTab } = useNav();
   const { isDemoMode } = useDemoMode();
   const { branding } = useBranding();
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
 
-  const isAuthConfirmPath = typeof window !== 'undefined' && window.location.pathname.startsWith('/auth/confirm');
-
-  if (isAuthConfirmPath) {
+  // Show SetPassword on ANY path when Supabase fires a PASSWORD_RECOVERY
+  // event or the URL hash contains type=recovery / type=invite. This must
+  // take priority over the dashboard so the user sets a new password first.
+  if (passwordRecovery) {
     return <SetPassword />;
   }
+
+  // Platform admins land on the Customers page by default, not the dashboard.
+  // This runs once when the profile first becomes available.
+  useEffect(() => {
+    if (profile?.is_platform_admin && activeTab === 'dashboard') {
+      setActiveTab('customers');
+    }
+  }, [profile, activeTab, setActiveTab]);
 
   if (loading) {
     return (

@@ -10,6 +10,7 @@ type AuthContextType = {
   loading: boolean;
   demoError: string;
   orgMismatch: boolean;
+  passwordRecovery: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
@@ -28,6 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [demoError, setDemoError] = useState('');
   const [orgMismatch, setOrgMismatch] = useState(false);
+  const [passwordRecovery, setPasswordRecovery] = useState(false);
   const demoLoggingIn = useRef(false);
 
   useEffect(() => {
@@ -60,7 +62,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       })();
     } else {
+      // Supabase redirect links put type=recovery or type=invite in the URL
+      // hash (e.g. #type=recovery&access_token=...). Detect this on any path,
+      // not just /auth/confirm, so the SetPassword screen always shows first.
+      const hashParams = new URLSearchParams(
+        window.location.hash.startsWith('#')
+          ? window.location.hash.slice(1)
+          : window.location.hash
+      );
+      const hashType = hashParams.get('type');
+      const isRecoveryLink = hashType === 'recovery' || hashType === 'invite';
+
       supabase.auth.getSession().then(({ data: { session } }) => {
+        if (isRecoveryLink && session?.user) {
+          setPasswordRecovery(true);
+          setUser(session.user);
+          setLoading(false);
+          return;
+        }
         setUser(session?.user ?? null);
         if (session?.user) {
           loadProfile(session.user.id);
@@ -70,8 +89,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
     }
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       (async () => {
+        // PASSWORD_RECOVERY fires when Supabase redirects from a reset/invite link.
+        // The user has a session but must set a new password before seeing the app.
+        if (event === 'PASSWORD_RECOVERY') {
+          setPasswordRecovery(true);
+          setUser(session?.user ?? null);
+          setLoading(false);
+          return;
+        }
+
         if (!session && demoLoggingIn.current) {
           return;
         }
@@ -134,6 +162,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     setUser(null);
     setProfile(null);
+    setPasswordRecovery(false);
     try {
       Object.keys(localStorage).forEach((key) => {
         if (key.startsWith('sb-') && key.includes('auth-token')) {
@@ -147,7 +176,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, demoError, orgMismatch, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, profile, loading, demoError, orgMismatch, passwordRecovery, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
