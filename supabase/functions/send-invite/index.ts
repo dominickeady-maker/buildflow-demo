@@ -6,6 +6,24 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
+// Only allow redirects to known Banksman domains
+const ALLOWED_REDIRECT_HOSTS = [
+  /^app\.banksman\.app$/,
+  /^[a-z0-9-]+\.banksman\.app$/,
+  /^buildflowdemo123\.netlify\.app$/,
+  /^localhost$/,
+  /^127\.0\.0\.1$/,
+];
+
+function isAllowedRedirectUrl(urlStr: string): boolean {
+  try {
+    const url = new URL(urlStr);
+    return ALLOWED_REDIRECT_HOSTS.some((re) => re.test(url.hostname));
+  } catch {
+    return false;
+  }
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
@@ -19,19 +37,40 @@ Deno.serve(async (req: Request) => {
       auth: { autoRefreshToken: false, persistSession: false },
     });
 
-    const { email, redirect_url } = await req.json();
+    const body = await req.json();
+    const { email, redirect_url } = body;
 
     if (!email || typeof email !== "string") {
       return new Response(
-        JSON.stringify({ error: "Email is required" }),
+        JSON.stringify({ error: "email is required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const { data, error } = await supabase.auth.admin.generateInviteLink({
+    // Validate and normalise the redirect URL.
+    // Always land on /auth/confirm — strip any path the caller provided and
+    // replace it, so even a misconfigured caller can't redirect elsewhere.
+    let finalRedirectUrl: string | undefined;
+    if (redirect_url) {
+      if (!isAllowedRedirectUrl(redirect_url)) {
+        return new Response(
+          JSON.stringify({ error: "redirect_url must be a banksman.app or approved domain" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      // Force path to /auth/confirm regardless of what the caller passed
+      const parsed = new URL(redirect_url);
+      parsed.pathname = "/auth/confirm";
+      parsed.search = "";
+      parsed.hash = "";
+      finalRedirectUrl = parsed.toString();
+    }
+
+    const { data, error } = await supabase.auth.admin.generateLink({
+      type: "invite",
       email,
       options: {
-        redirectTo: redirect_url || undefined,
+        redirectTo: finalRedirectUrl,
       },
     });
 
