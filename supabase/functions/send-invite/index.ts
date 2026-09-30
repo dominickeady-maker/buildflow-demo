@@ -31,8 +31,9 @@ Deno.serve(async (req: Request) => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
-    const supabase = createClient(supabaseUrl, serviceRoleKey, {
+    const adminClient = createClient(supabaseUrl, serviceRoleKey, {
       auth: { autoRefreshToken: false, persistSession: false },
     });
 
@@ -71,9 +72,7 @@ Deno.serve(async (req: Request) => {
     // inviteUserByEmail creates the auth.users row with all GoTrue token
     // columns properly initialised, avoiding the "Database error finding user"
     // issue that occurs when inserting into auth.users via SQL.
-    // If the user already exists (e.g. re-inviting), fall back to generateLink
-    // with type "recovery" to send a password-set link.
-    const { data: inviteData, error: inviteError } = await supabase.auth.admin.inviteUserByEmail(
+    const { data: inviteData, error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(
       email,
       {
         redirectTo: finalRedirectUrl,
@@ -84,22 +83,37 @@ Deno.serve(async (req: Request) => {
     let userId: string | undefined;
 
     if (inviteError) {
-      // User already exists — send a recovery link instead so they can set a password
+      // User already exists — send a password-reset email so they can set a password.
+      // generateLink only returns a link without sending an email, so we use
+      // resetPasswordForEmail with an anon-key client, which actually sends the email.
       if (inviteError.message.includes("already been registered") || inviteError.message.includes("already exists")) {
-        const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
-          type: "recovery",
-          email,
-          options: { redirectTo: finalRedirectUrl },
+        const anonClient = createClient(supabaseUrl, anonKey, {
+          auth: { autoRefreshToken: false, persistSession: false },
         });
 
-        if (linkError) {
+        const { error: resetError } = await anonClient.auth.resetPasswordForEmail(
+          email,
+          { redirectTo: finalRedirectUrl }
+        );
+
+        if (resetError) {
           return new Response(
-            JSON.stringify({ error: linkError.message }),
+            JSON.stringify({ error: resetError.message }),
             { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
 
-        userId = linkData.user?.id;
+        // Look up the existing user's ID via admin API for the profile upsert.
+        const { data: userData, error: userError } = await adminClient.auth.admin.listUsers();
+        if (userError) {
+          return new Response(
+            JSON.stringify({ error: `Password email sent but could not link profile: ${userError.message}` }),
+            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const existingUser = userData.users.find((u) => u.email === email);
+        userId = existingUser?.id;
       } else {
         return new Response(
           JSON.stringify({ error: inviteError.message }),
@@ -118,7 +132,7 @@ Deno.serve(async (req: Request) => {
     }
 
     // Create or update the profile linked to this organisation as manager.
-    const { error: profileError } = await supabase
+    const { error: profileError } = await adminClient
       .from("profiles")
       .upsert(
         {

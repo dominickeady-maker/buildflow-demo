@@ -1,11 +1,17 @@
 // © 2026 DM.AI 4U. All rights reserved. Unauthorised copying prohibited.
 import { useState, useEffect } from 'react';
 import { supabase, Organization } from '../../lib/supabase';
-import { Building2, Plus, Users, Edit2, Upload, X, Loader2, Check } from 'lucide-react';
+import { Building2, Plus, Users, Edit2, Upload, X, Loader2, Check, Mail } from 'lucide-react';
 import { useBranding } from '../../contexts/BrandingContext';
+
+interface ManagerInfo {
+  email: string;
+  full_name: string | null;
+}
 
 interface CustomerWithCount extends Organization {
   user_count: number;
+  manager: ManagerInfo | null;
 }
 
 export default function CustomersAdmin() {
@@ -59,7 +65,15 @@ export default function CustomersAdmin() {
         .select('*', { count: 'exact', head: true })
         .eq('organization_id', org.id);
 
-      enriched.push({ ...org, user_count: count || 0 });
+      const { data: managerData } = await supabase
+        .from('profiles')
+        .select('email, full_name')
+        .eq('organization_id', org.id)
+        .eq('role', 'manager')
+        .limit(1)
+        .maybeSingle();
+
+      enriched.push({ ...org, user_count: count || 0, manager: managerData as ManagerInfo | null });
     }
 
     setCustomers(enriched);
@@ -183,6 +197,48 @@ export default function CustomersAdmin() {
     }
 
     loadCustomers();
+  }
+
+  const [resendingId, setResendingId] = useState<string | null>(null);
+
+  async function handleResendInvite(customer: CustomerWithCount) {
+    if (!customer.manager?.email) {
+      setFormError(`No manager email found for ${customer.display_name || customer.name}.`);
+      return;
+    }
+    setResendingId(customer.id);
+    setFormError('');
+    setFormSuccess('');
+
+    try {
+      const subdomain = (customer.subdomain || '').replace(/[^a-z0-9]/gi, '').toLowerCase();
+      const redirectUrl = `https://${subdomain}.banksman.app/auth/confirm`;
+
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-invite`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          email: customer.manager.email,
+          redirect_url: redirectUrl,
+          org_id: customer.id,
+          full_name: customer.manager.full_name || undefined,
+        }),
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        setFormError(`Invite failed for ${customer.manager.email}: ${err.error}`);
+      } else {
+        setFormSuccess(`Invite email sent to ${customer.manager.email} for ${customer.display_name || customer.name}.`);
+      }
+    } catch (err: any) {
+      setFormError(err.message || 'Failed to resend invite');
+    } finally {
+      setResendingId(null);
+    }
   }
 
   function openEdit(customer: Organization) {
@@ -501,13 +557,29 @@ export default function CustomersAdmin() {
                     {new Date(customer.created_at).toLocaleDateString('en-GB')}
                   </td>
                   <td className="py-3 px-4 text-right">
-                    <button
-                      onClick={() => openEdit(customer)}
-                      className="inline-flex items-center gap-1 text-sm text-brand-400 hover:text-brand-300 transition-colors"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                      Edit
-                    </button>
+                    <div className="inline-flex items-center gap-3">
+                      <button
+                        onClick={() => openEdit(customer)}
+                        className="inline-flex items-center gap-1 text-sm text-brand-400 hover:text-brand-300 transition-colors"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                        Edit
+                      </button>
+                      {customer.manager?.email && (
+                        <button
+                          onClick={() => handleResendInvite(customer)}
+                          disabled={resendingId === customer.id}
+                          className="inline-flex items-center gap-1 text-sm text-slate-400 hover:text-brand-300 transition-colors disabled:opacity-50"
+                        >
+                          {resendingId === customer.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Mail className="w-4 h-4" />
+                          )}
+                          Resend
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
