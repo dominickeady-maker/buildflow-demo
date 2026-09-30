@@ -98,6 +98,10 @@ function AppContent() {
         <div className="text-center">
           {branding.isBranded && branding.logoUrl ? (
             <img src={branding.logoUrl} alt={branding.displayName || 'Company'} className="h-7 md:h-8 mx-auto mb-4 animate-pulse" />
+          ) : branding.isBranded && branding.displayName ? (
+            <span className="text-2xl font-bold mx-auto mb-4 animate-pulse" style={{ color: branding.primaryColor }}>
+              {branding.displayName}
+            </span>
           ) : (
             <img src="/banksman-header-logo-dark-bg.png" alt="Banksman" className="h-7 md:h-8 mx-auto mb-4 animate-pulse" />
           )}
@@ -206,7 +210,7 @@ function AppContent() {
 
   const headerLogo = branding.isBranded && branding.logoUrl
     ? branding.logoUrl
-    : '/banksman-header-logo-dark-bg.png';
+    : null;
   const headerAlt = branding.isBranded && branding.displayName
     ? branding.displayName
     : 'Banksman';
@@ -224,7 +228,15 @@ function AppContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
             <div className="flex items-center gap-3 md:gap-4">
-              <img src={headerLogo} alt={headerAlt} className="h-[26px] md:h-8" />
+              {headerLogo ? (
+                <img src={headerLogo} alt={headerAlt} className="h-[26px] md:h-8 max-w-[200px] object-contain" />
+              ) : branding.isBranded && branding.displayName ? (
+                <span className="text-xl md:text-2xl font-bold tracking-tight" style={{ color: branding.primaryColor }}>
+                  {branding.displayName}
+                </span>
+              ) : (
+                <img src="/banksman-header-logo-dark-bg.png" alt="Banksman" className="h-[26px] md:h-8" />
+              )}
               <div>
                 <p className="text-xs text-slate-400 font-medium mt-0.5 hidden sm:block">
                   {profile.full_name} <span className="text-brand-500">•</span> <span className="capitalize">{isPlatformAdmin ? 'Platform Admin' : profile.role}</span>

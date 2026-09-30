@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useWorkerLink } from '../../contexts/NavContext';
-import { Users, Plus, Edit2, Trash2, MapPin, Briefcase, Mail, UserCheck, AlertCircle } from 'lucide-react';
+import { Users, Plus, Edit2, Trash2, MapPin, Briefcase, Mail, UserCheck, AlertCircle, Loader2 } from 'lucide-react';
 
 interface Worker {
   id: string;
@@ -33,6 +33,7 @@ export default function WorkersManager({ isDemoMode = false }: { isDemoMode?: bo
   const [workerTasks, setWorkerTasks] = useState<Record<string, Task[]>>({});
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [planLimitError, setPlanLimitError] = useState('');
   const [formData, setFormData] = useState({
     email: '',
@@ -104,57 +105,34 @@ export default function WorkersManager({ isDemoMode = false }: { isDemoMode?: bo
       return;
     }
 
-    const { data: canAdd, error: planError } = await supabase.rpc('check_plan_limit', {
-      org_id: profile.organization_id,
-    });
+    setSubmitting(true);
 
-    if (planError) {
-      setPlanLimitError('Could not verify plan limit: ' + planError.message);
-      return;
-    }
-
-    if (!canAdd) {
-      const { data: org } = await supabase
-        .from('organizations')
-        .select('name, max_users')
-        .eq('id', profile.organization_id)
-        .maybeSingle();
-
-      setPlanLimitError(
-        `You've reached the ${org?.max_users || 10}-user limit for the ${org?.name || 'Starter'} plan. ` +
-        'Contact your platform admin to upgrade.'
-      );
-      return;
-    }
-
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: formData.email,
-      password: formData.password,
-    });
-
-    if (authError) {
-      setPlanLimitError('Failed to create worker account: ' + authError.message);
-      return;
-    }
-
-    if (authData.user) {
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: authData.user.id,
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-worker`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+        },
+        body: JSON.stringify({
           email: formData.email,
+          password: formData.password,
           full_name: formData.full_name,
-          role: 'worker',
-          organization_id: profile.organization_id,
-        });
+        }),
+      });
 
-      if (profileError) {
-        setPlanLimitError('Failed to create worker profile: ' + profileError.message);
-        return;
+      const result = await response.json();
+
+      if (!response.ok) {
+        setPlanLimitError(result.error || 'Failed to create worker');
+      } else {
+        resetForm();
+        loadWorkers();
       }
-
-      resetForm();
-      loadWorkers();
+    } catch (err: any) {
+      setPlanLimitError(err.message || 'Failed to create worker');
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -247,9 +225,10 @@ export default function WorkersManager({ isDemoMode = false }: { isDemoMode?: bo
             <div className="flex gap-2">
               <button
                 type="submit"
-                className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg transition-colors"
+                disabled={submitting}
+                className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
               >
-                Add Worker
+                {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Add Worker'}
               </button>
               <button
                 type="button"
