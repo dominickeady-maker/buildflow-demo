@@ -12,8 +12,25 @@ export type Profile = {
   full_name: string;
   role: 'worker' | 'manager';
   organization_id: string | null;
+  is_platform_admin: boolean;
   created_at: string;
   updated_at: string;
+};
+
+export type Organization = {
+  id: string;
+  name: string;
+  slug: string;
+  display_name: string | null;
+  logo_url: string | null;
+  primary_color: string;
+  subdomain: string | null;
+  custom_domain: string | null;
+  account_number: string | null;
+  plan: string;
+  max_users: number;
+  active: boolean;
+  created_at: string;
 };
 
 export type Site = {

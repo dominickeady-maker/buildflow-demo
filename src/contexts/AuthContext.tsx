@@ -2,12 +2,14 @@
 import { createContext, useContext, useEffect, useState, useRef, ReactNode } from 'react';
 import { supabase, Profile } from '../lib/supabase';
 import { User } from '@supabase/supabase-js';
+import { useBranding } from './BrandingContext';
 
 type AuthContextType = {
   user: User | null;
   profile: Profile | null;
   loading: boolean;
   demoError: string;
+  orgMismatch: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
@@ -20,10 +22,12 @@ const DEMO_ACCOUNTS: Record<string, { email: string; password: string }> = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const { branding } = useBranding();
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [demoError, setDemoError] = useState('');
+  const [orgMismatch, setOrgMismatch] = useState(false);
   const demoLoggingIn = useRef(false);
 
   useEffect(() => {
@@ -93,7 +97,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (error) {
       console.error('Error loading profile:', error);
-    } else {
+    } else if (data) {
+      if (data.is_platform_admin) {
+        setProfile(data);
+        setLoading(false);
+        return;
+      }
+      if (branding.organizationId && data.organization_id !== branding.organizationId) {
+        setOrgMismatch(true);
+        await supabase.auth.signOut();
+        setUser(null);
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
       setProfile(data);
     }
     setLoading(false);
@@ -101,6 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function signIn(email: string, password: string) {
     setDemoError('');
+    setOrgMismatch(false);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
   }
@@ -129,7 +147,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, demoError, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, profile, loading, demoError, orgMismatch, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );

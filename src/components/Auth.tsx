@@ -1,7 +1,9 @@
 // © 2026 DM.AI 4U. All rights reserved. Unauthorised copying prohibited.
 import { useState } from 'react';
+import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { ExternalLink } from 'lucide-react';
+import { useBranding } from '../contexts/BrandingContext';
+import { ExternalLink, KeyRound } from 'lucide-react';
 import Footer from './Footer';
 import TermsOfService from './TermsOfService';
 
@@ -10,7 +12,29 @@ export default function Auth({ onTermsClick, showTerms, onCloseTerms }: { onTerm
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn, demoError } = useAuth();
+  const { signIn, demoError, orgMismatch } = useAuth();
+  const { branding } = useBranding();
+  const [resetSent, setResetSent] = useState(false);
+  const [resetting, setResetting] = useState(false);
+
+  async function handlePasswordReset() {
+    if (!email) {
+      setError('Enter your email above first, then click reset.');
+      return;
+    }
+    setResetting(true);
+    setError('');
+    const redirectUrl = `${window.location.origin}/auth/confirm`;
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectUrl,
+    });
+    setResetting(false);
+    if (resetError) {
+      setError(resetError.message);
+    } else {
+      setResetSent(true);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -30,7 +54,11 @@ export default function Auth({ onTermsClick, showTerms, onCloseTerms }: { onTerm
     <div className="min-h-screen bg-navy flex flex-col items-center justify-center p-4">
       <div className="relative bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md p-8 border border-slate-700">
         <div className="flex items-center justify-center mb-8">
-          <img src="/banksman-logo-full-dark-bg.png" alt="Banksman" className="max-w-[300px] w-full h-auto" />
+          {branding.isBranded && branding.logoUrl ? (
+            <img src={branding.logoUrl} alt={branding.displayName || 'Company'} className="max-w-[300px] w-full h-auto" />
+          ) : (
+            <img src="/banksman-logo-full-dark-bg.png" alt="Banksman" className="max-w-[300px] w-full h-auto" />
+          )}
         </div>
 
         <div className="mb-6">
@@ -40,6 +68,12 @@ export default function Auth({ onTermsClick, showTerms, onCloseTerms }: { onTerm
             </div>
           </div>
         </div>
+
+        {orgMismatch && (
+          <div className="mb-4 bg-amber-900/50 border border-amber-700 text-amber-200 px-4 py-3 rounded-lg text-sm">
+            This login isn't for this company. Please use the correct web address for your organisation.
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4" autoComplete="on">
           <div>
@@ -86,22 +120,39 @@ export default function Auth({ onTermsClick, showTerms, onCloseTerms }: { onTerm
           </button>
         </form>
 
-        <div className="mt-6 pt-6 border-t border-slate-700">
-          <h2 className="text-sm font-semibold text-slate-200 mb-1">Not got an account yet?</h2>
-          <p className="text-sm text-slate-400 mb-3">Banksman accounts are set up when you subscribe.</p>
-          <a
-            href="https://banksman.app/#pricing"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-400 hover:text-brand-300 transition-colors"
-          >
-            See pricing
-            <ExternalLink className="w-3.5 h-3.5" />
-          </a>
+        <div className="mt-4 text-center">
+          {resetSent ? (
+            <p className="text-sm text-green-400">Password reset link sent to {email}.</p>
+          ) : (
+            <button
+              onClick={handlePasswordReset}
+              disabled={resetting}
+              className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-brand-400 transition-colors"
+            >
+              <KeyRound className="w-3.5 h-3.5" />
+              {resetting ? 'Sending...' : 'Forgot password?'}
+            </button>
+          )}
         </div>
+
+        {!branding.isBranded && (
+          <div className="mt-6 pt-6 border-t border-slate-700">
+            <h2 className="text-sm font-semibold text-slate-200 mb-1">Not got an account yet?</h2>
+            <p className="text-sm text-slate-400 mb-3">Banksman accounts are set up when you subscribe.</p>
+            <a
+              href="https://banksman.app/#pricing"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-400 hover:text-brand-300 transition-colors"
+            >
+              See pricing
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        )}
       </div>
 
-      <div className="relative z-10 mt-4">
+      <div className="relative z-10 mt-4 w-full max-w-md">
         <Footer onTermsClick={onTermsClick} />
       </div>
       {showTerms && <TermsOfService onClose={onCloseTerms!} />}

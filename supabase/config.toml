@@ -1,0 +1,5 @@
+[functions.voiceflow-chatbot]
+verify_jwt = true
+
+[functions.send-invite]
+verify_jwt = true

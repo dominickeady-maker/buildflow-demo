@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../contexts/AuthContext';
 import { useWorkerLink } from '../../contexts/NavContext';
-import { Users, Plus, Edit2, Trash2, MapPin, Briefcase, Mail, UserCheck } from 'lucide-react';
+import { Users, Plus, Edit2, Trash2, MapPin, Briefcase, Mail, UserCheck, AlertCircle } from 'lucide-react';
 
 interface Worker {
   id: string;
@@ -25,12 +26,14 @@ interface Task {
 }
 
 export default function WorkersManager({ isDemoMode = false }: { isDemoMode?: boolean }) {
+  const { profile } = useAuth();
   const openWorker = useWorkerLink();
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [sites, setSites] = useState<Site[]>([]);
   const [workerTasks, setWorkerTasks] = useState<Record<string, Task[]>>({});
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [planLimitError, setPlanLimitError] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -94,6 +97,35 @@ export default function WorkersManager({ isDemoMode = false }: { isDemoMode?: bo
 
   async function handleAddWorker(e: React.FormEvent) {
     e.preventDefault();
+    setPlanLimitError('');
+
+    if (!profile?.organization_id) {
+      setPlanLimitError('Your account is not linked to an organisation.');
+      return;
+    }
+
+    const { data: canAdd, error: planError } = await supabase.rpc('check_plan_limit', {
+      org_id: profile.organization_id,
+    });
+
+    if (planError) {
+      setPlanLimitError('Could not verify plan limit: ' + planError.message);
+      return;
+    }
+
+    if (!canAdd) {
+      const { data: org } = await supabase
+        .from('organizations')
+        .select('name, max_users')
+        .eq('id', profile.organization_id)
+        .maybeSingle();
+
+      setPlanLimitError(
+        `You've reached the ${org?.max_users || 10}-user limit for the ${org?.name || 'Starter'} plan. ` +
+        'Contact your platform admin to upgrade.'
+      );
+      return;
+    }
 
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: formData.email,
@@ -101,7 +133,7 @@ export default function WorkersManager({ isDemoMode = false }: { isDemoMode?: bo
     });
 
     if (authError) {
-      alert('Failed to create worker account: ' + authError.message);
+      setPlanLimitError('Failed to create worker account: ' + authError.message);
       return;
     }
 
@@ -113,10 +145,11 @@ export default function WorkersManager({ isDemoMode = false }: { isDemoMode?: bo
           email: formData.email,
           full_name: formData.full_name,
           role: 'worker',
+          organization_id: profile.organization_id,
         });
 
       if (profileError) {
-        alert('Failed to create worker profile: ' + profileError.message);
+        setPlanLimitError('Failed to create worker profile: ' + profileError.message);
         return;
       }
 
@@ -168,6 +201,13 @@ export default function WorkersManager({ isDemoMode = false }: { isDemoMode?: bo
           Add Worker
         </button>
       </div>
+
+      {planLimitError && (
+        <div className="bg-amber-900/50 border border-amber-700 text-amber-200 px-4 py-3 rounded-lg text-sm flex items-start gap-2">
+          <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+          <span>{planLimitError}</span>
+        </div>
+      )}
 
       {showForm && (
         <div className="bg-slate-700 border border-slate-600 rounded-lg p-6">

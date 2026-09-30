@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { NavProvider, useNav } from './contexts/NavContext';
 import { DemoModeProvider, useDemoMode } from './contexts/DemoModeContext';
+import { BrandingProvider, useBranding } from './contexts/BrandingContext';
 import Auth from './components/Auth';
 import WorkerDashboard from './components/worker/WorkerDashboard';
 import MaterialsRequest from './components/worker/MaterialsRequest';
@@ -22,7 +23,8 @@ import SiteDetail from './components/detail/SiteDetail';
 import WorkerDetail from './components/detail/WorkerDetail';
 import TaskDetail from './components/detail/TaskDetail';
 import WorkerTaskDetail from './components/detail/WorkerTaskDetail';
-import { LayoutDashboard, ListTodo, Package, MapPin, Clock, LogOut, Camera, FileText, Users, User, MessageCircle, MoreHorizontal, X, Info } from 'lucide-react';
+import CustomersAdmin from './components/admin/CustomersAdmin';
+import { LayoutDashboard, ListTodo, Package, MapPin, Clock, LogOut, Camera, FileText, Users, User, MessageCircle, MoreHorizontal, X, Info, Building2 } from 'lucide-react';
 import Footer from './components/Footer';
 import TermsOfService from './components/TermsOfService';
 
@@ -30,6 +32,7 @@ function AppContent() {
   const { user, profile, loading, signOut } = useAuth();
   const { activeView, activeTab, setActiveTab } = useNav();
   const { isDemoMode } = useDemoMode();
+  const { branding } = useBranding();
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
 
@@ -37,7 +40,11 @@ function AppContent() {
     return (
       <div className="min-h-screen bg-navy flex items-center justify-center">
         <div className="text-center">
-          <img src="/banksman-header-logo-dark-bg.png" alt="Banksman" className="h-7 md:h-8 mx-auto mb-4 animate-pulse" />
+          {branding.isBranded && branding.logoUrl ? (
+            <img src={branding.logoUrl} alt={branding.displayName || 'Company'} className="h-7 md:h-8 mx-auto mb-4 animate-pulse" />
+          ) : (
+            <img src="/banksman-header-logo-dark-bg.png" alt="Banksman" className="h-7 md:h-8 mx-auto mb-4 animate-pulse" />
+          )}
           <p className="text-slate-300">Loading...</p>
         </div>
       </div>
@@ -49,6 +56,7 @@ function AppContent() {
   }
 
   const isManager = profile.role === 'manager';
+  const isPlatformAdmin = profile.is_platform_admin === true;
 
   const managerTabs = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -63,6 +71,11 @@ function AppContent() {
     { id: 'profile', label: 'Profile', icon: User },
   ];
 
+  const adminTabs = [
+    { id: 'customers', label: 'Customers', icon: Building2 },
+    { id: 'profile', label: 'Profile', icon: User },
+  ];
+
   const workerTabs = [
     { id: 'dashboard', label: 'My Tasks', icon: ListTodo },
     { id: 'hours', label: 'My Hours', icon: Clock },
@@ -73,9 +86,7 @@ function AppContent() {
     { id: 'profile', label: 'Profile', icon: User },
   ];
 
-  const tabs = isManager ? managerTabs : workerTabs;
-
-  // For mobile bottom nav: first 4 tabs + More
+  const tabs = isPlatformAdmin ? adminTabs : isManager ? managerTabs : workerTabs;
   const mobilePrimaryTabs = tabs.slice(0, 4);
   const mobileMoreTabs = tabs.slice(4);
 
@@ -102,6 +113,9 @@ function AppContent() {
     if (activeTab === 'drawings') return <DrawingsManager isDemoMode={isDemoMode} />;
     if (activeTab === 'profile') return <AccountProfile />;
     if (activeTab === 'messages') return <Messages />;
+    if (isPlatformAdmin) {
+      if (activeTab === 'customers') return <CustomersAdmin />;
+    }
     if (isManager) {
       if (activeTab === 'dashboard') return <ManagerDashboard />;
       if (activeTab === 'tasks') return <TasksManager isDemoMode={isDemoMode} />;
@@ -134,25 +148,30 @@ function AppContent() {
     );
   }
 
+  const headerLogo = branding.isBranded && branding.logoUrl
+    ? branding.logoUrl
+    : '/banksman-header-logo-dark-bg.png';
+  const headerAlt = branding.isBranded && branding.displayName
+    ? branding.displayName
+    : 'Banksman';
+
   return (
     <div className="min-h-screen bg-navy pb-28 md:pb-0">
       <div className="sticky top-0 z-50">
-      {/* Demo mode banner */}
       {isDemoMode && (
         <div className="bg-amber-500/95 text-amber-950 text-center py-1.5 px-4 text-xs font-medium flex items-center justify-center gap-2">
           <Info className="w-3.5 h-3.5 flex-shrink-0" />
           <span>Demo environment — not for redistribution · data resets regularly</span>
         </div>
       )}
-      {/* Top bar — always visible */}
       <nav className="bg-slate-900 border-b border-brand-500/20 backdrop-blur-md bg-opacity-90 shadow-lg shadow-brand-900/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
             <div className="flex items-center gap-3 md:gap-4">
-              <img src="/banksman-header-logo-dark-bg.png" alt="Banksman" className="h-[26px] md:h-8" />
+              <img src={headerLogo} alt={headerAlt} className="h-[26px] md:h-8" />
               <div>
                 <p className="text-xs text-slate-400 font-medium mt-0.5 hidden sm:block">
-                  {profile.full_name} <span className="text-brand-500">•</span> <span className="capitalize">{profile.role}</span>
+                  {profile.full_name} <span className="text-brand-500">•</span> <span className="capitalize">{isPlatformAdmin ? 'Platform Admin' : profile.role}</span>
                 </p>
               </div>
             </div>
@@ -170,14 +189,12 @@ function AppContent() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
-        {/* Desktop tab bar — always visible */}
         <div className="hidden md:flex gap-2 mb-6 overflow-x-auto pb-2">
           {tabs.map(tab => (
             <TabButton key={tab.id} tab={tab} onClick={() => handleTabClick(tab.id)} isActive={activeTab === tab.id} />
           ))}
         </div>
 
-        {/* Content area */}
         {activeView ? (
           <div className="bg-slate-800 rounded-xl shadow-2xl border border-slate-700 p-4 md:p-6">
             <Breadcrumbs rootLabel={rootLabel} />
@@ -190,7 +207,6 @@ function AppContent() {
         )}
       </div>
 
-      {/* Mobile bottom nav */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-900 border-t border-brand-500/20 backdrop-blur-md bg-opacity-95" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="flex items-center justify-around h-16 px-1">
           {mobilePrimaryTabs.map(tab => {
@@ -210,7 +226,6 @@ function AppContent() {
             );
           })}
 
-          {/* More button */}
           <button
             onClick={() => setMoreMenuOpen(true)}
             className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1 rounded-lg transition-colors flex-1 ${
@@ -223,15 +238,12 @@ function AppContent() {
         </div>
       </div>
 
-      {/* Footer */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 hidden md:block">
         <Footer onTermsClick={() => setShowTerms(true)} />
       </div>
 
-      {/* Terms modal */}
       {showTerms && <TermsOfService onClose={() => setShowTerms(false)} />}
 
-      {/* Mobile More menu */}
       {moreMenuOpen && (
         <div className="md:hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" onClick={() => setMoreMenuOpen(false)}>
           <div className="absolute bottom-0 left-0 right-0 bg-slate-800 rounded-t-2xl border-t border-slate-700 p-4 pb-6" style={{ paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom))' }} onClick={e => e.stopPropagation()}>
@@ -263,20 +275,21 @@ function AppContent() {
           </div>
         </div>
       )}
-
     </div>
   );
 }
 
 function App() {
   return (
-    <AuthProvider>
-      <DemoModeProvider>
-        <NavProvider>
-          <AppContent />
-        </NavProvider>
-      </DemoModeProvider>
-    </AuthProvider>
+    <BrandingProvider>
+      <AuthProvider>
+        <DemoModeProvider>
+          <NavProvider>
+            <AppContent />
+          </NavProvider>
+        </DemoModeProvider>
+      </AuthProvider>
+    </BrandingProvider>
   );
 }
 

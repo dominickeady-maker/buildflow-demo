@@ -5,13 +5,13 @@ export default {
     extend: {
       colors: {
         brand: {
-          300: '#ffb184',
-          400: '#ff9257',
-          500: '#ff7a2e',
-          600: '#e8631a',
-          700: '#c04e12',
-          800: '#9a3e0e',
-          900: '#7a320b',
+          300: 'var(--brand-300, #ffb184)',
+          400: 'var(--brand-400, #ff9257)',
+          500: 'var(--brand-500, #ff7a2e)',
+          600: 'var(--brand-600, #e8631a)',
+          700: 'var(--brand-700, #c04e12)',
+          800: 'var(--brand-800, #9a3e0e)',
+          900: 'var(--brand-900, #7a320b)',
         },
         navy: {
           DEFAULT: '#0d1120',

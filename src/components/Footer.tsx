@@ -1,8 +1,10 @@
 // © 2026 DM.AI 4U. All rights reserved. Unauthorised copying prohibited.
 import { Shield } from 'lucide-react';
+import { useBranding } from '../contexts/BrandingContext';
 
 export default function Footer({ onTermsClick }: { onTermsClick?: () => void }) {
   const year = new Date().getFullYear();
+  const { branding } = useBranding();
 
   return (
     <footer className="border-t border-slate-700/50 mt-8 py-4 px-4 text-center">
@@ -18,6 +20,12 @@ export default function Footer({ onTermsClick }: { onTermsClick?: () => void }) 
             >
               Terms of Service
             </button>
+          </>
+        )}
+        {branding.isBranded && (
+          <>
+            <span className="text-slate-600">|</span>
+            <span>Powered by Banksman</span>
           </>
         )}
       </div>
