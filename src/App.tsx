@@ -25,9 +25,11 @@ import TaskDetail from './components/detail/TaskDetail';
 import WorkerTaskDetail from './components/detail/WorkerTaskDetail';
 import CustomersAdmin from './components/admin/CustomersAdmin';
 import SetPassword from './components/SetPassword';
-import { LayoutDashboard, ListTodo, Package, MapPin, Clock, LogOut, Camera, FileText, Users, User, MessageCircle, MoreHorizontal, X, Info, Building2 } from 'lucide-react';
+import { LayoutDashboard, ListTodo, Package, MapPin, Clock, LogOut, Camera, FileText, Users, User, MessageCircle, MoreHorizontal, X, Info, Building2, Menu } from 'lucide-react';
 import Footer from './components/Footer';
 import TermsOfService from './components/TermsOfService';
+import NotificationBell from './components/NotificationBell';
+import { useNotificationsState } from './contexts/NotificationsContext';
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }, { hasError: boolean }> {
   constructor(props: { children: ReactNode }) {
@@ -71,7 +73,9 @@ function AppContent() {
   const { activeView, activeTab, setActiveTab } = useNav();
   const { isDemoMode } = useDemoMode();
   const { branding } = useBranding();
+  const { unreadCount: unreadNotifications } = useNotificationsState();
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const [burgerMenuOpen, setBurgerMenuOpen] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
 
   // Platform admins land on the Customers page by default, not the dashboard.
@@ -191,12 +195,12 @@ function AppContent() {
     return null;
   }
 
-  function TabButton({ tab, onClick, isActive }: { tab: { id: string; label: string; icon: any }; onClick: () => void; isActive: boolean }) {
+  function TabButton({ tab, onClick, isActive, hasBadge }: { tab: { id: string; label: string; icon: any }; onClick: () => void; isActive: boolean; hasBadge?: boolean }) {
     const Icon = tab.icon;
     return (
       <button
         onClick={onClick}
-        className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all whitespace-nowrap ${
+        className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all whitespace-nowrap relative ${
           isActive
             ? 'bg-brand-500 text-white shadow-lg shadow-brand-900/50'
             : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
@@ -204,6 +208,7 @@ function AppContent() {
       >
         <Icon className="w-4 h-4" />
         {tab.label}
+        {hasBadge && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">!</span>}
       </button>
     );
   }
@@ -244,13 +249,16 @@ function AppContent() {
               </div>
             </div>
 
-            <button
-              onClick={() => { setActiveTab('dashboard'); signOut(); }}
-              className="flex items-center gap-2 px-3 md:px-5 py-2 md:py-2.5 text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-xl transition-all border border-slate-700 hover:border-slate-600"
-            >
-              <LogOut className="w-4 h-4" />
-              <span className="text-sm font-semibold hidden sm:inline">Sign Out</span>
-            </button>
+            <div className="flex items-center gap-1">
+              <NotificationBell />
+              <button
+                onClick={() => setBurgerMenuOpen(true)}
+                className="flex items-center gap-2 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-xl transition-all"
+                aria-label="Menu"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
       </nav>
@@ -259,7 +267,7 @@ function AppContent() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
         <div className="hidden md:flex gap-2 mb-6 overflow-x-auto pb-2">
           {tabs.map(tab => (
-            <TabButton key={tab.id} tab={tab} onClick={() => handleTabClick(tab.id)} isActive={activeTab === tab.id} />
+            <TabButton key={tab.id} tab={tab} onClick={() => handleTabClick(tab.id)} isActive={activeTab === tab.id} hasBadge={tab.id === 'messages' && unreadNotifications > 0} />
           ))}
         </div>
 
@@ -280,15 +288,17 @@ function AppContent() {
           {mobilePrimaryTabs.map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id && !activeView;
+            const hasBadge = tab.id === 'messages' && unreadNotifications > 0;
             return (
               <button
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id)}
-                className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1 rounded-lg transition-colors flex-1 ${
+                className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1 rounded-lg transition-colors flex-1 relative ${
                   isActive ? 'text-brand-400' : 'text-slate-400'
                 }`}
               >
                 <Icon className="w-5 h-5" />
+                {hasBadge && <span className="absolute top-0 right-1/2 translate-x-3 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1">{unreadNotifications > 9 ? '9+' : unreadNotifications}</span>}
                 <span className="text-[10px] font-medium leading-none">{tab.label}</span>
               </button>
             );
@@ -311,6 +321,67 @@ function AppContent() {
       </div>
 
       {showTerms && <TermsOfService onClose={() => setShowTerms(false)} />}
+
+      {burgerMenuOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" onClick={() => setBurgerMenuOpen(false)}>
+          <div className="absolute right-0 top-0 bottom-0 w-72 bg-slate-800 border-l border-slate-700 flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-4 border-b border-slate-700">
+              <div className="flex items-center gap-3">
+                <div className="bg-brand-500 rounded-full p-2">
+                  <User className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-white">{profile.full_name}</p>
+                  <p className="text-xs text-slate-400 capitalize">{isPlatformAdmin ? 'Platform Admin' : profile.role}</p>
+                </div>
+              </div>
+              <button onClick={() => setBurgerMenuOpen(false)} className="text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-2">
+              {tabs.map(tab => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id && !activeView;
+                const hasBadge = tab.id === 'messages' && unreadNotifications > 0;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => { handleTabClick(tab.id); setBurgerMenuOpen(false); }}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors relative ${
+                      isActive ? 'bg-brand-600 text-white' : 'text-slate-300 hover:bg-slate-700'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    {tab.label}
+                    {hasBadge && <span className="ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[20px] h-[20px] flex items-center justify-center px-1">{unreadNotifications > 9 ? '9+' : unreadNotifications}</span>}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="p-2 border-t border-slate-700">
+              <button
+                onClick={() => { handleTabClick('profile'); setBurgerMenuOpen(false); }}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  activeTab === 'profile' ? 'bg-brand-600 text-white' : 'text-slate-300 hover:bg-slate-700'
+                }`}
+              >
+                <User className="w-5 h-5" />
+                Profile
+              </button>
+              <button
+                onClick={() => { setBurgerMenuOpen(false); setActiveTab('dashboard'); signOut(); }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-900/30 transition-colors"
+              >
+                <LogOut className="w-5 h-5" />
+                Log out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {moreMenuOpen && (
         <div className="md:hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" onClick={() => setMoreMenuOpen(false)}>

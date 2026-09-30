@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { supabase, Profile, Task, Site, Timesheet, Material, Trade } from '../../lib/supabase';
 import { useNav } from '../../contexts/NavContext';
-import { UserCheck, Mail, MapPin, Briefcase, Clock, Package, CheckCircle2, ArrowRight } from 'lucide-react';
+import { setMessageTarget } from '../../utils/messageTarget';
+import { UserCheck, Mail, MapPin, Briefcase, Clock, Package, CheckCircle2, ArrowRight, MessageSquare } from 'lucide-react';
 
 export default function WorkerDetail({ workerId }: { workerId: string }) {
-  const { pushView } = useNav();
+  const { pushView, setActiveTab } = useNav();
   const [worker, setWorker] = useState<Profile | null>(null);
   const [tasks, setTasks] = useState<(Task & { site: Site; trade?: Trade })[]>([]);
   const [timesheets, setTimesheets] = useState<(Timesheet & { site: Site })[]>([]);
@@ -68,6 +69,13 @@ export default function WorkerDetail({ workerId }: { workerId: string }) {
               <Mail className="w-3 h-3" /> {worker.email}
             </p>
           </div>
+          <button
+            onClick={() => { setMessageTarget(worker.id); setActiveTab('messages'); }}
+            className="flex items-center gap-2 px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-sm transition-colors flex-shrink-0"
+          >
+            <MessageSquare className="w-4 h-4" />
+            Message
+          </button>
         </div>
       </div>
 

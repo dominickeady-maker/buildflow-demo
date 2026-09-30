@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { MessageCircle, Send, User, Search, Loader2, ArrowLeft } from 'lucide-react';
 import { formatDateUK, formatTimeUK } from '../utils/dateFormat';
+import { consumeMessageTarget } from '../utils/messageTarget';
 
 interface Message {
   id: string;
@@ -49,6 +50,11 @@ export default function Messages() {
   useEffect(() => {
     loadConversations();
     loadAvailableUsers();
+
+    const target = consumeMessageTarget();
+    if (target) {
+      setSelectedUser(target);
+    }
 
     const channel = supabase
       .channel('messages-updates')
