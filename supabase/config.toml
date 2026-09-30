@@ -3,6 +3,3 @@ verify_jwt = true
 
 [functions.send-invite]
 verify_jwt = true
-
-[functions.configure-auth-urls]
-verify_jwt = false
