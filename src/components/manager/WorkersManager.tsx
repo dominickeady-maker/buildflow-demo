@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useWorkerLink } from '../../contexts/NavContext';
-import { Users, Plus, Edit2, Trash2, MapPin, Briefcase, Mail, UserCheck, AlertCircle, Loader2, MapPinned, X, Check } from 'lucide-react';
+import { Users, Plus, Edit2, Trash2, MapPin, Briefcase, Mail, UserCheck, AlertCircle, Loader2, MapPinned, X, Check, Clock, Send } from 'lucide-react';
 
 interface Worker {
   id: string;
@@ -11,6 +11,7 @@ interface Worker {
   role: string;
   created_at: string;
   organization_id: string;
+  invite_pending?: boolean;
 }
 
 interface Site {
@@ -37,11 +38,11 @@ export default function WorkersManager({ isDemoMode = false }: { isDemoMode?: bo
   const [planLimitError, setPlanLimitError] = useState('');
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
     full_name: '',
   });
   const [assigningWorker, setAssigningWorker] = useState<Worker | null>(null);
   const [assignedSiteIds, setAssignedSiteIds] = useState<Set<string>>(new Set());
+  const [resendingId, setResendingId] = useState<string | null>(null);
 
   useEffect(() => {
     loadData();
@@ -118,7 +119,6 @@ export default function WorkersManager({ isDemoMode = false }: { isDemoMode?: bo
         },
         body: JSON.stringify({
           email: formData.email,
-          password: formData.password,
           full_name: formData.full_name,
         }),
       });
@@ -192,8 +192,32 @@ export default function WorkersManager({ isDemoMode = false }: { isDemoMode?: bo
   }
 
   function resetForm() {
-    setFormData({ email: '', password: '', full_name: '' });
+    setFormData({ email: '', full_name: '' });
     setShowForm(false);
+  }
+
+  async function handleResendInvite(worker: Worker) {
+    setResendingId(worker.id);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-worker`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+        },
+        body: JSON.stringify({ email: worker.email, resend: true }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        alert(result.error || 'Failed to resend invite');
+      } else {
+        alert('Invite resent to ' + worker.email);
+      }
+    } catch (err: any) {
+      alert(err.message || 'Failed to resend invite');
+    } finally {
+      setResendingId(null);
+    }
   }
 
   function getSiteNameById(siteId: string) {
@@ -216,7 +240,7 @@ export default function WorkersManager({ isDemoMode = false }: { isDemoMode?: bo
           className="flex items-center gap-2 px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg transition-colors"
         >
           <Plus className="w-4 h-4" />
-          Add Worker
+          Invite Worker
         </button>
       </div>
 
@@ -229,7 +253,8 @@ export default function WorkersManager({ isDemoMode = false }: { isDemoMode?: bo
 
       {showForm && (
         <div className="bg-slate-700 border border-slate-600 rounded-lg p-6">
-          <h3 className="font-medium text-white mb-4">Add New Worker</h3>
+          <h3 className="font-medium text-white mb-4">Invite New Worker</h3>
+          <p className="text-sm text-slate-400 mb-4">The worker will receive an email invite and set their own password.</p>
           <form onSubmit={handleAddWorker} className="space-y-4">
             <div>
               <label className="block text-sm text-slate-300 mb-2">Full Name</label>
@@ -251,24 +276,13 @@ export default function WorkersManager({ isDemoMode = false }: { isDemoMode?: bo
                 required
               />
             </div>
-            <div>
-              <label className="block text-sm text-slate-300 mb-2">Password</label>
-              <input
-                type="password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-brand-500"
-                required
-                minLength={6}
-              />
-            </div>
             <div className="flex gap-2">
               <button
                 type="submit"
                 disabled={submitting}
                 className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
               >
-                {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Add Worker'}
+                {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Send className="w-4 h-4" /> Send Invite</>}
               </button>
               <button
                 type="button"
@@ -299,7 +313,15 @@ export default function WorkersManager({ isDemoMode = false }: { isDemoMode?: bo
                     <UserCheck className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-white">{worker.full_name}</h3>
+                    <h3 className="font-semibold text-white flex items-center gap-2">
+                      {worker.full_name}
+                      {worker.invite_pending && (
+                        <span className="inline-flex items-center gap-1 text-xs font-normal text-amber-300 bg-amber-900/40 border border-amber-700/50 px-2 py-0.5 rounded-full">
+                          <Clock className="w-3 h-3" />
+                          Invite pending
+                        </span>
+                      )}
+                    </h3>
                     <p className="text-sm text-slate-400 flex items-center gap-1">
                       <Mail className="w-3 h-3" />
                       {worker.email}
@@ -308,6 +330,16 @@ export default function WorkersManager({ isDemoMode = false }: { isDemoMode?: bo
                 </div>
                 {!isDemoMode && (
                   <div className="flex gap-2">
+                    {worker.invite_pending && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleResendInvite(worker); }}
+                        disabled={resendingId === worker.id}
+                        className="text-amber-400 hover:text-amber-300 transition-colors disabled:opacity-50"
+                        title="Resend invite"
+                      >
+                        {resendingId === worker.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                      </button>
+                    )}
                     <button
                       onClick={(e) => { e.stopPropagation(); openAssignSites(worker); }}
                       className="text-slate-400 hover:text-brand-400 transition-colors"

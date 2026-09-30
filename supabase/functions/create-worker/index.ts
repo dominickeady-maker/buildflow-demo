@@ -6,6 +6,23 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
+const DISPOSABLE_DOMAINS = [
+  "test.com", "example.com", "example.org", "example.net",
+  "mailinator.com", "guerrillamail.com", "tempmail.com", "tempmail.net",
+  "throwaway.email", "trashmail.com", "yopmail.com", "sharklasers.com",
+  "guerrillamail.info", "grr.la", "dispostable.com", "fakemail.net",
+  "fakeinbox.com", "maildrop.cc", "mintemail.com", "mohmal.com",
+  "getnada.com", "temp-mail.org", "emailondeck.com", "10minutemail.com",
+];
+
+function isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) return false;
+  const domain = email.split("@")[1].toLowerCase();
+  if (DISPOSABLE_DOMAINS.includes(domain)) return false;
+  return true;
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
@@ -21,28 +38,23 @@ Deno.serve(async (req: Request) => {
     });
 
     const body = await req.json();
-    const { email, password, full_name } = body;
+    const { email, full_name, resend } = body;
 
     if (!email || typeof email !== "string") {
       return new Response(
-        JSON.stringify({ error: "email is required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-    if (!full_name || typeof full_name !== "string") {
-      return new Response(
-        JSON.stringify({ error: "full_name is required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-    if (!password || password.length < 6) {
-      return new Response(
-        JSON.stringify({ error: "password must be at least 6 characters" }),
+        JSON.stringify({ error: "Email is required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Identify the calling manager from their JWT to get their organization_id.
+    if (!isValidEmail(email)) {
+      return new Response(
+        JSON.stringify({ error: "Please enter a valid email address. Disposable or test emails are not allowed." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Identify the calling manager from their JWT.
     const authHeader = req.headers.get("Authorization") || "";
     const token = authHeader.replace("Bearer ", "");
     const anonClient = createClient(supabaseUrl, anonKey, {
@@ -74,12 +86,64 @@ Deno.serve(async (req: Request) => {
 
     if (managerProfile.role !== "manager") {
       return new Response(
-        JSON.stringify({ error: "Only managers can create workers" }),
+        JSON.stringify({ error: "Only managers can invite workers" }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     const orgId = managerProfile.organization_id;
+
+    // Get the org subdomain for the redirect URL.
+    const { data: org } = await adminClient
+      .from("organizations")
+      .select("subdomain")
+      .eq("id", orgId)
+      .maybeSingle();
+
+    const subdomain = org?.subdomain || "app";
+    const redirectTo = `https://${subdomain}.banksman.app/auth/confirm`;
+
+    // Handle resend invite
+    if (resend) {
+      const { data: existingProfile } = await adminClient
+        .from("profiles")
+        .select("id, email, invite_pending")
+        .eq("email", email)
+        .eq("organization_id", orgId)
+        .maybeSingle();
+
+      if (!existingProfile) {
+        return new Response(
+          JSON.stringify({ error: "No worker found with that email in your organisation" }),
+          { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const { error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(email, {
+        redirectTo,
+        data: { full_name: existingProfile.id },
+      });
+
+      if (inviteError) {
+        return new Response(
+          JSON.stringify({ error: "Failed to resend invite: " + inviteError.message }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      return new Response(
+        JSON.stringify({ success: true, resent: true }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // New invite flow
+    if (!full_name || typeof full_name !== "string") {
+      return new Response(
+        JSON.stringify({ error: "Full name is required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     // Check plan limit
     const { data: canAdd, error: planError } = await adminClient
@@ -99,31 +163,29 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Create the auth user with the specified password (email confirmation off).
-    const { data: authData, error: authError } = await adminClient.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-      user_metadata: { full_name, organization_id: orgId },
+    // Send the invite email. The worker sets their own password from the link.
+    const { data: inviteData, error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(email, {
+      redirectTo,
+      data: { full_name, organization_id: orgId },
     });
 
-    if (authError) {
-      if (authError.message.includes("already been registered") || authError.message.includes("already exists")) {
+    if (inviteError) {
+      if (inviteError.message.includes("already been registered") || inviteError.message.includes("already exists")) {
         return new Response(
           JSON.stringify({ error: "A user with this email already exists" }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       return new Response(
-        JSON.stringify({ error: authError.message }),
+        JSON.stringify({ error: inviteError.message }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const userId = authData.user?.id;
+    const userId = inviteData.user?.id;
     if (!userId) {
       return new Response(
-        JSON.stringify({ error: "User created but no ID returned" }),
+        JSON.stringify({ error: "Invite sent but no user ID returned" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -138,6 +200,7 @@ Deno.serve(async (req: Request) => {
           full_name,
           role: "worker",
           organization_id: orgId,
+          invite_pending: true,
         },
         { onConflict: "id" }
       );
