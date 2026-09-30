@@ -30,6 +30,7 @@ export type Organization = {
   plan: string;
   max_users: number;
   active: boolean;
+  is_internal: boolean;
   created_at: string;
 };
 

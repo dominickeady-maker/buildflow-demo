@@ -41,6 +41,7 @@ export default function CustomersAdmin() {
     const { data, error } = await supabase
       .from('organizations')
       .select('*')
+      .eq('is_internal', false)
       .order('created_at', { ascending: false });
 
     if (error) {
