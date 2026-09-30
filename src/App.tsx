@@ -24,6 +24,7 @@ import WorkerDetail from './components/detail/WorkerDetail';
 import TaskDetail from './components/detail/TaskDetail';
 import WorkerTaskDetail from './components/detail/WorkerTaskDetail';
 import CustomersAdmin from './components/admin/CustomersAdmin';
+import SetPassword from './components/SetPassword';
 import { LayoutDashboard, ListTodo, Package, MapPin, Clock, LogOut, Camera, FileText, Users, User, MessageCircle, MoreHorizontal, X, Info, Building2 } from 'lucide-react';
 import Footer from './components/Footer';
 import TermsOfService from './components/TermsOfService';
@@ -35,6 +36,12 @@ function AppContent() {
   const { branding } = useBranding();
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
+
+  const isAuthConfirmPath = typeof window !== 'undefined' && window.location.pathname.startsWith('/auth/confirm');
+
+  if (isAuthConfirmPath) {
+    return <SetPassword />;
+  }
 
   if (loading) {
     return (
