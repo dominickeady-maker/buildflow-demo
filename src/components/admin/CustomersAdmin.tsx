@@ -98,6 +98,8 @@ export default function CustomersAdmin() {
         body: JSON.stringify({
           email: formData.manager_email,
           redirect_url: redirectUrl,
+          org_id: result.org_id,
+          full_name: formData.manager_name,
         }),
       });
 
