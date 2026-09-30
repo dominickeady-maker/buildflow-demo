@@ -44,6 +44,7 @@ export default function Messages() {
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const selectedUserRef = useRef<string | null>(null);
 
   useEffect(() => {
     loadConversations();
@@ -56,8 +57,8 @@ export default function Messages() {
         { event: '*', schema: 'public', table: 'messages' },
         () => {
           loadConversations();
-          if (selectedUser) {
-            loadMessages(selectedUser);
+          if (selectedUserRef.current) {
+            loadMessages(selectedUserRef.current);
           }
         }
       )
@@ -67,6 +68,10 @@ export default function Messages() {
       supabase.removeChannel(channel);
     };
   }, []);
+
+  useEffect(() => {
+    selectedUserRef.current = selectedUser;
+  }, [selectedUser]);
 
   useEffect(() => {
     if (selectedUser) {
@@ -89,10 +94,13 @@ export default function Messages() {
   }
 
   async function loadAvailableUsers() {
+    if (!user || !profile?.organization_id) return;
+
     const { data, error } = await supabase
       .from('profiles')
       .select('id, full_name, role')
-      .neq('id', user?.id)
+      .neq('id', user.id)
+      .eq('organization_id', profile.organization_id)
       .order('full_name');
 
     if (error) {

@@ -1,13 +1,19 @@
 import { useState, useEffect } from 'react';
 import { supabase, Site } from '../../lib/supabase';
 import { useSiteLink } from '../../contexts/NavContext';
-import { MapPin, Plus, Edit2, Trash2, Download, Users, Briefcase, ChevronDown, ChevronUp } from 'lucide-react';
+import { MapPin, Plus, Edit2, Trash2, Download, Users, Briefcase, ChevronDown, ChevronUp, UserPlus, X, Check } from 'lucide-react';
 import { exportToCSV, formatDataForExport } from '../../utils/exportToCSV';
 import { formatDateUK } from '../../utils/dateFormat';
 
 interface SiteWithDetails extends Site {
   workers?: Array<{ id: string; full_name: string }>;
   tasks?: Array<{ id: string; title: string; status: string; assigned_to: string | null }>;
+}
+
+interface OrgWorker {
+  id: string;
+  full_name: string;
+  email: string;
 }
 
 export default function SitesManager({ isDemoMode = false }: { isDemoMode?: boolean }) {
@@ -17,6 +23,9 @@ export default function SitesManager({ isDemoMode = false }: { isDemoMode?: bool
   const [editingSite, setEditingSite] = useState<Site | null>(null);
   const [expandedSites, setExpandedSites] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [orgWorkers, setOrgWorkers] = useState<OrgWorker[]>([]);
+  const [assigningSiteId, setAssigningSiteId] = useState<string | null>(null);
+  const [assignedWorkerIds, setAssignedWorkerIds] = useState<Set<string>>(new Set());
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -24,7 +33,22 @@ export default function SitesManager({ isDemoMode = false }: { isDemoMode?: bool
 
   useEffect(() => {
     loadSites();
+    loadOrgWorkers();
   }, []);
+
+  async function loadOrgWorkers() {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, full_name, email')
+      .eq('role', 'worker')
+      .order('full_name');
+
+    if (error) {
+      console.error('Error loading org workers:', error);
+    } else {
+      setOrgWorkers(data || []);
+    }
+  }
 
   async function loadSites() {
     const { data, error } = await supabase
@@ -38,8 +62,18 @@ export default function SitesManager({ isDemoMode = false }: { isDemoMode?: bool
       const sitesWithDetails = await Promise.all(
         (data || []).map(async (site) => {
           const tasks = await loadSiteTasks(site.id);
-          const workerIds = [...new Set(tasks.map(t => t.assigned_to).filter(Boolean))];
-          const workers = await loadWorkers(workerIds as string[]);
+          const taskWorkerIds = new Set(tasks.map(t => t.assigned_to).filter(Boolean) as string[]);
+
+          // Load directly-assigned workers from site_workers
+          const { data: swData } = await supabase
+            .from('site_workers')
+            .select('worker_id')
+            .eq('site_id', site.id);
+          const assignedIds = new Set((swData || []).map(sw => sw.worker_id));
+
+          // Combine: workers from tasks + workers from site_workers
+          const allWorkerIds = [...new Set([...taskWorkerIds, ...assignedIds])];
+          const workers = await loadWorkers(allWorkerIds);
 
           return {
             ...site,
@@ -116,6 +150,45 @@ export default function SitesManager({ isDemoMode = false }: { isDemoMode?: bool
     }
 
     resetForm();
+    loadSites();
+  }
+
+  async function openAssignWorkers(siteId: string) {
+    setAssigningSiteId(siteId);
+    const { data } = await supabase
+      .from('site_workers')
+      .select('worker_id')
+      .eq('site_id', siteId);
+    setAssignedWorkerIds(new Set((data || []).map(sw => sw.worker_id)));
+  }
+
+  async function toggleWorkerAssignment(siteId: string, workerId: string, isAssigned: boolean) {
+    if (isAssigned) {
+      await supabase
+        .from('site_workers')
+        .delete()
+        .eq('site_id', siteId)
+        .eq('worker_id', workerId);
+      setAssignedWorkerIds(prev => {
+        const next = new Set(prev);
+        next.delete(workerId);
+        return next;
+      });
+    } else {
+      await supabase
+        .from('site_workers')
+        .insert({ site_id: siteId, worker_id: workerId });
+      setAssignedWorkerIds(prev => {
+        const next = new Set(prev);
+        next.add(workerId);
+        return next;
+      });
+    }
+  }
+
+  function closeAssignWorkers() {
+    setAssigningSiteId(null);
+    setAssignedWorkerIds(new Set());
     loadSites();
   }
 
@@ -300,10 +373,21 @@ export default function SitesManager({ isDemoMode = false }: { isDemoMode?: bool
               {isExpanded && (
                 <div className="border-t border-slate-600 bg-slate-800/50 p-4 space-y-4">
                   <div>
-                    <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
-                      <Users className="w-4 h-4 text-blue-400" />
-                      Workers on Site
-                    </h4>
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-sm font-semibold text-white flex items-center gap-2">
+                        <Users className="w-4 h-4 text-blue-400" />
+                        Workers on Site
+                      </h4>
+                      {!isDemoMode && (
+                        <button
+                          onClick={() => openAssignWorkers(site.id)}
+                          className="flex items-center gap-1 text-xs text-brand-400 hover:text-brand-300 transition-colors"
+                        >
+                          <UserPlus className="w-3.5 h-3.5" />
+                          Assign Workers
+                        </button>
+                      )}
+                    </div>
                     {site.workers && site.workers.length > 0 ? (
                       <div className="space-y-1">
                         {site.workers.map(worker => (
@@ -372,6 +456,56 @@ export default function SitesManager({ isDemoMode = false }: { isDemoMode?: bool
           </div>
         )}
       </div>
+
+      {assigningSiteId && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" onClick={closeAssignWorkers}>
+          <div className="bg-slate-800 rounded-xl border border-slate-700 p-6 max-w-md w-full max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white">Assign Workers</h3>
+              <button onClick={closeAssignWorkers} className="text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            {orgWorkers.length === 0 ? (
+              <p className="text-slate-400 text-sm py-4 text-center">No workers in your organisation yet. Add workers from the Workers page first.</p>
+            ) : (
+              <div className="space-y-2">
+                {orgWorkers.map(worker => {
+                  const isAssigned = assignedWorkerIds.has(worker.id);
+                  return (
+                    <label
+                      key={worker.id}
+                      className="flex items-center gap-3 p-3 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer hover:border-slate-600 transition-colors"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => toggleWorkerAssignment(assigningSiteId, worker.id, isAssigned)}
+                        className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${
+                          isAssigned ? 'bg-brand-500 border-brand-500' : 'border-slate-600 hover:border-slate-500'
+                        }`}
+                      >
+                        {isAssigned && <Check className="w-3.5 h-3.5 text-white" />}
+                      </button>
+                      <div className="flex-1">
+                        <div className="text-sm font-medium text-white">{worker.full_name}</div>
+                        <div className="text-xs text-slate-400">{worker.email}</div>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={closeAssignWorkers}
+                className="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg text-sm transition-colors"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

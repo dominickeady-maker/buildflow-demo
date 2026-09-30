@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useWorkerLink } from '../../contexts/NavContext';
-import { Users, Plus, Edit2, Trash2, MapPin, Briefcase, Mail, UserCheck, AlertCircle, Loader2 } from 'lucide-react';
+import { Users, Plus, Edit2, Trash2, MapPin, Briefcase, Mail, UserCheck, AlertCircle, Loader2, MapPinned, X, Check } from 'lucide-react';
 
 interface Worker {
   id: string;
@@ -40,6 +40,8 @@ export default function WorkersManager({ isDemoMode = false }: { isDemoMode?: bo
     password: '',
     full_name: '',
   });
+  const [assigningWorker, setAssigningWorker] = useState<Worker | null>(null);
+  const [assignedSiteIds, setAssignedSiteIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadData();
@@ -134,6 +136,44 @@ export default function WorkersManager({ isDemoMode = false }: { isDemoMode?: bo
     } finally {
       setSubmitting(false);
     }
+  }
+
+  async function openAssignSites(worker: Worker) {
+    setAssigningWorker(worker);
+    const { data } = await supabase
+      .from('site_workers')
+      .select('site_id')
+      .eq('worker_id', worker.id);
+    setAssignedSiteIds(new Set((data || []).map(sw => sw.site_id)));
+  }
+
+  async function toggleSiteAssignment(workerId: string, siteId: string, isAssigned: boolean) {
+    if (isAssigned) {
+      await supabase
+        .from('site_workers')
+        .delete()
+        .eq('worker_id', workerId)
+        .eq('site_id', siteId);
+      setAssignedSiteIds(prev => {
+        const next = new Set(prev);
+        next.delete(siteId);
+        return next;
+      });
+    } else {
+      await supabase
+        .from('site_workers')
+        .insert({ worker_id: workerId, site_id: siteId });
+      setAssignedSiteIds(prev => {
+        const next = new Set(prev);
+        next.add(siteId);
+        return next;
+      });
+    }
+  }
+
+  function closeAssignSites() {
+    setAssigningWorker(null);
+    setAssignedSiteIds(new Set());
   }
 
   async function handleDeleteWorker(workerId: string) {
@@ -267,12 +307,21 @@ export default function WorkersManager({ isDemoMode = false }: { isDemoMode?: bo
                   </div>
                 </div>
                 {!isDemoMode && (
-                  <button
-                    onClick={() => handleDeleteWorker(worker.id)}
-                    className="text-red-400 hover:text-red-300 transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); openAssignSites(worker); }}
+                      className="text-slate-400 hover:text-brand-400 transition-colors"
+                      title="Assign to sites"
+                    >
+                      <MapPinned className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleDeleteWorker(worker.id); }}
+                      className="text-red-400 hover:text-red-300 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 )}
               </div>
 
@@ -334,6 +383,55 @@ export default function WorkersManager({ isDemoMode = false }: { isDemoMode?: bo
         <div className="text-center py-12 bg-slate-700 border border-slate-600 rounded-lg">
           <Users className="w-12 h-12 text-slate-500 mx-auto mb-3" />
           <p className="text-slate-400">No workers yet</p>
+        </div>
+      )}
+
+      {assigningWorker && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" onClick={closeAssignSites}>
+          <div className="bg-slate-800 rounded-xl border border-slate-700 p-6 max-w-md w-full max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white">Assign {assigningWorker.full_name} to Sites</h3>
+              <button onClick={closeAssignSites} className="text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            {sites.length === 0 ? (
+              <p className="text-slate-400 text-sm py-4 text-center">No sites in your organisation yet. Create sites from the Sites page first.</p>
+            ) : (
+              <div className="space-y-2">
+                {sites.map(site => {
+                  const isAssigned = assignedSiteIds.has(site.id);
+                  return (
+                    <label
+                      key={site.id}
+                      className="flex items-center gap-3 p-3 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer hover:border-slate-600 transition-colors"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => toggleSiteAssignment(assigningWorker.id, site.id, isAssigned)}
+                        className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${
+                          isAssigned ? 'bg-brand-500 border-brand-500' : 'border-slate-600 hover:border-slate-500'
+                        }`}
+                      >
+                        {isAssigned && <Check className="w-3.5 h-3.5 text-white" />}
+                      </button>
+                      <div className="flex-1">
+                        <div className="text-sm font-medium text-white">{site.name}</div>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={closeAssignSites}
+                className="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg text-sm transition-colors"
+              >
+                Done
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

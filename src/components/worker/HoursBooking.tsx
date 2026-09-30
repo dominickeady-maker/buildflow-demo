@@ -3,6 +3,7 @@ import { supabase, Site, Timesheet } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { Clock, PoundSterling, Calendar } from 'lucide-react';
 import { formatDateUK } from '../../utils/dateFormat';
+import { loadWorkerSites } from '../../utils/workerSites';
 
 export default function HoursBooking() {
   const { profile } = useAuth();
@@ -26,16 +27,9 @@ export default function HoursBooking() {
   }, [profile?.id]);
 
   async function loadSites() {
-    const { data, error } = await supabase
-      .from('sites')
-      .select('*')
-      .order('name');
-
-    if (error) {
-      console.error('Error loading sites:', error);
-    } else {
-      setSites(data);
-    }
+    if (!profile?.id) return;
+    const data = await loadWorkerSites(profile.id);
+    setSites(data);
   }
 
   async function loadRecentEntries() {

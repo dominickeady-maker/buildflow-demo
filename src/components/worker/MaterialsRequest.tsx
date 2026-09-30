@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase, Site } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { Package, Plus, Search } from 'lucide-react';
+import { loadWorkerSites } from '../../utils/workerSites';
 
 const COMMON_MATERIALS = [
   // Aggregates
@@ -197,7 +198,7 @@ export default function MaterialsRequest() {
 
   useEffect(() => {
     loadSites();
-  }, []);
+  }, [profile?.id]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -212,16 +213,9 @@ export default function MaterialsRequest() {
   }, []);
 
   async function loadSites() {
-    const { data, error } = await supabase
-      .from('sites')
-      .select('*')
-      .order('name');
-
-    if (error) {
-      console.error('Error loading sites:', error);
-    } else {
-      setSites(data);
-    }
+    if (!profile?.id) return;
+    const data = await loadWorkerSites(profile.id);
+    setSites(data);
   }
 
   async function handleSubmit(e: React.FormEvent) {
