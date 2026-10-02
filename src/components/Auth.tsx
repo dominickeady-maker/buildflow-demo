@@ -25,15 +25,25 @@ export default function Auth({ onTermsClick, showTerms, onCloseTerms }: { onTerm
     setResetting(true);
     setError('');
     const redirectUrl = `${window.location.origin}/auth/confirm`;
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: redirectUrl,
-    });
-    setResetting(false);
-    if (resetError) {
-      setError(resetError.message);
-    } else {
-      setResetSent(true);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/reset-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ email, redirect_url: redirectUrl }),
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.error || 'Failed to send reset email');
+      } else {
+        setResetSent(true);
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to send reset email');
     }
+    setResetting(false);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -122,7 +132,7 @@ export default function Auth({ onTermsClick, showTerms, onCloseTerms }: { onTerm
 
         <div className="mt-4 text-center">
           {resetSent ? (
-            <p className="text-sm text-green-400">Password reset link sent to {email}.</p>
+            <p className="text-sm text-green-400">If that email exists, we've sent a reset link to {email}.</p>
           ) : (
             <button
               onClick={handlePasswordReset}
