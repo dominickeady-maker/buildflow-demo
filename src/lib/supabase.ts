@@ -13,6 +13,9 @@ export type Profile = {
   role: 'worker' | 'manager';
   organization_id: string | null;
   is_platform_admin: boolean;
+  invite_pending?: boolean;
+  avatar_url?: string | null;
+  text_size?: 'normal' | 'large' | 'extra_large';
   created_at: string;
   updated_at: string;
 };

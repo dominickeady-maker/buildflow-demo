@@ -1,37 +1,148 @@
-import { useState, useEffect } from 'react';
-import { supabase, Task, Site, Profile, Trade, Material } from '../../lib/supabase';
+import { useState, useEffect, useRef } from 'react';
+import { supabase, Task, Site, Profile, Trade, Drawing, Material } from '../../lib/supabase';
+import { useAuth } from '../../contexts/AuthContext';
+import { useOrganization } from '../../hooks/useOrganization';
 import { useNav } from '../../contexts/NavContext';
-import { Clock, Package, MapPin, UserCheck, ArrowRight } from 'lucide-react';
+import { Clock, MapPin, FileText, Package, Camera, Upload, Loader2, CheckCircle2, X, ExternalLink, UserCheck, ArrowRight, Calendar } from 'lucide-react';
 import { formatDateUK } from '../../utils/dateFormat';
+import heic2any from 'heic2any';
+import { processImageForUpload } from '../../utils/imageResize';
 
-export default function TaskDetail({ taskId }: { taskId: string }) {
+interface ConstructionPhoto {
+  id: string;
+  image_url: string;
+  thumbnail_url: string;
+  description: string | null;
+  created_at: string;
+  user_id: string;
+}
+
+export default function TaskDetail({ taskId, isDemoMode = false }: { taskId: string; isDemoMode?: boolean }) {
+  const { user, profile } = useAuth();
+  const { organizationId } = useOrganization();
   const { pushView } = useNav();
+  const isManager = profile?.role === 'manager';
+
   const [task, setTask] = useState<(Task & { site?: Site; assignee?: Profile; trade?: Trade }) | null>(null);
+  const [drawings, setDrawings] = useState<Drawing[]>([]);
   const [materials, setMaterials] = useState<(Material & { site: Site })[]>([]);
+  const [photos, setPhotos] = useState<ConstructionPhoto[]>([]);
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
+  const [photoDescription, setPhotoDescription] = useState('');
+  const [pendingPhotos, setPendingPhotos] = useState<{ file: File; previewUrl: string }[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [enlargedPhoto, setEnlargedPhoto] = useState<ConstructionPhoto | null>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    loadAllData(taskId);
+    loadAll(taskId);
   }, [taskId]);
 
-  async function loadAllData(id: string) {
+  async function loadAll(id: string) {
+    setLoading(true);
     const [taskRes] = await Promise.all([
       supabase.from('tasks').select('*, site:sites(*), assignee:profiles!assigned_to(*), trade:trades(*)').eq('id', id).maybeSingle(),
     ]);
 
-    if (taskRes.data) setTask(taskRes.data as any);
-
-    // Try to find materials linked to this task's site
     if (taskRes.data) {
-      const { data: siteMaterials } = await supabase
-        .from('materials')
-        .select('*, site:sites(*)')
-        .eq('site_id', taskRes.data.site_id)
-        .order('created_at', { ascending: false });
-      if (siteMaterials) setMaterials(siteMaterials as any);
-    }
+      setTask(taskRes.data as any);
+      const siteId = taskRes.data.site_id;
 
+      const [drawingsRes, materialsRes, photosRes] = await Promise.all([
+        supabase.from('drawings').select('*').eq('site_id', siteId).order('created_at', { ascending: false }),
+        supabase.from('materials').select('*, site:sites(*)').eq('site_id', siteId).order('created_at', { ascending: false }),
+        supabase.from('construction_photos').select('id, image_url, thumbnail_url, description, created_at, user_id').eq('task_id', id).order('created_at', { ascending: false }),
+      ]);
+
+      if (drawingsRes.data) setDrawings(drawingsRes.data);
+      if (materialsRes.data) setMaterials(materialsRes.data as any);
+      if (photosRes.data) setPhotos(photosRes.data as any);
+    }
     setLoading(false);
+  }
+
+  async function updateStatus(newStatus: 'in_progress' | 'complete') {
+    if (!task) return;
+    setUpdating(true);
+    const updateData: any = { status: newStatus };
+    if (newStatus === 'complete') {
+      updateData.completed_at = new Date().toISOString();
+      updateData.completed_by = user?.id;
+    }
+    const { error } = await supabase.from('tasks').update(updateData).eq('id', task.id);
+    if (error) {
+      alert(`Failed to update: ${error.message}`);
+    } else {
+      await loadAll(task.id);
+    }
+    setUpdating(false);
+  }
+
+  async function convertHeicToJpeg(file: File): Promise<File> {
+    const convertedBlob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.92 });
+    const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+    return new File([blob], file.name.replace(/\.heic$/i, '.jpg'), { type: 'image/jpeg', lastModified: Date.now() });
+  }
+
+  async function handlePhotoSelection(files: FileList | null) {
+    if (!files || files.length === 0) return;
+    const pending: { file: File; previewUrl: string }[] = [];
+    for (let i = 0; i < files.length; i++) {
+      let file = files[i];
+      const isHeic = file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic';
+      if (isHeic) {
+        try { file = await convertHeicToJpeg(file); } catch { continue; }
+      }
+      pending.push({ file, previewUrl: URL.createObjectURL(file) });
+    }
+    setPendingPhotos(pending);
+    setShowPhotoModal(true);
+    setPhotoDescription('');
+  }
+
+  async function uploadPhotos() {
+    if (pendingPhotos.length === 0 || uploading || !user || !organizationId || !task) return;
+    setUploading(true);
+    try {
+      for (let i = 0; i < pendingPhotos.length; i++) {
+        const { file, previewUrl } = pendingPhotos[i];
+        const { full, thumbnail } = await processImageForUpload(file);
+        const timestamp = Date.now();
+        const random = Math.random().toString(36).substring(7);
+        const fullFileName = `${user.id}/${timestamp}-${random}.jpg`;
+        const thumbFileName = `${user.id}/thumbs/${timestamp}-${random}.jpg`;
+        const { error: uploadError } = await supabase.storage.from('construction-photos').upload(fullFileName, full, { cacheControl: '3600', upsert: false });
+        if (uploadError) { alert(`Upload failed: ${uploadError.message}`); continue; }
+        await supabase.storage.from('construction-photos').upload(thumbFileName, thumbnail, { cacheControl: '3600', upsert: false });
+        const { data: { publicUrl: fullUrl } } = supabase.storage.from('construction-photos').getPublicUrl(fullFileName);
+        const { data: { publicUrl: thumbUrl } } = supabase.storage.from('construction-photos').getPublicUrl(thumbFileName);
+        await supabase.from('construction_photos').insert({
+          user_id: user.id, organization_id: organizationId, image_url: fullUrl, thumbnail_url: thumbUrl,
+          description: photoDescription || null, task_id: task.id,
+          issues: [], ai_processing: false,
+          metadata: { filename: file.name, size: full.size, type: 'image/jpeg', uploadedAt: new Date().toISOString() },
+        });
+        URL.revokeObjectURL(previewUrl);
+      }
+      setPendingPhotos([]);
+      setShowPhotoModal(false);
+      if (cameraInputRef.current) cameraInputRef.current.value = '';
+      if (galleryInputRef.current) galleryInputRef.current.value = '';
+      await loadAll(task.id);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  function cancelUpload() {
+    pendingPhotos.forEach(p => URL.revokeObjectURL(p.previewUrl));
+    setPendingPhotos([]);
+    setShowPhotoModal(false);
+    if (cameraInputRef.current) cameraInputRef.current.value = '';
+    if (galleryInputRef.current) galleryInputRef.current.value = '';
   }
 
   if (loading || !task) {
@@ -39,45 +150,58 @@ export default function TaskDetail({ taskId }: { taskId: string }) {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Task Header */}
+    <div className="space-y-5">
+      {/* Task header */}
       <div className="bg-slate-700 border border-slate-600 rounded-lg p-5">
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex items-center gap-2 mb-3 flex-wrap">
           {task.trade && (
             <span className="text-xs font-medium text-brand-300 bg-brand-900/30 px-2 py-1 rounded">{task.trade.name}</span>
           )}
           <span className={`text-xs font-medium px-2 py-1 rounded ${
             task.status === 'complete' ? 'bg-green-900/50 text-green-400' :
-            task.status === 'in_progress' ? 'bg-blue-900/50 text-blue-400' :
-            'bg-slate-600 text-white'
+            task.status === 'in_progress' ? 'bg-blue-900/50 text-blue-400' : 'bg-slate-600 text-white'
           }`}>{task.status.replace('_', ' ')}</span>
+          {task.status === 'complete' && <CheckCircle2 className="w-4 h-4 text-green-400" />}
         </div>
         <h2 className="text-xl font-bold text-white">{task.title}</h2>
         {task.description && <p className="text-sm text-slate-300 mt-2">{task.description}</p>}
+
+        {/* Dates */}
+        <div className="flex flex-wrap gap-4 mt-3 text-xs text-slate-400">
+          <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> Created: {formatDateUK(task.created_at)}</span>
+          {task.completed_at && <span className="flex items-center gap-1 text-green-400"><CheckCircle2 className="w-3 h-3" /> Completed: {formatDateUK(task.completed_at)}</span>}
+        </div>
       </div>
 
-      {/* Linked entities */}
+      {/* Site and Assignee */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Site */}
         {task.site && (
-          <button
-            onClick={() => pushView({ type: 'site', id: task.site!.id, label: task.site!.name, subTab: 'overview' })}
-            className="bg-slate-700 border border-slate-600 rounded-lg p-4 text-left hover:border-brand-500/50 transition-colors"
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <MapPin className="w-5 h-5 text-blue-400" />
-              <h3 className="font-semibold text-white">Site</h3>
+          isManager ? (
+            <button
+              onClick={() => pushView({ type: 'site', id: task.site!.id, label: task.site!.name, subTab: 'overview' })}
+              className="bg-slate-700 border border-slate-600 rounded-lg p-4 text-left hover:border-brand-500/50 transition-colors"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <MapPin className="w-5 h-5 text-blue-400" />
+                <h3 className="font-semibold text-white">Site</h3>
+              </div>
+              <p className="text-sm text-slate-300">{task.site.name}</p>
+              {task.site.description && <p className="text-xs text-slate-500 mt-1">{task.site.description}</p>}
+              <div className="flex items-center gap-1 mt-2 text-xs text-brand-400">Open site <ArrowRight className="w-3 h-3" /></div>
+            </button>
+          ) : (
+            <div className="bg-slate-700 border border-slate-600 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <MapPin className="w-5 h-5 text-blue-400" />
+                <h3 className="font-semibold text-white">Site</h3>
+              </div>
+              <p className="text-white font-medium">{task.site.name}</p>
+              {task.site.description && <p className="text-sm text-slate-400 mt-1">{task.site.description}</p>}
             </div>
-            <p className="text-sm text-slate-300">{task.site.name}</p>
-            {task.site.description && <p className="text-xs text-slate-500 mt-1">{task.site.description}</p>}
-            <div className="flex items-center gap-1 mt-2 text-xs text-brand-400">
-              Open site <ArrowRight className="w-3 h-3" />
-            </div>
-          </button>
+          )
         )}
 
-        {/* Assignee */}
-        {task.assignee && (
+        {task.assignee && isManager && (
           <button
             onClick={() => pushView({ type: 'worker', id: task.assignee!.id, label: task.assignee!.full_name })}
             className="bg-slate-700 border border-slate-600 rounded-lg p-4 text-left hover:border-brand-500/50 transition-colors"
@@ -89,65 +213,185 @@ export default function TaskDetail({ taskId }: { taskId: string }) {
             <p className="text-sm text-slate-300">{task.assignee.full_name}</p>
             <p className="text-xs text-slate-500 mt-1 capitalize">{task.assignee.role}</p>
             {task.trade && <p className="text-xs text-slate-500">{task.trade.name}</p>}
-            <div className="flex items-center gap-1 mt-2 text-xs text-brand-400">
-              Open worker <ArrowRight className="w-3 h-3" />
-            </div>
+            <div className="flex items-center gap-1 mt-2 text-xs text-brand-400">Open worker <ArrowRight className="w-3 h-3" /></div>
           </button>
         )}
       </div>
 
-      {/* Related materials */}
+      {/* Action buttons */}
+      {!isManager && task.status !== 'complete' && (
+        <div className="flex gap-3">
+          {task.status === 'todo' && (
+            <button
+              onClick={() => updateStatus('in_progress')}
+              disabled={updating}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
+            >
+              {updating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Clock className="w-4 h-4" />}
+              {updating ? 'Starting...' : 'Start Task'}
+            </button>
+          )}
+          {task.status === 'in_progress' && (
+            <button
+              onClick={() => updateStatus('complete')}
+              disabled={updating}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
+            >
+              {updating ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+              {updating ? 'Completing...' : 'Mark Complete'}
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Drawings */}
+      <div className="bg-slate-700 border border-slate-600 rounded-lg p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <FileText className="w-5 h-5 text-brand-400" />
+          <h3 className="font-semibold text-white">Drawings</h3>
+          <span className="text-sm text-slate-400">({drawings.length})</span>
+        </div>
+        {drawings.length > 0 ? (
+          <div className="space-y-2">
+            {drawings.map(d => (
+              <a
+                key={d.id}
+                href={d.file_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-3 bg-slate-800 hover:bg-slate-600/50 rounded-lg transition-colors"
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-white font-medium truncate">{d.title}</p>
+                  <p className="text-xs text-slate-400">{d.category} · v{d.version}</p>
+                </div>
+                <ExternalLink className="w-4 h-4 text-blue-400 flex-shrink-0 ml-2" />
+              </a>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-slate-400">No drawings for this site</p>
+        )}
+      </div>
+
+      {/* Photos */}
+      <div className="bg-slate-700 border border-slate-600 rounded-lg p-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Camera className="w-5 h-5 text-blue-400" />
+            <h3 className="font-semibold text-white">Photos</h3>
+            <span className="text-sm text-slate-400">({photos.length})</span>
+          </div>
+        </div>
+
+        {!isManager && !isDemoMode && (
+          <>
+            <input ref={cameraInputRef} type="file" accept="image/jpeg,image/png,image/jpg,image/heic" capture="environment" className="hidden" onChange={(e) => handlePhotoSelection(e.target.files)} multiple />
+            <input ref={galleryInputRef} type="file" accept="image/jpeg,image/png,image/jpg,image/heic" className="hidden" onChange={(e) => handlePhotoSelection(e.target.files)} multiple />
+            <div className="flex flex-col sm:flex-row gap-2 mb-3">
+              <button onClick={() => cameraInputRef.current?.click()} disabled={uploading} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-500 text-white font-medium rounded-lg transition-all disabled:opacity-50 text-sm">
+                <Camera className="w-4 h-4" /> Take Photo
+              </button>
+              <button onClick={() => galleryInputRef.current?.click()} disabled={uploading} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-600 hover:bg-slate-500 text-white font-medium rounded-lg transition-colors disabled:opacity-50 text-sm">
+                <Upload className="w-4 h-4" /> Upload
+              </button>
+            </div>
+          </>
+        )}
+        {!isManager && isDemoMode && (
+          <div className="flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-600 text-slate-400 font-medium rounded-lg text-sm opacity-60 mb-3">
+            <Camera className="w-4 h-4" />
+            Photo upload is disabled in the demo
+          </div>
+        )}
+
+        {uploading && <p className="text-sm text-blue-400 mb-2 flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin" /> Uploading...</p>}
+
+        {photos.length > 0 && (
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+            {photos.map(p => (
+              <button
+                key={p.id}
+                onClick={() => setEnlargedPhoto(p)}
+                className="relative aspect-square rounded-lg overflow-hidden bg-slate-800 hover:ring-2 hover:ring-brand-500 transition-all"
+              >
+                <img src={p.thumbnail_url || p.image_url} alt={p.description || ''} className="w-full h-full object-cover" loading="lazy" />
+                {p.description && <div className="absolute bottom-0 left-0 right-0 bg-black/70 p-1"><p className="text-white text-xs line-clamp-1">{p.description}</p></div>}
+              </button>
+            ))}
+          </div>
+        )}
+        {photos.length === 0 && !uploading && <p className="text-sm text-slate-400">No photos yet for this task</p>}
+      </div>
+
+      {/* Materials */}
       <div className="bg-slate-700 border border-slate-600 rounded-lg p-4">
         <div className="flex items-center gap-2 mb-3">
           <Package className="w-5 h-5 text-brand-400" />
-          <h3 className="font-semibold text-white">Related Material Requests</h3>
+          <h3 className="font-semibold text-white">Material Requests</h3>
           <span className="text-sm text-slate-400">({materials.length})</span>
         </div>
-        <div className="space-y-2">
-          {materials.map(m => (
-            <div key={m.id} className="flex items-center justify-between p-2 hover:bg-slate-600/50 rounded-lg transition-colors">
-              <div className="flex-1">
-                <span className="text-sm text-slate-300">{m.item_name}</span>
-                <span className="text-xs text-slate-500 ml-2">Qty: {m.quantity}</span>
+        {materials.length > 0 ? (
+          <div className="space-y-2">
+            {materials.map(m => (
+              <div key={m.id} className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-white font-medium truncate">{m.item_name}</p>
+                  <p className="text-xs text-slate-400">Qty: {m.quantity}</p>
+                </div>
+                <span className={`text-xs font-medium px-2 py-1 rounded flex-shrink-0 ml-2 ${
+                  m.status === 'delivered' ? 'bg-green-900/50 text-green-400' :
+                  m.status === 'ordered' ? 'bg-purple-900/30 text-purple-400' :
+                  m.status === 'approved' ? 'bg-blue-900/30 text-blue-400' : 'bg-brand-900/30 text-brand-400'
+                }`}>{m.status}</span>
               </div>
-              <span className={`text-xs font-medium px-2 py-1 rounded ${
-                m.status === 'delivered' ? 'bg-green-900/50 text-green-400' :
-                m.status === 'ordered' ? 'bg-purple-900/30 text-purple-400' :
-                m.status === 'approved' ? 'bg-blue-900/30 text-blue-400' :
-                'bg-brand-900/30 text-brand-400'
-              }`}>{m.status}</span>
-            </div>
-          ))}
-          {materials.length === 0 && <p className="text-sm text-slate-400">No material requests for this site</p>}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-slate-400">No material requests for this site</p>
+        )}
       </div>
 
-      {/* Metadata */}
-      <div className="bg-slate-700 border border-slate-600 rounded-lg p-4">
-        <h3 className="font-semibold text-white mb-3">Details</h3>
-        <div className="space-y-2 text-sm">
-          {task.trade && (
-            <div className="flex justify-between">
-              <span className="text-slate-400">Trade</span>
-              <span className="text-white">{task.trade.name}</span>
+      {/* Photo upload modal */}
+      {showPhotoModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-slate-800 rounded-xl shadow-2xl border border-slate-700 max-w-md w-full p-6 max-h-[85vh] overflow-y-auto overscroll-contain">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-white">Add Photo Details</h3>
+              <button onClick={cancelUpload} className="text-slate-400 hover:text-white"><X className="w-5 h-5" /></button>
             </div>
-          )}
-          <div className="flex justify-between">
-            <span className="text-slate-400">Status</span>
-            <span className="text-white capitalize">{task.status.replace('_', ' ')}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-slate-400">Created</span>
-            <span className="text-white">{formatDateUK(task.created_at)}</span>
-          </div>
-          {task.completed_at && (
-            <div className="flex justify-between">
-              <span className="text-slate-400">Completed</span>
-              <span className="text-white">{formatDateUK(task.completed_at)}</span>
+            {pendingPhotos.length > 0 && (
+              <div className="grid grid-cols-3 gap-2 mb-4">
+                {pendingPhotos.map((p, i) => <img key={i} src={p.previewUrl} alt="" className="w-full aspect-square object-cover rounded-lg" />)}
+              </div>
+            )}
+            <div className="mb-4">
+              <label className="block text-sm font-semibold text-white mb-2">Description (optional)</label>
+              <textarea value={photoDescription} onChange={(e) => setPhotoDescription(e.target.value)} placeholder="Add notes..." className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" rows={2} />
             </div>
-          )}
+            <div className="flex gap-3">
+              <button onClick={cancelUpload} disabled={uploading} className="flex-1 px-4 py-2.5 bg-slate-700 text-white rounded-lg font-medium hover:bg-slate-600 disabled:opacity-50">Cancel</button>
+              <button onClick={uploadPhotos} disabled={uploading} className="flex-1 px-4 py-2.5 bg-brand-500 text-white rounded-lg font-medium disabled:opacity-50 flex items-center justify-center gap-2">
+                {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Upload'}
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Enlarged photo viewer */}
+      {enlargedPhoto && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80" onClick={() => setEnlargedPhoto(null)}>
+          <div className="relative max-w-2xl w-full" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setEnlargedPhoto(null)} className="absolute -top-10 right-0 text-white hover:text-slate-300 flex items-center gap-1 text-sm">
+              <X className="w-5 h-5" /> Close
+            </button>
+            <img src={enlargedPhoto.image_url} alt={enlargedPhoto.description || ''} className="w-full rounded-lg" />
+            {enlargedPhoto.description && <p className="text-white text-sm mt-2 text-center">{enlargedPhoto.description}</p>}
+            <p className="text-slate-400 text-xs mt-1 text-center">{formatDateUK(enlargedPhoto.created_at)}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

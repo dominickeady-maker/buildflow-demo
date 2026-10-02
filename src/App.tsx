@@ -22,7 +22,6 @@ import Breadcrumbs from './components/Breadcrumbs';
 import SiteDetail from './components/detail/SiteDetail';
 import WorkerDetail from './components/detail/WorkerDetail';
 import TaskDetail from './components/detail/TaskDetail';
-import WorkerTaskDetail from './components/detail/WorkerTaskDetail';
 import CustomersAdmin from './components/admin/CustomersAdmin';
 import SetPassword from './components/SetPassword';
 import { LayoutDashboard, ListTodo, Package, MapPin, Clock, LogOut, Camera, FileText, Users, User, MessageCircle, MoreHorizontal, X, Info, Building2, Menu } from 'lucide-react';
@@ -77,6 +76,14 @@ function AppContent() {
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [burgerMenuOpen, setBurgerMenuOpen] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
+
+  // Apply text size preference on profile load
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove('text-large', 'text-extra-large');
+    if (profile?.text_size === 'large') root.classList.add('text-large');
+    else if (profile?.text_size === 'extra_large') root.classList.add('text-extra-large');
+  }, [profile?.text_size]);
 
   // Platform admins land on the Customers page by default, not the dashboard.
   useEffect(() => {
@@ -167,8 +174,8 @@ function AppContent() {
     if (!activeView) return null;
     if (activeView.type === 'site') return <SiteDetail siteId={activeView.id} />;
     if (activeView.type === 'worker') return <WorkerDetail workerId={activeView.id} />;
-    if (activeView.type === 'task') return <TaskDetail taskId={activeView.id} />;
-    if (activeView.type === 'worker_task') return <WorkerTaskDetail taskId={activeView.id} isDemoMode={isDemoMode} />;
+    if (activeView.type === 'task') return <TaskDetail taskId={activeView.id} isDemoMode={isDemoMode} />;
+    if (activeView.type === 'worker_task') return <TaskDetail taskId={activeView.id} isDemoMode={isDemoMode} />;
     return null;
   }
 
@@ -242,7 +249,14 @@ function AppContent() {
               ) : (
                 <img src="/banksman-header-logo-dark-bg.png" alt="Banksman" className="h-[26px] md:h-8" />
               )}
-              <div>
+              <div className="flex items-center gap-2">
+                {profile.avatar_url ? (
+                  <img src={profile.avatar_url} alt={profile.full_name} className="w-8 h-8 rounded-full object-cover" />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center">
+                    <User className="w-4 h-4 text-white" />
+                  </div>
+                )}
                 <p className="text-xs text-slate-400 font-medium mt-0.5 hidden sm:block">
                   {profile.full_name} <span className="text-brand-500">•</span> <span className="capitalize">{isPlatformAdmin ? 'Platform Admin' : profile.role}</span>
                 </p>
@@ -327,9 +341,13 @@ function AppContent() {
           <div className="absolute right-0 top-0 bottom-0 w-72 bg-slate-800 border-l border-slate-700 flex flex-col" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between p-4 border-b border-slate-700">
               <div className="flex items-center gap-3">
-                <div className="bg-brand-500 rounded-full p-2">
-                  <User className="w-5 h-5 text-white" />
-                </div>
+                {profile.avatar_url ? (
+                  <img src={profile.avatar_url} alt={profile.full_name} className="w-10 h-10 rounded-full object-cover" />
+                ) : (
+                  <div className="bg-brand-500 rounded-full p-2">
+                    <User className="w-5 h-5 text-white" />
+                  </div>
+                )}
                 <div>
                   <p className="text-sm font-semibold text-white">{profile.full_name}</p>
                   <p className="text-xs text-slate-400 capitalize">{isPlatformAdmin ? 'Platform Admin' : profile.role}</p>

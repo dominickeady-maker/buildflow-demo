@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useDemoMode } from '../contexts/DemoModeContext';
 import { supabase } from '../lib/supabase';
-import { User, Mail, Lock, Bell, Save, Loader2 } from 'lucide-react';
+import { User, Mail, Lock, Save, Loader2, Camera, Type } from 'lucide-react';
+import { processImageForUpload } from '../utils/imageResize';
 
 interface ProfileData {
   full_name: string;
@@ -10,11 +11,16 @@ interface ProfileData {
   role: string;
 }
 
+type TextSize = 'normal' | 'large' | 'extra_large';
+
 export default function AccountProfile() {
   const { user } = useAuth();
   const { isDemoMode } = useDemoMode();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [textSize, setTextSize] = useState<TextSize>('normal');
   const [profileData, setProfileData] = useState<ProfileData>({
     full_name: '',
     email: '',
@@ -24,16 +30,23 @@ export default function AccountProfile() {
     newPassword: '',
     confirmPassword: '',
   });
-  const [notifications, setNotifications] = useState({
-    emailNotifications: true,
-    taskUpdates: true,
-    materialRequests: true,
-  });
   const [message, setMessage] = useState({ type: '', text: '' });
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     loadProfile();
   }, [user]);
+
+  useEffect(() => {
+    applyTextSize(textSize);
+  }, [textSize]);
+
+  function applyTextSize(size: TextSize) {
+    const root = document.documentElement;
+    root.classList.remove('text-normal', 'text-large', 'text-extra-large');
+    if (size === 'large') root.classList.add('text-large');
+    else if (size === 'extra_large') root.classList.add('text-extra-large');
+  }
 
   async function loadProfile() {
     if (!user) return;
@@ -52,6 +65,10 @@ export default function AccountProfile() {
         email: data.email || '',
         role: data.role || '',
       });
+      setAvatarUrl(data.avatar_url || null);
+      const size = (data.text_size as TextSize) || 'normal';
+      setTextSize(size);
+      applyTextSize(size);
     }
     setLoading(false);
   }
@@ -77,6 +94,46 @@ export default function AccountProfile() {
 
     setSaving(false);
     setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+  }
+
+  async function handleAvatarUpload(file: File) {
+    if (!user || isDemoMode) return;
+    setUploadingAvatar(true);
+    try {
+      const { full } = await processImageForUpload(file);
+      const fileName = `${user.id}/avatar-${Date.now()}.jpg`;
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, full, { cacheControl: '3600', upsert: true });
+      if (uploadError) {
+        setMessage({ type: 'error', text: 'Failed to upload photo: ' + uploadError.message });
+        return;
+      }
+      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName);
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', user.id);
+      if (updateError) {
+        setMessage({ type: 'error', text: 'Failed to save photo' });
+      } else {
+        setAvatarUrl(publicUrl);
+        setMessage({ type: 'success', text: 'Profile photo updated' });
+      }
+    } catch (err: any) {
+      setMessage({ type: 'error', text: err.message || 'Failed to upload' });
+    } finally {
+      setUploadingAvatar(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+    setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+  }
+
+  async function handleTextSizeChange(size: TextSize) {
+    setTextSize(size);
+    applyTextSize(size);
+    if (!user) return;
+    await supabase.from('profiles').update({ text_size: size }).eq('id', user.id);
   }
 
   async function handleChangePassword() {
@@ -139,6 +196,74 @@ export default function AccountProfile() {
           {message.text}
         </div>
       )}
+
+      {/* Profile photo */}
+      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Camera className="w-5 h-5 text-blue-400" />
+          <h3 className="text-lg font-semibold text-white">Profile Photo</h3>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="Profile" className="w-20 h-20 rounded-full object-cover border-2 border-slate-600" />
+            ) : (
+              <div className="w-20 h-20 rounded-full bg-brand-500 flex items-center justify-center border-2 border-slate-600">
+                <User className="w-8 h-8 text-white" />
+              </div>
+            )}
+          </div>
+          <div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/jpg,image/heic"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleAvatarUpload(file);
+              }}
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingAvatar || isDemoMode}
+              className="flex items-center gap-2 px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+            >
+              {uploadingAvatar ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
+              {avatarUrl ? 'Change Photo' : 'Upload Photo'}
+            </button>
+            {isDemoMode && <p className="text-xs text-amber-400 mt-1">Disabled in the demo</p>}
+          </div>
+        </div>
+      </div>
+
+      {/* Text size */}
+      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Type className="w-5 h-5 text-brand-400" />
+          <h3 className="text-lg font-semibold text-white">Text Size</h3>
+        </div>
+        <div className="flex gap-3">
+          {([
+            { value: 'normal', label: 'Normal', sample: 'text-base' },
+            { value: 'large', label: 'Large', sample: 'text-lg' },
+            { value: 'extra_large', label: 'Extra Large', sample: 'text-xl' },
+          ] as { value: TextSize; label: string; sample: string }[]).map(opt => (
+            <button
+              key={opt.value}
+              onClick={() => handleTextSizeChange(opt.value)}
+              className={`flex-1 px-4 py-3 rounded-lg border transition-all ${
+                textSize === opt.value
+                  ? 'bg-brand-600 border-brand-500 text-white'
+                  : 'bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600'
+              }`}
+            >
+              <div className={`font-semibold ${opt.sample}`}>A</div>
+              <div className="text-xs mt-1">{opt.label}</div>
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 space-y-6">
         <div>
@@ -267,75 +392,6 @@ export default function AccountProfile() {
               )}
               Update Password
             </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 space-y-6">
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <Bell className="w-5 h-5 text-green-400" />
-            <h3 className="text-lg font-semibold text-white">Notification Preferences</h3>
-          </div>
-
-          <div className="space-y-3">
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={notifications.emailNotifications}
-                onChange={(e) =>
-                  setNotifications({
-                    ...notifications,
-                    emailNotifications: e.target.checked,
-                  })
-                }
-                className="w-5 h-5 rounded bg-slate-700 border-slate-600 text-blue-600 focus:ring-2 focus:ring-blue-500"
-              />
-              <div>
-                <p className="text-white font-medium">Email Notifications</p>
-                <p className="text-slate-400 text-sm">Receive updates via email</p>
-              </div>
-            </label>
-
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={notifications.taskUpdates}
-                onChange={(e) =>
-                  setNotifications({
-                    ...notifications,
-                    taskUpdates: e.target.checked,
-                  })
-                }
-                className="w-5 h-5 rounded bg-slate-700 border-slate-600 text-blue-600 focus:ring-2 focus:ring-blue-500"
-              />
-              <div>
-                <p className="text-white font-medium">Task Updates</p>
-                <p className="text-slate-400 text-sm">
-                  Get notified when tasks are assigned or updated
-                </p>
-              </div>
-            </label>
-
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={notifications.materialRequests}
-                onChange={(e) =>
-                  setNotifications({
-                    ...notifications,
-                    materialRequests: e.target.checked,
-                  })
-                }
-                className="w-5 h-5 rounded bg-slate-700 border-slate-600 text-blue-600 focus:ring-2 focus:ring-blue-500"
-              />
-              <div>
-                <p className="text-white font-medium">Material Requests</p>
-                <p className="text-slate-400 text-sm">
-                  Receive alerts for new material requests
-                </p>
-              </div>
-            </label>
           </div>
         </div>
       </div>

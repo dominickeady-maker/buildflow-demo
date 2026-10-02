@@ -16,7 +16,6 @@ export default function DrawingsManager({ isDemoMode = false }: { isDemoMode?: b
   const [uploading, setUploading] = useState(false);
   const [filterSite, setFilterSite] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
-  const [selectedDrawing, setSelectedDrawing] = useState<Drawing | null>(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadForm, setUploadForm] = useState({
@@ -119,7 +118,7 @@ export default function DrawingsManager({ isDemoMode = false }: { isDemoMode?: b
       const fileName = `${organizationId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
       // Upload to storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('drawings')
         .upload(fileName, selectedFile, {
           cacheControl: '3600',

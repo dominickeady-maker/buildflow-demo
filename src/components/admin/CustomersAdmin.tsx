@@ -1,7 +1,7 @@
 // © 2026 DM.AI 4U. All rights reserved. Unauthorised copying prohibited.
 import { useState, useEffect } from 'react';
 import { supabase, Organization } from '../../lib/supabase';
-import { Building2, Plus, Users, Edit2, Upload, X, Loader2, Check, Mail } from 'lucide-react';
+import { Building2, Plus, Edit2, Upload, X, Loader2, Check, Mail } from 'lucide-react';
 import { useBranding } from '../../contexts/BrandingContext';
 
 interface ManagerInfo {

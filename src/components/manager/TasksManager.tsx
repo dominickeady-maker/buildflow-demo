@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase, Task, Site, Profile, Trade } from '../../lib/supabase';
 import { useSiteLink, useWorkerLink, useTaskLink } from '../../contexts/NavContext';
-import { Plus, CreditCard as Edit2, Trash2, Filter, Download } from 'lucide-react';
+import { Plus, Pencil, Trash2, Filter, Download } from 'lucide-react';
 import { exportToCSV, formatDataForExport } from '../../utils/exportToCSV';
 
 export default function TasksManager({ isDemoMode = false }: { isDemoMode?: boolean }) {
@@ -437,9 +437,10 @@ export default function TasksManager({ isDemoMode = false }: { isDemoMode?: bool
               <div className="flex gap-2 ml-4">
                 <button
                   onClick={() => startEdit(task)}
-                  className="p-2 text-slate-300 hover:text-brand-400 hover:bg-brand-700/30 rounded transition-colors"
+                  className="p-2 text-slate-300 hover:text-brand-400 hover:bg-brand-700/30 rounded transition-colors flex items-center gap-1"
                 >
-                  <Edit2 className="w-4 h-4" />
+                  <Pencil className="w-4 h-4" />
+                  <span className="text-xs">Edit</span>
                 </button>
                 {!isDemoMode && (
                   <button

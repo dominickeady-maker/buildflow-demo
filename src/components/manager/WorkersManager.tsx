@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useWorkerLink } from '../../contexts/NavContext';
-import { Users, Plus, Edit2, Trash2, MapPin, Briefcase, Mail, UserCheck, AlertCircle, Loader2, MapPinned, X, Check, Clock, Send } from 'lucide-react';
+import { Users, Plus, Trash2, MapPin, Briefcase, Mail, UserCheck, AlertCircle, Loader2, MapPinned, X, Check, Clock, Send } from 'lucide-react';
 
 interface Worker {
   id: string;

@@ -3,8 +3,8 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useNav } from '../contexts/NavContext';
 import { getNotificationsState } from '../contexts/NotificationsContext';
-import { Bell, X, CheckCheck, MessageCircle, ListTodo, Clock, Package, FileText } from 'lucide-react';
-import { formatTimeUK, formatDateUK } from '../utils/dateFormat';
+import { Bell, X, CheckCheck, MessageCircle, ListTodo, Clock, Package } from 'lucide-react';
+import { formatDateUK } from '../utils/dateFormat';
 
 interface NotificationItem {
   id: string;
@@ -30,7 +30,7 @@ function getIcon(type: string) {
 
 export default function NotificationBell() {
   const { user } = useAuth();
-  const { setActiveTab } = useNav();
+  const { setActiveTab, pushView } = useNav();
   const { unreadCount, refreshUnread } = getNotificationsState();
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -85,8 +85,16 @@ export default function NotificationBell() {
     refreshUnread();
 
     if (n.link) {
-      const tab = n.link.split(':')[0];
-      setActiveTab(tab);
+      const parts = n.link.split(':');
+      const prefix = parts[0];
+      const entityId = parts[1];
+
+      if (prefix === 'task' && entityId) {
+        setActiveTab('tasks');
+        pushView({ type: 'task', id: entityId, label: 'Task' });
+      } else {
+        setActiveTab(prefix);
+      }
     }
     setOpen(false);
   }

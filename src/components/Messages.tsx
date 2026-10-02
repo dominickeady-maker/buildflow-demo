@@ -212,7 +212,7 @@ export default function Messages() {
 
     setSending(true);
 
-    const { data, error } = await supabase.from('messages').insert({
+    const { error } = await supabase.from('messages').insert({
       sender_id: user.id,
       receiver_id: selectedUser,
       message: newMessage.trim(),

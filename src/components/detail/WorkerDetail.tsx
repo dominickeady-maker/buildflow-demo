@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase, Profile, Task, Site, Timesheet, Material, Trade } from '../../lib/supabase';
 import { useNav } from '../../contexts/NavContext';
 import { setMessageTarget } from '../../utils/messageTarget';
-import { UserCheck, Mail, MapPin, Briefcase, Clock, Package, CheckCircle2, ArrowRight, MessageSquare } from 'lucide-react';
+import { UserCheck, Mail, MapPin, Briefcase, Clock, Package, CheckCircle2, ArrowRight, MessageSquare, ListTodo, Send, Loader2 } from 'lucide-react';
 
 export default function WorkerDetail({ workerId }: { workerId: string }) {
   const { pushView, setActiveTab } = useNav();
@@ -12,6 +12,7 @@ export default function WorkerDetail({ workerId }: { workerId: string }) {
   const [materials, setMaterials] = useState<(Material & { site: Site })[]>([]);
   const [trade, setTrade] = useState<Trade | null>(null);
   const [loading, setLoading] = useState(true);
+  const [resending, setResending] = useState(false);
 
   useEffect(() => {
     loadAllData(workerId);
@@ -69,14 +70,64 @@ export default function WorkerDetail({ workerId }: { workerId: string }) {
               <Mail className="w-3 h-3" /> {worker.email}
             </p>
           </div>
-          <button
-            onClick={() => { setMessageTarget(worker.id); setActiveTab('messages'); }}
-            className="flex items-center gap-2 px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-sm transition-colors flex-shrink-0"
-          >
-            <MessageSquare className="w-4 h-4" />
-            Message
-          </button>
         </div>
+      </div>
+
+      {/* Action buttons */}
+      <div className="flex flex-wrap gap-2">
+        <button
+          onClick={() => { setMessageTarget(worker.id); setActiveTab('messages'); }}
+          className="flex items-center gap-2 px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-sm transition-colors"
+        >
+          <MessageSquare className="w-4 h-4" />
+          Message
+        </button>
+        <button
+          onClick={() => setActiveTab('tasks')}
+          className="flex items-center gap-2 px-3 py-2 bg-slate-600 hover:bg-slate-500 text-white rounded-lg text-sm transition-colors"
+        >
+          <ListTodo className="w-4 h-4" />
+          Assign Task
+        </button>
+        <button
+          onClick={() => setActiveTab('timesheets')}
+          className="flex items-center gap-2 px-3 py-2 bg-slate-600 hover:bg-slate-500 text-white rounded-lg text-sm transition-colors"
+        >
+          <Clock className="w-4 h-4" />
+          View Timesheets
+        </button>
+        {worker.invite_pending && (
+          <button
+            onClick={async () => {
+              setResending(true);
+              try {
+                const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-worker`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+                  },
+                  body: JSON.stringify({ email: worker.email, resend: true }),
+                });
+                const result = await response.json();
+                if (!response.ok) {
+                  alert(result.error || 'Failed to resend invite');
+                } else {
+                  alert('Invite resent to ' + worker.email);
+                }
+              } catch (err: any) {
+                alert(err.message || 'Failed to resend invite');
+              } finally {
+                setResending(false);
+              }
+            }}
+            disabled={resending}
+            className="flex items-center gap-2 px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm transition-colors disabled:opacity-50"
+          >
+            {resending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+            Resend Invite
+          </button>
+        )}
       </div>
 
       {/* Stats */}

@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './AuthContext';
-import { formatTimeUK, formatDateUK } from '../utils/dateFormat';
 
 export interface AppNotification {
   id: string;
@@ -11,11 +10,6 @@ export interface AppNotification {
   link: string | null;
   read_at: string | null;
   created_at: string;
-}
-
-interface NotificationsContextValue {
-  unreadCount: number;
-  refreshUnread: () => void;
 }
 
 let contextRef: { unreadCount: number; refreshUnread: () => void } = {
